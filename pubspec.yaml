@@ -71,6 +71,7 @@ dependencies:
   dropdown_button2: ^2.3.9 # This is current latest package
   webview_flutter: ^4.8.0
   upgrader: ^4.8.1
+  change_app_package_name: ^1.4.0
 #  google_fonts: ^4.0.4
 dev_dependencies:
 

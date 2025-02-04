@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "285981301230",
     "project_id": "hairfixingzone-d5142",
-    "storage_bucket": "hairfixingzone-d5142.appspot.com"
+    "storage_bucket": "hairfixingzone-d5142.firebasestorage.app"
   },
   "client": [
     {
@@ -39,6 +39,35 @@
         "mobilesdk_app_id": "1:285981301230:android:114a27b1e2aa003e4f16ff",
         "android_client_info": {
           "package_name": "com.example.hairfixingservice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "285981301230-ksqcfr8cpv626qe9luip1er8hjk5ba3j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRv7sPrmEOwJW97vgOO_EkdPnoDdhJexk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "285981301230-ksqcfr8cpv626qe9luip1er8hjk5ba3j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:285981301230:android:992bd4e45861042d4f16ff",
+        "android_client_info": {
+          "package_name": "com.hairfixingzone.hfz"
         }
       },
       "oauth_client": [

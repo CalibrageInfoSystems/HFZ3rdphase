@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
 class CommonUtils{
 
-
-
-
  static void showCustomToastMessageLongbottom(
       String message,
       BuildContext context,
