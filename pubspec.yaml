@@ -1,0 +1,215 @@
+name: hairfixingzone
+description: Hair Loss Treatment for Men and Women
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.1+3
+
+environment:
+  sdk: '>=2.19.6 <3.0.0'
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  bottom_navy_bar: ^6.0.0
+  calendar_date_picker2: ^1.0.0
+  carousel_slider: ^4.0.0
+  cupertino_icons: ^1.0.4
+  custom_date_range_picker: ^1.0.6
+  dotted_border: ^2.0.0+1
+#  firebase_core: ^1.10.6
+#  firebase_core: ^3.5.0 # This is 6 months below version
+  firebase_core: ^3.6.0
+#  firebase_core_platform_interface: ^5.2.1 # This is 11 months below version
+  firebase_core_platform_interface: ^5.3.0
+#  firebase_messaging: ^15.1.1  # This is 6 months below version
+  firebase_messaging: ^15.1.3
+#  firebase_core_platform_interface: 4.5.1
+#  firebase_messaging: ^13.0.4
+  flutter:
+    sdk: flutter
+  flutter_carousel_widget: ^2.2.0  # This is 10 months below version
+  flutter_datetime_picker: ^1.5.1 # This is current latest package
+  flutter_datetime_picker_plus: ^2.1.0 # This is 13 months below version
+  flutter_expanded_tile: ^0.3.7 # This is 19 months below version
+  flutter_infinite_marquee: ^1.0.0 # This is current latest package
+  flutter_local_notifications: ^9.1.5 # This is 2 years below version
+  flutter_rating_bar: ^4.0.1  # This is current latest package
+  flutter_svg: ^0.22.0 # This is 3 years below version
+  flutter_timezone: ^1.0.8 # This is 12 months below version
+  loading_animation_widget: ^1.2.0+4 # This is 22 months below version
+  loading_progress: ^1.0.2 # This is current latest package
+  marquee: ^2.2.3 # This is current latest package
+  permission_handler: ^11.0.0 # This is 13 months below version
+  photo_view: ^0.14.0 # This is 2 years below version
+  pin_code_fields: ^8.0.1 # This is current latest package
+  provider: ^6.0.3 # This is 2 years below version
+  readmore: ^2.2.0 # This is 2 years below version
+  shared_preferences: ^2.2.2 # This is 12 months below version
+  shimmer: ^3.0.0 # This is current latest package
+  syncfusion_flutter_gauges: ^19.3.48 # This is 2 years below version
+  table_calendar: ^3.0.0 # This is 3 years below version
+  url_launcher: ^6.2.4 # This is 8 months below version
+  icon_decoration: ^2.0.2 # This is current latest package
+  dropdown_button2: ^2.3.9 # This is current latest package
+  webview_flutter: ^4.8.0
+  upgrader: ^4.8.1
+#  google_fonts: ^4.0.4
+dev_dependencies:
+
+  connectivity: ^3.0.6
+
+  # The "flutter_lints" package below conta  ins a set of recommended lints to
+  # encourage good coding practices. The l int set provided by the package is
+  # activated in the `analysis_options.ya ml` file located at the root of your
+  # package. See that file for informatio n about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^2.0.0
+  flutter_svg: ^0.22.0
+  flutter_test:
+    sdk: flutter
+  http: ^0.13.4 # This is 3 years below version
+  intl: ^0.17.0 # This is 3 years below version
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+
+    - assets/splash_background.png
+    - assets/web_icon.png
+    - assets/schedule.png
+    - assets/User_icon.svg
+    - assets/top_image.png
+    - assets/gender.png
+    - assets/user.svg
+    - assets/skin-care.svg
+    - assets/calendar-_2_.svg
+    - assets/rescheduling.svg
+    - assets/rate.svg
+    - assets/close.svg
+    - assets/hairfixing_logo.png
+    - assets/left-arrow.svg
+    - assets/befor_login_illustration.png
+    - assets/hfz_logo.png
+    - assets/password_success.png
+    - assets/sign-out-alt.svg
+    - assets/calendar-clock.svg
+    - assets/filter.svg
+    - assets/invite-alt.svg
+    - assets/objects-column.svg
+    - assets/calendar-_3_.svg
+    - assets/calendar-xmark.svg
+    - assets/star.svg
+    - assets/products_icon.svg
+    - assets/about_us_icon.svg
+    - assets/my_profile_icon.svg
+    - assets/my_bookings_icon.svg
+    - assets/book_op_illusion.svg
+    - assets/check.svg
+    - assets/phone_call.svg
+    - assets/id-card-clip-alt.svg
+    - assets/venus-mars.svg
+    - assets/calendar_icon.svg
+    - assets/pen-circle.svg
+    - assets/calendar-day.svg
+    - assets/calendar-lines.svg
+    - assets/overview.svg
+    - assets/undraw_cancel_re_pkdm.svg
+    - assets/undraw_order_confirmed.svg
+    - assets/checked.png
+    - assets/rejected.png
+    - assets/check.png
+    - assets/applogo.png
+    - assets/feedbackbanner.svg
+    - assets/about_us.jpg
+    - assets/bs_v2.svg
+    - assets/bs_v3.svg
+    - assets/facebook.svg
+    - assets/instagram.svg
+    - assets/logout.svg
+    - assets/site.svg
+    - assets/youtube.svg
+    - assets/user_profile.svg
+    - assets/Profile_new.svg
+    - assets/headset.svg
+    - assets/fav_star.svg
+    - assets/logout_new.svg
+    - assets/about_us.svg
+    - assets/f_us3.png
+    - assets/wave_background.png
+    - assets/home.svg
+    - assets/apps.svg
+    - assets/favoritesvgrepo.svg
+    - assets/giftbox.svg
+    - assets/change-password-icon.svg
+    - assets/bs_v5.svg
+    - assets/squareupright.svg
+    - assets/home_new.svg
+    - assets/apps-add.svg
+    - assets/apps-add.svg
+    - assets/flashbg4.png
+    - assets/bar_texture_rec.png
+    - assets/booking.svg
+    - assets/markersvg.svg
+    - assets/calendarcheck.svg
+    - assets/calendarplus.svg
+    - assets/privacy_icon.svg
+    - assets/privacy_policy_image_2.jpg
+    - assets/privacy_policy_image_3.jpg
+    - assets/not_visted.svg
+
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+
+    - family: Outfit
+      fonts:
+        - asset: fonts/Outfit-Medium.ttf
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
