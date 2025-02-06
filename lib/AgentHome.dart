@@ -6,6 +6,7 @@ import 'package:hairfixingzone/Branches_screen.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/CustomerLoginScreen.dart';
+import 'package:hairfixingzone/Inventory_screen.dart';
 import 'package:hairfixingzone/MyAppointments.dart';
 import 'package:hairfixingzone/branchesforagent.dart';
 import 'package:hairfixingzone/startingscreen.dart';
@@ -141,7 +142,6 @@ class _AgentHomeState extends State<AgentHome> {
             _currentIndex = index;
           }),
           selectedItemColor: Colors.black,
-
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
@@ -203,14 +203,24 @@ class _AgentHomeState extends State<AgentHome> {
               ),
               label: 'Consultations',
             ),
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/overview.svg',
+                width: 20,
+                height: 20,
+                color: Colors.black.withOpacity(0.6),
+              ),
+              activeIcon: SvgPicture.asset(
+                'assets/overview.svg',
+                width: 20,
+                height: 20,
+                color: CommonUtils.primaryTextColor,
+              ),
+              label: 'Inventary',
+            ),
           ],
           selectedLabelStyle: CommonStyles.txSty_16b_fb,
-          // unselectedLabelStyle: TextStyle(
-          //   fontSize: 14,
-          //   color: Colors.grey, // Customize the color as needed
-          // ),
         ),
-
       ),
     );
   }
@@ -229,6 +239,8 @@ class _AgentHomeState extends State<AgentHome> {
         return ViewConsultation(
           agentId: widget.userId,
         );
+      case 4:
+        return InventoryScreen(userId: widget.userId);
 
       default:
         return AgentDashBoard(
@@ -242,8 +254,12 @@ class _AgentHomeState extends State<AgentHome> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Logout',style: CommonStyles.txSty_18b_fb,),
-          content: const Text('Are You Sure You Want to Logout?',style: CommonStyles.txSty_16b_fb),
+          title: const Text(
+            'Logout',
+            style: CommonStyles.txSty_18b_fb,
+          ),
+          content: const Text('Are You Sure You Want to Logout?',
+              style: CommonStyles.txSty_16b_fb),
           actions: [
             Container(
               child: ElevatedButton(
@@ -320,11 +336,10 @@ class _AgentHomeState extends State<AgentHome> {
         "Logout Successfully", context, 0, 3);
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) =>  startingscreen()),
+      MaterialPageRoute(builder: (context) => startingscreen()),
       (route) => false,
     );
   }
-
 
   void checkLoginuserdata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -341,10 +356,12 @@ class _AgentHomeState extends State<AgentHome> {
         return '';
       case 1:
         return 'Book Appointment';
-        case 2:
+      case 2:
         return 'Check Appointments';
       case 3:
         return 'View Consultations';
+      case 4:
+        return 'Inventory';
       default:
         return 'default';
     }
