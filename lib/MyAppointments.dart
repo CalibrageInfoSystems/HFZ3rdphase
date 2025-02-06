@@ -1052,7 +1052,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
       context: context,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       initialDate: initialDate,
-      firstDate: DateTime(currentDate.year , currentDate.month -3, currentDate.day),
+     firstDate: DateTime(2020),
       lastDate: DateTime(currentDate.year + 1, currentDate.month, currentDate.day),
       initialDatePickerMode: DatePickerMode.day,
     );
