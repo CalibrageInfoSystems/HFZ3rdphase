@@ -3,7 +3,7 @@ library APIConstants;
 const String SUCCESS_MESSAGE = " You will be contacted by us very soon.";
 
 var baseUrl = "http://182.18.157.215/SaloonApp/API/"; // Test
- //var baseUrl = "http://182.18.157.215/Saloon_UAT/API/"; //UAT
+//var baseUrl = "http://182.18.157.215/Saloon_UAT/API/"; //UAT
 //var baseUrl ="http://137.59.201.212/HairFixingZone/API/";//live
 
 //var imagesflierepo ="http://137.59.201.212/HairFixingZone/FileRepository/";// HairFixingZone Live
@@ -34,8 +34,6 @@ var GetHolidayListByBranchId = "api/Appointment/GetHolidayListByBranchId/";
 
 var SendFirebaseNotifications = "SendFirebaseNotifications";
 
-
-
 var AddAgentSlotInformation = "AddAgentSlotInformation";
 
 var GetApprovedDeclinedSlots = "api/Appointment/GetApprovedDeclinedSlots";
@@ -51,7 +49,8 @@ var getbanner = 'GetBanner?Id=null';
 var getcontent = 'GetContent/true';
 var addupdateconsulation = 'api/Consultation/AddUpdateConsultation';
 var agentAppointments = 'api/Appointment/GetAppointment';
-var getconsulationbranchesbyagentid = 'api/Consultation/GetConsultationsByBranchId/';
+var getconsulationbranchesbyagentid =
+    'api/Consultation/GetConsultationsByBranchId/';
 var changepassword = 'ChangePassword';
 var getbranchesall = 'GetBranchById/null/true';
 var updateuser = 'UpdateUser';
@@ -62,9 +61,12 @@ var getCustomerDatabyid = 'GetCustomerData?id=';
 var getholidayslist = 'api/HolidayList/GetHolidayListdetails';
 var getconsulationbyranchid = 'api/Consultation/GetConsultationsByBranchId';
 //var validateusernameotp = "ValidateOTP";
- var AddCustomerNotification = "AddCustomerNotification";
- var GetTechnicians = "api/Appointment/GetTechnicians";
- var Addfavourites = "AddUpdateFavourites";
- var Viewfavourites = "GetFavourites";
- var DisplayOffers = "api/Offer/GetOffer/1";
- var deleteuser = "DeleteUser";
+var AddCustomerNotification = "AddCustomerNotification";
+var GetTechnicians = "api/Appointment/GetTechnicians";
+var Addfavourites = "AddUpdateFavourites";
+var Viewfavourites = "GetFavourites";
+var DisplayOffers = "api/Offer/GetOffer/1";
+var deleteuser = "DeleteUser";
+
+const getInventoryByBranchId = "Inventory/GetInventoryByBranchId/";
+const addUpdateInventory = "Inventory/AddUpdateInventory";
