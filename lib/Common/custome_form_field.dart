@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
 
-
 class CustomeFormField extends StatelessWidget {
   final String label;
   final TextInputType keyboardType;
@@ -21,23 +20,28 @@ class CustomeFormField extends StatelessWidget {
   final TextStyle? errorStyle;
   final TextStyle? textStyle;
   final FocusNode? focusNode;
+  final int? maxLines;
+  final bool isMandatory;
+
   const CustomeFormField({
     Key? key,
     required this.label,
     this.keyboardType = TextInputType.text,
     this.maxLength,
+    this.isMandatory = true,
     this.maxLengthEnforcement,
     this.obscureText = false,
     this.suffixIcon,
     this.onTap,
     this.errorText,
+    this.maxLines = 1,
     this.onChanged,
     this.inputFormatters,
     this.validator,
     this.controller,
     this.readOnly = false,
     this.errorStyle,
-    this.textStyle,// Initialize the readOnly parameter with a default value
+    this.textStyle, // Initialize the readOnly parameter with a default value
     this.focusNode,
   }) : super(key: key);
 
@@ -51,12 +55,13 @@ class CustomeFormField extends StatelessWidget {
           children: [
             Text(
               '$label ',
-           style:CommonUtils.txSty_12b_fb,),
-
-            const Text(
-              '*',
-              style: TextStyle(color: Colors.red),
+              style: CommonUtils.txSty_12b_fb,
             ),
+            if (isMandatory)
+              const Text(
+                '*',
+                style: TextStyle(color: Colors.red),
+              ),
           ],
         ),
         const SizedBox(
@@ -67,7 +72,8 @@ class CustomeFormField extends StatelessWidget {
           controller: controller,
           decoration: InputDecoration(
             suffixIcon: suffixIcon,
-            contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+            contentPadding:
+                const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(
                 color: Color(0xFF0f75bc),
@@ -94,9 +100,11 @@ class CustomeFormField extends StatelessWidget {
             hintText: 'Enter $label',
             hintStyle: CommonStyles.texthintstyle,
             errorText: errorText,
-            errorStyle: CommonStyles.texthintstyle.copyWith(color: Color.fromARGB(255, 175, 15, 4),),
+            errorStyle: CommonStyles.texthintstyle.copyWith(
+              color: Color.fromARGB(255, 175, 15, 4),
+              fontSize: 11,
+            ),
             counterText: "",
-
           ),
           focusNode: focusNode,
           inputFormatters: inputFormatters,
@@ -105,10 +113,12 @@ class CustomeFormField extends StatelessWidget {
           keyboardType: keyboardType,
           obscureText: obscureText,
           maxLength: maxLength,
+          maxLines: maxLines,
           maxLengthEnforcement: maxLengthEnforcement,
-          readOnly: readOnly, // Pass the readOnly parameter to the TextFormField
+          readOnly:
+              readOnly, // Pass the readOnly parameter to the TextFormField
           onTap: onTap,
-            style: CommonStyles.txSty_14b_fb,
+          style: CommonStyles.txSty_14b_fb,
           //  textStyle :CommonStyles.txSty_14b_fb
           // Add onTap to handle any additional logic if needed
         ),
