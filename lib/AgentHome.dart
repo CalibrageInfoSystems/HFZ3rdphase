@@ -237,14 +237,14 @@ class _AgentHomeState extends State<AgentHome> {
         return Branches_screen(userId: widget.userId!);
       case 3:
         return ViewConsultation(
-          agentId: widget.userId,
+          agentId: widget.userId!,
         );
       case 4:
-        return InventoryScreen(userId: widget.userId);
+        return InventoryScreen(userId: widget.userId!);
 
       default:
         return AgentDashBoard(
-          agentid: widget.userId,
+          agentid: widget.userId!,
         );
     }
   }

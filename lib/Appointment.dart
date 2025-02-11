@@ -2,6 +2,8 @@ class Appointment {
   final int id;
   final int branchId;
   final String name;
+  final String address;
+  final String imageName;
   final String date;
   final String slotTime;
   final String customerName;
@@ -29,6 +31,8 @@ class Appointment {
     required this.id,
     required this.branchId,
     required this.name,
+    required this.address,
+    required this.imageName,
     required this.date,
     required this.slotTime,
     required this.customerName,
@@ -57,6 +61,8 @@ class Appointment {
       id: json['id'] ?? 0, // Default to 0 if null
       branchId: json['branchId'] ?? 0, // Default to 0 if null
       name: json['name'] ?? '',
+      address: json['address'] ?? '',
+      imageName: json['imageName'] ?? '',
       date: json['date'] ?? '',
       slotTime: json['slotTime'] ?? '',
       customerName: json['customerName'] ?? '',

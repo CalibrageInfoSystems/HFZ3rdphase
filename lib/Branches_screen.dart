@@ -230,6 +230,7 @@ class BranchTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('userId ===233: $userId' '$branchnames');
     return Container(
 
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

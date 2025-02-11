@@ -275,32 +275,7 @@ class _BookingScreenState extends State<Rescheduleslotscreen> {
     );
   }
 
-  void logOutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to Logout?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('No'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                onConfirmLogout(context);
-              },
-              child: const Text('Yes'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   Future<void> _openDatePicker(bool isTodayHoliday) async {
     setState(() {
@@ -920,59 +895,7 @@ class _BookingScreenState extends State<Rescheduleslotscreen> {
                                       selectedValue = dropdownItems[selectedTypeCdId]['typeCdId'];
                                       selectedName = dropdownItems[selectedTypeCdId]['desc'];
 
-                                      // Clear previously selected next slot
-                                      //   _nextTimeSlot = null;
-                                      //
-                                      //   // Check if a slot is selected
-                                      //   final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                                      //   int selectedIndex = visibleSlots.indexWhere((slot) => slot.SlotTimeSpan == _selectedTimeSlot);
-                                      //   // if (selectedValue == 7 && selectedIndex == visibleSlots.length - 1) {
-                                      //   //   setState(() {
-                                      //   //     _isLastSlotSelected = true;
-                                      //   //   });
-                                      //   //
-                                      //   // } else {
-                                      //   //   setState(() {
-                                      //   //     _isLastSlotSelected = false;
-                                      //   //   });
-                                      //   //
-                                      //   // }
-                                      //   setState(() {
-                                      //     _isLastSlotSelected = (selectedValue == 7 && selectedIndex == visibleSlots.length - 1);
-                                      //   });
-                                      //   if (selectedIndex != -1) {
-                                      //     // Current slot selection logic
-                                      //     _selectedSlot = visibleSlots[selectedIndex].slot;
-                                      //     AvailableSlots = visibleSlots[selectedIndex].availableSlots.toString();
-                                      //
-                                      //     // If the purpose of visit is "New Hair Patch", try to select the next slot
-                                      //     if (selectedValue == 7 && selectedIndex + 1 < visibleSlots.length) {
-                                      //       final nextSlot = visibleSlots[selectedIndex + 1];
-                                      //       if (nextSlot.availableSlots > 0) {
-                                      //         _nextTimeSlot = nextSlot.SlotTimeSpan;
-                                      //         isnextSlotsAvailable = true;
-                                      //         // Set next time slot
-                                      //       } else {
-                                      //         isnextSlotsAvailable = false;
-                                      //         // Show toast and reset next slot if it's not available
-                                      //         // ScaffoldMessenger.of(context).showSnackBar(
-                                      //         //   SnackBar(
-                                      //         //     content: Text('Next slot is not available'),
-                                      //         //     backgroundColor: Colors.red,
-                                      //         //     duration: Duration(seconds: 4),
-                                      //         //   ),
-                                      //         // );
-                                      //         _nextTimeSlot = null; // Reset if next slot is not available
-                                      //       }
-                                      //     } else {
-                                      //       _nextTimeSlot = null; // Reset next slot if not "New Hair Patch"
-                                      //     }
-                                      //   }
-                                      // } else {
-                                      //   // isnextSlotsAvailable  = false;
-                                      //   // Reset all selections if the purpose of visit is not selected
-                                      //   _selectedSlot = '';
-                                      //   _nextTimeSlot = null;
+
                                     }
                                   });
                                 },

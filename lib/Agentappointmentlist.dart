@@ -48,7 +48,7 @@ class Agentappointmentlist extends StatefulWidget {
 class MyAppointments_screenState extends State<Agentappointmentlist> {
   Future<List<Appointment>>? apiData;
   List<Appointment> temp = [];
-  int? userId;
+   int? agentUserId;
   int? branchid;
 
   @override
@@ -65,7 +65,7 @@ class MyAppointments_screenState extends State<Agentappointmentlist> {
         print('The Internet Is Connected');
         checkLoginuserdata();
 
-        print('UserID==$userId');
+
         print('UserID==${widget.userId}');
       } else {
         print('The Internet Is not Connected');
@@ -76,10 +76,10 @@ class MyAppointments_screenState extends State<Agentappointmentlist> {
   void checkLoginuserdata() async {
     myAppointmentsProvider!.clearFilter();
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getInt('userId');
-    print('userId: : $userId');
+    agentUserId = prefs.getInt('userId')!;
+    print('userId: : $agentUserId');
 
-    initializeData(userId);
+    initializeData(agentUserId);
   }
 
   void initializeData(int? userId) {
@@ -253,6 +253,7 @@ class MyAppointments_screenState extends State<Agentappointmentlist> {
                               } else {
                                 List<Appointment> data = provider.proAppointments;
                                 print('datasize ${data.length}');
+                                print('widget.userId ${widget.userId}');
 
                                 if (data.isNotEmpty) {
                                   return Padding(
@@ -911,7 +912,7 @@ class UserFeedback {
 
 class OpCard extends StatefulWidget {
   final Appointment data;
-  int? userId;
+  int userId;
   int? branchid;
   String? branchaddress;
   final VoidCallback? onRefresh;
@@ -919,7 +920,7 @@ class OpCard extends StatefulWidget {
   OpCard({
     Key? key,
     required this.data,
-    required int userId,
+    required this.userId,
     required int branchid,
     required String branchaddress,
     this.onRefresh,
@@ -937,7 +938,7 @@ class _OpCardState extends State<OpCard> {
   final TextEditingController _priceController = TextEditingController();
 
   double rating_star = 0.0;
-  int? userId;
+  int? opuserId;
   final GlobalKey _toolTipKey = GlobalKey();
   final GlobalKey _fullnameTipKey = GlobalKey();
   final GlobalKey _emailtoolTipKey = GlobalKey();
@@ -962,7 +963,8 @@ class _OpCardState extends State<OpCard> {
 
     dateValues = parseDateString(widget.data.date);
     print('userid===userId,$dateValues');
-    print('userid===userId,$userId');
+    print('userid===userId,$opuserId');
+    print('widget===userId,${widget.userId}');
     fetchPaymentOptions();
   }
 
@@ -1320,7 +1322,7 @@ class _OpCardState extends State<OpCard> {
                       Row(
                         mainAxisAlignment: widget.data.rating != null ? MainAxisAlignment.start : MainAxisAlignment.end,
                         children: [
-                          verifyStatus(widget.data, userId),
+                          verifyStatus(widget.data, widget.userId),
                         ],
                       ),
                     ],
@@ -1482,7 +1484,7 @@ class _OpCardState extends State<OpCard> {
   }
 
   Widget verifyStatus(Appointment data, int? userId) {
-    print('date ${data.date} - slotduration ${data.slotDuration}');
+    print('date ${data.date} - slotduration ${data.slotDuration} --userId $userId');
     switch (data.statusTypeId) {
       case 4: // Submited
         //   return const SizedBox();
@@ -1640,11 +1642,12 @@ class _OpCardState extends State<OpCard> {
                     2,
                   );
                 } else {
+                  print('====?${widget.userId}');
                   // Navigate to reschedule screen if time difference is greater than 60 minutes
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Agentrescheduleslotscreen(
+                      builder: (context) => Agentrescheduleslotscreen( userId: userId!,
                         data: data,
                       ),
                     ),
@@ -2057,8 +2060,8 @@ class _OpCardState extends State<OpCard> {
     String dateTimeString = now.toString();
     print('DateTime as String: $dateTimeString');
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getInt('userId');
-    print('userId CancelAppointment: $userId');
+    opuserId = prefs.getInt('userId');
+    print('userId CancelAppointment: $opuserId');
     //  for (MyAppointment_Model appointment in appointmens) {
     // Create the request object for each appointment
     final request = {
@@ -2076,7 +2079,7 @@ class _OpCardState extends State<OpCard> {
       "IsActive": true,
       "CreatedDate": dateTimeString,
       "UpdatedDate": dateTimeString,
-      "UpdatedByUserId": userId!,
+      "UpdatedByUserId": opuserId!,
       "rating": null,
       "review": null,
       "reviewSubmittedDate": null,

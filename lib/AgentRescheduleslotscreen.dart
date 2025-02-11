@@ -19,8 +19,13 @@ import 'package:hairfixingzone/api_config.dart';
 import 'Common/common_styles.dart';
 class Agentrescheduleslotscreen extends StatefulWidget {
   final Appointment data;
+  final int userId;
 
-  const Agentrescheduleslotscreen({super.key, required this.data});
+  const Agentrescheduleslotscreen({
+    super.key,
+     required this.userId,
+    required this.data,
+  });
 
   @override
   _AgentrescheduleslotscreenState createState() => _AgentrescheduleslotscreenState();
@@ -110,12 +115,12 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
   bool isMobileNumberValidate = false;
   bool _mobileNumberError = false;
   String? _mobileNumberErrorMsg;
-  late String selecteddate;
+   String? selecteddate;
 
   String phonenumber = '';
 
   String Gender = '';
-
+   int? agentId;
   int? Id;
   @override
   void dispose() {
@@ -135,12 +140,15 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
   @override
   void initState() {
     super.initState();
-    getUserDataFromSharedPreferences();
+   // getUserDataFromSharedPreferences();
+    print("====Agent user Id ${widget.userId}");
     branchId = widget.data.branchId; // Ensure this property exists in Appointment
     dropValue = 'Select';
-    _dateController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
-    selectedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
+    _dateController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    selecteddate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    _fullnameController1.text = widget.data.customerName ?? '';
+    _phonenumberController2.text = widget.data.phoneNumber ?? '';
     _checkInternetAndFetchData();
   }
 
@@ -164,7 +172,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
 
   Future<void> _fetchTimeSlots() async {
     try {
-      List<Slot> fetchedSlots = await fetchTimeSlots(DateTime.parse(selectedDate), branchId);
+      List<Slot> fetchedSlots = await fetchTimeSlots(DateTime.parse(selecteddate!), branchId);
       setState(() {
         slots = fetchedSlots;
       });
@@ -266,7 +274,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
 
     if (await CommonUtils.checkInternetConnectivity()) {
       print('Connected to the internet');
-      fetchTimeSlots(DateTime.parse(selecteddate), branchId).then((value) {
+      fetchTimeSlots(DateTime.parse(selecteddate!), branchId).then((value) {
         setState(() {
           slots = value;
           _selectedTimeSlot = '';
@@ -370,7 +378,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                                 child: ClipRRect(
                                   //  borderRadius: BorderRadius.circular(10.0),
                                   child: Image.network(
-                                  'https://example.com/placeholder-image.jpg',
+                                    widget.data.imageName.isNotEmpty ? widget.data.imageName : 'https://example.com/placeholder-image.jpg',
                                     fit: BoxFit.cover,
                                     height: MediaQuery.of(context).size.height / 5.5 / 2,
                                     width: MediaQuery.of(context).size.width / 3.2,
@@ -411,7 +419,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                                       height: 5,
                                     ),
                                     Text(
-                                      widget.data.slotTime!,
+                                      widget.data.address!,
                                       style: CommonStyles.txSty_12b_f5,
                                     ),
                                     const SizedBox(
@@ -810,19 +818,18 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                               alignedDropdown: true,
                               child: DropdownButton2<int>(
                                 isExpanded: true,
-
                                 items: [
-                                  DropdownMenuItem<int>(
-                                    value: -1,
-                                    child: Text(
-                                      ' Select Purpose of Visit',
-                                      style: TextStyle(
-                                        color: Colors.grey, fontSize: 14, fontFamily: 'Outfit',
-                                        //  fontWeight: FontWeight.w500
-                                      ),
-                                    ),
-                                    // Static text
-                                  ),
+                                  // DropdownMenuItem<int>(
+                                  //   value: -1,
+                                  //   child: Text(
+                                  //     ' Select Purpose of Visit',
+                                  //     style: TextStyle(
+                                  //       color: Colors.grey, fontSize: 14, fontFamily: 'Outfit',
+                                  //       //  fontWeight: FontWeight.w500
+                                  //     ),
+                                  //   ),
+                                  //   // Static text
+                                  // ),
                                   ...dropdownItems.asMap().entries.map((entry) {
                                     final index = entry.key;
                                     final item = entry.value;
@@ -841,48 +848,6 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                                   }).toList(),
                                 ].toList(),
                                 value: selectedTypeCdId,
-                                // onChanged: (value) {
-                                //   setState(() {
-                                //     selectedTypeCdId = value!;
-                                //     if (selectedTypeCdId != -1) {
-                                //       selectedValue = dropdownItems[selectedTypeCdId]['typeCdId'];
-                                //       selectedName = dropdownItems[selectedTypeCdId]['desc'];
-                                //
-                                //       final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                                //       int selectedIndex = visibleSlots.indexWhere((slot) => slot.SlotTimeSpan == _selectedTimeSlot);
-                                //
-                                //       if (selectedIndex != -1) {
-                                //         // Current slot
-                                //         _selectedSlot = visibleSlots[selectedIndex].slot;
-                                //         AvailableSlots = visibleSlots[selectedIndex].availableSlots.toString();
-                                //
-                                //         // Next slot selection
-                                //         if (selectedName == "New Hair Patch" && selectedIndex + 1 < visibleSlots.length) {
-                                //           final nextSlot = visibleSlots[selectedIndex + 1];
-                                //           if (nextSlot.availableSlots > 0) {
-                                //             _nextTimeSlot = nextSlot.SlotTimeSpan; // Set next time slot
-                                //           } else {
-                                //             ScaffoldMessenger.of(context).showSnackBar(
-                                //               SnackBar(
-                                //                 content: Text('Next slot not available'),
-                                //                 backgroundColor: Colors.red,
-                                //                 duration: Duration(seconds: 2),
-                                //               ),
-                                //             );
-                                //
-                                //             _nextTimeSlot = null; // Reset if no next slot is available
-                                //           }
-                                //         } else {
-                                //           _nextTimeSlot = null; // Reset if not "New Hair Patch"
-                                //         }
-                                //       }
-                                //     } else {
-                                //       _selectedSlot = '';
-                                //       _nextTimeSlot = null; // Reset selections
-                                //     }
-                                //   });
-                                // },
-
                                 onChanged: (value) {
                                   setState(() {
                                     selectedTypeCdId = value!;
@@ -890,53 +855,10 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                                       selectedValue = dropdownItems[selectedTypeCdId]['typeCdId'];
                                       selectedName = dropdownItems[selectedTypeCdId]['desc'];
 
-                                      //   // Clear previously selected next slot
-                                      //   _nextTimeSlot = null;
-                                      //
-                                      //   // Check if a slot is selected
-                                      //   final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                                      //   int selectedIndex = visibleSlots.indexWhere((slot) => slot.SlotTimeSpan == _selectedTimeSlot);
-                                      //   setState(() {
-                                      //     _isLastSlotSelected = (selectedValue == 7 && selectedIndex == visibleSlots.length - 1);
-                                      //   });
-                                      //   if (selectedIndex != -1) {
-                                      //     // Current slot selection logic
-                                      //     _selectedSlot = visibleSlots[selectedIndex].slot;
-                                      //     AvailableSlots = visibleSlots[selectedIndex].availableSlots.toString();
-                                      //
-                                      //     // If the purpose of visit is "New Hair Patch", try to select the next slot
-                                      //     if (selectedValue ==7&& selectedIndex + 1 < visibleSlots.length) {
-                                      //       final nextSlot = visibleSlots[selectedIndex + 1];
-                                      //       if (nextSlot.availableSlots > 0) {
-                                      //         _nextTimeSlot = nextSlot.SlotTimeSpan;
-                                      //         isnextSlotsAvailable = true;
-                                      //         // Set next time slot
-                                      //       } else {
-                                      //         isnextSlotsAvailable = false;
-                                      //         // Show toast and reset next slot if it's not available
-                                      //         // ScaffoldMessenger.of(context).showSnackBar(
-                                      //         //   SnackBar(
-                                      //         //     content: Text('Next slot not available'),
-                                      //         //     backgroundColor: Colors.red,
-                                      //         //     duration: Duration(seconds: 2),
-                                      //         //   ),
-                                      //         // );
-                                      //         _nextTimeSlot = null; // Reset if next slot is not available
-                                      //       }
-                                      //     } else {
-                                      //       _nextTimeSlot = null; // Reset next slot if not "New Hair Patch"
-                                      //     }
-                                      //   }
-                                      // } else {
-                                      //   // Reset all selections if the purpose of visit is not selected
-                                      //   _selectedSlot = '';
-                                      //   _nextTimeSlot = null;
-                                      // }
+
                                     }
                                   });
                                 },
-
-
                                 buttonStyleData: ButtonStyleData(
                                   height: 45,
                                   width: double.infinity,
@@ -1137,248 +1059,112 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
 
   }
 
-  // Future<void> validatePurpose(String? value) async {
-  //   if (!isSlotsAvailable) {
-  //     showCustomToastMessageLong('No Slots Are Available Today', context, 1, 4);
-  //   }
-  //    if (selectedName == "New Hair Patch"){
-  //     if (!isnextSlotsAvailable) {
-  //     showCustomToastMessageLong('Next Slots is not Available ', context, 1, 4);}
-  //   }
-  //
-  //   else if (!slotselection) {
-  //     showCustomToastMessageLong('Please Select A Slot', context, 1, 4);
-  //   }
-  //   else if (value == null || value.isEmpty) {
-  //     // If value is empty, set ispurposeselected to true
-  //     ispurposeselected = true;
-  //     setState(() {});
-  //   } else {
-  //     // If all conditions are met, proceed to book the appointment
-  //     bookappointment();
-  //   }
-  // }
-
-  //  void bookappointment() {
-  //    // Perform your validation here
-  //    if (!isSlotsAvailable) {
-  //      showCustomToastMessageLong('No Slots Available Today', context, 1, 4);
-  //    } else if (!slotselection) {
-  //      showCustomToastMessageLong('Please Select A Slot', context, 1, 4);
-  //    }
-  //    if (!ispurposeselected) {
-  //      handleAppointmentBooking();
-  //    }
-  //
-  // else{
-  //
-  //      // If all validations pass, proceed with booking the appointment
-  //      // For example, you can call a function to handle the booking process
-  //      // Assuming you have a function called 'handleAppointmentBooking'
-  //      handleAppointmentBooking();
-  //    }
-  //  }
   Future<void> bookappointment() async {
+    if (_formKey.currentState!.validate()) {
+      final url = Uri.parse(baseUrl + postApiAppointment);
+      print('url==>890: $url');
+      String fullName = _fullnameController1.text;
+      String phonenumber = _phonenumberController2.text;
+      DateTime now = DateTime.now();
+      ProgressDialog progressDialog = ProgressDialog(context);
 
-    final url = Uri.parse(baseUrl + postApiAppointment);
-    print('url==>890: $url');
-    String fullName = _fullnameController1.text;
-    String phonenumber = _phonenumberController2.text;
-    DateTime now = DateTime.now();
-    // CommonStyles.startProgress(context);
-    ProgressDialog progressDialog = ProgressDialog(context);
+      // Show the progress dialog
+      progressDialog.show();
+      String dateTimeString = now.toString();
+      print('DateTime as String: $dateTimeString');
+      print('DateTime as String: $selecteddate');
+      print('_selectedTimeSlot892 $_selectedTimeSlot');
+      String slotdate = DateFormat('dd MMM yyyy').format(_selectedDate);
+      print('slotdate $slotdate');
+      // print('screenFrom1213: ${widget.screenFrom}');
+      // print('appointmentId1214: ${widget.appointmentId}');
 
-    // Show the progress dialog
-    progressDialog.show();
+      final request = {
+        "id": widget.data.id,
+        "branchId": widget.data.branchId,
+        "date": selecteddate,
+        "slotTime": timeSlotParts[0],
+        "customerName": fullName,
+        "phoneNumber": phonenumber,
+        "email": email,
+        "genderTypeId":null,
+        "statusTypeId": 18,
+        "purposeOfVisitId": selectedValue,
+        "isActive": true,
+        "createdDate": dateTimeString,
+        "updatedDate": dateTimeString,
+        "updatedByUserId":  widget.userId,
+        "rating": null,
+        "review": null,
+        "reviewSubmittedDate": null,
+        // "timeofslot": widget.data.timeofSlot,
+        "timeofslot": '$_selectedTimeSlot24',
+        "customerId": null,
+        "paymentTypeId": null
+      };
 
-    String dateTimeString = now.toString();
-    print('DateTime as String: $dateTimeString');
-    print('DateTime as String: $selecteddate');
-    print('_selectedTimeSlot892 $_selectedTimeSlot');
-    String slotdate = DateFormat('dd MMM yyyy').format(_selectedDate);
-    print('slotdate $slotdate');
-    print('date _selectedDate ====$_selectedDate');
-    print('slotSelectedDateTime:897 $slotSelectedDateTime');
-    // print('appointmentId1214: ${widget.appointmentId}');
-    // CommonStyles.progressBar(context);
-    final request = {
-      "id": null,
-      "branchId": branchId,
-      "date": selecteddate,
-      "slotTime": timeSlotParts[0],
-      "customerName": fullName,//agentname
-      "phoneNumber": phonenumber,
-      "email": email,
-      "genderTypeId": null, //Sharedprefs  //null
-      "statusTypeId": 5,//agent-5
-      "purposeOfVisitId": selectedValue, //dropdown
-      "isActive": true,
-      "createdDate": dateTimeString,
-      "updatedDate": dateTimeString,
-      "updatedByUserId": 6,//agentid
-      "rating": null,
-      "review": null,
-      "reviewSubmittedDate": null,
-      "timeofslot": timeSlotParts[0],
-      // "timeofslot": '$_selectedTimeSlot24',
-      "customerId": null,//null
-      "paymentTypeId": null,//null
-      "technicianId": null,
-    };
+      print('Object: ${json.encode(request)}');
+      try {
+        final response = await http.post(
+          url,
+          body: json.encode(request),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        );
+        // Check the response status code
+        // if (response.statusCode == 200) {
+        //   print('Request sent successfully');
+        //   showCustomToastMessageLong('Slot booked successfully', context, 0, 2);
+        //   Navigator.pop(context);
+        // } else {
+        //   showCustomToastMessageLong('Failed to send the request', context, 1, 2);
+        //   print('Failed to send the request. Status code: ${response.statusCode}');
+        // }
 
-    print('bookappointment: ${json.encode(request)}');
-    try {
-      final response = await http.post(
-        url,
-        body: json.encode(request),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-      // Check the response status code
-      // if (response.statusCode == 200) {
-      //   print('Request sent successfully');
-      //   showCustomToastMessageLong('Slot booked successfully', context, 0, 2);
-      //   Navigator.pop(context);
-      // } else {
-      //   showCustomToastMessageLong('Failed to send the request', context, 1, 2);
-      //   print('Failed to send the request. Status code: ${response.statusCode}');
-      // }
+        if (response.statusCode == 200) {
+          Map<String, dynamic> data = json.decode(response.body);
+          // LoadingProgress.stop(context);
+          // Extract the necessary information
+          bool isSuccess = data['isSuccess'];
+          progressDialog.dismiss();
+          DateTime testdate = DateTime.now();
+          print(' testdate ====$testdate');
+          if (isSuccess == true) {
 
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        // LoadingProgress.stop(context);
-        // Extract the necessary information
-        bool isSuccess = data['isSuccess'];
-        progressDialog.dismiss();
-        DateTime testdate = DateTime.now();
-        print(' testdate ====$testdate');
-        if (isSuccess == true) {
-          // final int notificationId1 = UniqueKey().hashCode;
-          // // debugPrint('Notification Scheduled for $testdate with ID: $notificationId1');
-          // debugPrint('Notification Scheduled for $slotSelectedDateTime with ID: $notificationId1');
-          // // Hey Sai, Today your Appointment is Scheduled for 10.45 AM at the JNTU Branch, Located at Jntu Stop.
-          // await NotificationService().scheduleNotification(
-          //   title: 'Reminder Notification',
-          //   body: 'Hey $userFullName, Today Your Appointment is Scheduled for  $_selectedTimeSlot at the ${widget.branchname} Branch, Located at ${widget.branchaddress}.',
-          //   //   scheduledNotificationDateTime: testdate!,
-          //   scheduledNotificationDateTime: slotSelectedDateTime!,
-          //   id: notificationId1,
-          // );
-          // //  Hey  Sai, It has Been 20 Days Since Your Tape with Glue Service was Done. Please Revisit the service at Hair Fixing Zone at the JNTU Branch
-          // if (selectedValue == 8 || selectedValue == 9 || selectedValue == 10 || selectedValue == 11) {
-          //   DateTime testdate = DateTime.now();
-          //   print(' testdate ====1072$testdate');
-          //   // Handle each case separately
-          //   switch (selectedValue) {
-          //     case 8:
-          //       final int notificationId2 = UniqueKey().hashCode;
-          //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
-          //       await NotificationService().scheduleNotification(
-          //         title: 'Reminder Notification',
-          //         body:
-          //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
-          //         scheduledNotificationDateTime: newDateTime!,
-          //         //   scheduledNotificationDateTime: testdate!,
-          //         id: notificationId2,
-          //       );
-          //       // Handle value 8
-          //       break;
-          //     case 9:
-          //       final int notificationId2 = UniqueKey().hashCode;
-          //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
-          //       await NotificationService().scheduleNotification(
-          //         title: 'Reminder Notification',
-          //         body:
-          //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
-          //         scheduledNotificationDateTime: newDateTime!,
-          //         //  scheduledNotificationDateTime: testdate!,
-          //         id: notificationId2,
-          //       );
-          //       // Handle value 9
-          //       break;
-          //     case 10:
-          //     // Handle value 10
-          //       final int notificationId2 = UniqueKey().hashCode;
-          //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
-          //       await NotificationService().scheduleNotification(
-          //         title: 'Reminder Notification',
-          //         body:
-          //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
-          //         scheduledNotificationDateTime: newDateTime!,
-          //         //   scheduledNotificationDateTime: testdate!,
-          //         id: notificationId2,
-          //       );
-          //       break;
-          //     case 11:
-          //       final int notificationId2 = UniqueKey().hashCode;
-          //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
-          //       await NotificationService().scheduleNotification(
-          //         title: 'Reminder Notification',
-          //         body:
-          //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
-          //         scheduledNotificationDateTime: newDateTime!,
-          //         // scheduledNotificationDateTime: testdate!,
-          //         id: notificationId2,
-          //       );
-          //       // Handle value 11
-          //       break;
-          //     default:
-          //     // Handle other cases if needed
-          //       break;
-          //   }
-          // }
+            print('Request sent successfully');
+            CommonUtils.showCustomToastMessageLong('Appointment Rescheduled  Successfully', context, 0, 5);
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => AgentHome(userId: widget.userId
+                ),
+              ),
+            );
+          } else {
+            progressDialog.dismiss();
+            print('statusmesssage${data['statusMessage']}');
+            CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 1, 5);
+          }
 
-          // if (selectedValue == 10) {
-          //   final int notificationId2 = UniqueKey().hashCode;
-          //   debugPrint(
-          //       'Notification Scheduled for $newDateTime with ID: $notificationId2');
-          //   //  debugPrint('Notification Scheduled for $testdate with ID: $notificationId2');
-          //   await NotificationService().scheduleNotification(
-          //     title: 'Reminder Notification',
-          //     body:
-          //     'Hey $userFullName, It Has Been 20 Days Since Your New Patch Was Done. Please Revisit the Hairfixing Zone at The ${widget.branchname}',
-          //     // scheduledNotificationDateTime: testdate!,
-          //     scheduledNotificationDateTime: newDateTime!,
-          //     id: notificationId2,
-          //   );
-          // }
 
-          // Your existing code...
-          // LoadingProgress.stop(context,rootNavigator);Appointment Added Successfully
-          print('Request sent successfully');
-          CommonUtils.showCustomToastMessageLong('Appointment Added Successfully', context, 0, 5);
-          // Navigator.of(context).pushReplacement(
-          //   MaterialPageRoute(
-          //     builder: (context) => AgentHome(userId: AgentId,
-          //     ),
-          //   ),
-          // );
+          setState(() {
+            isButtonEnabled = true;
+            progressDialog.dismiss();
+          });
         } else {
           progressDialog.dismiss();
-          print('statusmesssage${data['statusMessage']}');
-          CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 1, 5);
+          // ProgressManager.stopProgress();
+          //showCustomToastMessageLong(
+          // 'Failed to send the request', context, 1, 2);
+          print('Failed to send the request. Status code: ${response.statusCode}');
         }
-
-
-        setState(() {
-          isButtonEnabled = true;
-          progressDialog.dismiss();
-        });
-      } else {
+      } catch (e) {
         progressDialog.dismiss();
         // ProgressManager.stopProgress();
-        //showCustomToastMessageLong(
-        // 'Failed to send the request', context, 1, 2);
-        print('Failed to send the request. Status code: ${response.statusCode}');
+        print('Error slot: $e');
       }
-    } catch (e) {
-      progressDialog.dismiss();
-      // ProgressManager.stopProgress();
-      print('Error slot: $e');
+      }
     }
-    // }
-  }
 
   bool isHoliday(DateTime date) {
     return holidayList.any((holiday) => date.year == holiday.holidayDate.year && date.month == holiday.holidayDate.month && date.day == holiday.holidayDate.day);
@@ -1597,11 +1383,28 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
       final data = json.decode(response.body);
       setState(() {
         dropdownItems = data['listResult'];
+        print("widget.data.purposeOfVisitId: ${widget.data.purposeOfVisitId}");
+        print("Dropdown items:");
+        for (var item in dropdownItems) {
+          print("Item: $item");
+        }
+
+        // Assuming widget.data.purposeOfVisitId is the value you want to match
+        selectedTypeCdId = dropdownItems.indexWhere((item) => item['typeCdId'] == widget.data.purposeOfVisitId);
+        print("selectedTypeCdId: $selectedTypeCdId"); // Print selectedTypeCdId
+        if (selectedTypeCdId != -1) {
+          selectedName = widget.data.purposeOfVisit;
+          selectedValue = widget.data.purposeOfVisitId; // Prepopulate selectedName
+        } else {
+          ispurposeselected = false;
+        }
+        print('selectedName:$selectedName');
       });
     } else {
       print('Failed to fetch data');
     }
   }
+
 
   Future<void> getUserDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -1610,7 +1413,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
     userFullName = prefs.getString('userFullName') ?? '';
   //  genderttypeid = prefs.getInt('genderTypeId');
     phonenumber = prefs.getString('contactNumber') ?? '';
-    email = prefs.getString('email') ?? '';
+//    email = prefs.getString('email') ?? '';
     contactNumber = prefs.getString('contactNumber') ?? '';
     // genderbyid = prefs.getString('gender');
   }
