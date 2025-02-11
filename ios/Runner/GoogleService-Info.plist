@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDOX_khOsuNSCAMWjOML7yrE4W1XMAFs7U</string>
+	<key>GCM_SENDER_ID</key>
+	<string>285981301230</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.hairfixingzone.hfz</string>
+	<key>PROJECT_ID</key>
+	<string>hairfixingzone-d5142</string>
+	<key>STORAGE_BUCKET</key>
+	<string>hairfixingzone-d5142.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:285981301230:ios:7f467870dd7c867e4f16ff</string>
+</dict>
+</plist>
