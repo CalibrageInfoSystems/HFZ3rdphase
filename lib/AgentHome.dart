@@ -240,11 +240,13 @@ class _AgentHomeState extends State<AgentHome> {
           agentId: widget.userId!,
         );
       case 4:
-        return InventoryScreen(userId: widget.userId!);
+        return Branches_screen(
+            userId: widget.userId, isBranchFrom: 'inventory');
+      // return InventoryScreen(userId: widget.userId);
 
       default:
         return AgentDashBoard(
-          agentid: widget.userId!,
+          agentid: widget.userId,
         );
     }
   }

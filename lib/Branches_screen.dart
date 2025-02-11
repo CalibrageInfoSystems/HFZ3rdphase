@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hairfixingzone/inventory_screen.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,8 +18,9 @@ import 'api_config.dart';
 
 class Branches_screen extends StatefulWidget {
   final int userId;
+  final String? isBranchFrom;
 
-  const Branches_screen({super.key, required this.userId});
+  const Branches_screen({super.key, required this.userId, this.isBranchFrom});
 
   @override
   _BranchesscreenState createState() => _BranchesscreenState();
@@ -44,7 +46,8 @@ class _BranchesscreenState extends State<Branches_screen> {
         // _getBranchData(widget.userId);
         fetchData();
       } else {
-        CommonUtils.showCustomToastMessageLong('Please Check Your Internet Connection', context, 1, 4);
+        CommonUtils.showCustomToastMessageLong(
+            'Please Check Your Internet Connection', context, 1, 4);
         print('Not connected to the internet'); // Not connected to the internet
       }
     });
@@ -62,7 +65,8 @@ class _BranchesscreenState extends State<Branches_screen> {
         print('Connected to the internet');
         // _getBranchData(widget.userId);
       } else {
-        CommonUtils.showCustomToastMessageLong('No Internet Connection', context, 1, 4);
+        CommonUtils.showCustomToastMessageLong(
+            'No Internet Connection', context, 1, 4);
         print('Not connected to the internet'); // Not connected to the internet
       }
     });
@@ -74,26 +78,25 @@ class _BranchesscreenState extends State<Branches_screen> {
     final desiredWidth = screenWidth;
 
     return Scaffold(
-      // appBar: AppBar(
-      //     elevation: 0,
-      //     backgroundColor: const Color(0xffe2f0fd),
-      //     title: const Text(
-      //       'Select Branch',
-      //       style: TextStyle(color: Color(0xFF11528f), fontSize: 16.0, fontFamily: "Outfit", fontWeight: FontWeight.w600),
-      //     ),
-      //     leading: IconButton(
-      //       icon: const Icon(
-      //         Icons.arrow_back_ios,
-      //         color: CommonUtils.primaryTextColor,
-      //       ),
-      //       onPressed: () {
-      //         Navigator.of(context).pop();
-      //       },
-      //     )),
-      body:
-      Container(
-        color: Colors.white,
-      child:Column(
+        // appBar: AppBar(
+        //     elevation: 0,
+        //     backgroundColor: const Color(0xffe2f0fd),
+        //     title: const Text(
+        //       'Select Branch',
+        //       style: TextStyle(color: Color(0xFF11528f), fontSize: 16.0, fontFamily: "Outfit", fontWeight: FontWeight.w600),
+        //     ),
+        //     leading: IconButton(
+        //       icon: const Icon(
+        //         Icons.arrow_back_ios,
+        //         color: CommonUtils.primaryTextColor,
+        //       ),
+        //       onPressed: () {
+        //         Navigator.of(context).pop();
+        //       },
+        //     )),
+        body: Container(
+      color: Colors.white,
+      child: Column(
         children: [
           const SizedBox(
             height: 10,
@@ -107,7 +110,11 @@ class _BranchesscreenState extends State<Branches_screen> {
               if (imageUrl == null || imageUrl.isEmpty) {
                 imageUrl = 'assets/top_image.png';
               }
-              return BranchTemplate(branchnames: branchnames, imageUrl: imageUrl, userId: widget.userId);
+              return BranchTemplate(
+                  branchnames: branchnames,
+                  imageUrl: imageUrl,
+                  userId: widget.userId,
+                  isBranchFrom: widget.isBranchFrom);
             },
           )
 
@@ -169,51 +176,47 @@ class _BranchesscreenState extends State<Branches_screen> {
     });
 
     String apiUrl = '$baseUrl$GetBranchByUserId$userId/null';
-   const maxRetries = 1; // Set maximum number of retries
- int retries = 0;
+    const maxRetries = 1; // Set maximum number of retries
+    int retries = 0;
 
-  while (retries < maxRetries) {
-    try {
-      // Make the HTTP GET request with a timeout of 30 seconds
-      final response = await http.get(Uri.parse(apiUrl));
-      print('apiUrl: $apiUrl');
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+    while (retries < maxRetries) {
+      try {
+        // Make the HTTP GET request with a timeout of 30 seconds
+        final response = await http.get(Uri.parse(apiUrl));
+        print('apiUrl: $apiUrl');
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
 
-        List<BranchModel> branchList = [];
-        for (var item in data['listResult']) {
-          branchList.add(BranchModel(
-            id: item['id'],
-            name: item['name'],
-            imageName: item['imageName'],
-            address: item['address'],
-            startTime: item['startTime'],
-            closeTime: item['closeTime'],
-            room: item['room'],
-            mobileNumber: item['mobileNumber'],
-            isActive: item['isActive'],
-              locationUrl : item['LocationUrl']
-          ));
+          List<BranchModel> branchList = [];
+          for (var item in data['listResult']) {
+            branchList.add(BranchModel(
+                id: item['id'],
+                name: item['name'],
+                imageName: item['imageName'],
+                address: item['address'],
+                startTime: item['startTime'],
+                closeTime: item['closeTime'],
+                room: item['room'],
+                mobileNumber: item['mobileNumber'],
+                isActive: item['isActive'],
+                locationUrl: item['LocationUrl']));
+          }
+
+          setState(() {
+            brancheslist = branchList;
+            _isLoading = false;
+          });
+          return; // Exit the function after successful response
+        } else {
+          print('Request failed with status: ${response.statusCode}');
         }
-
-        setState(() {
-          brancheslist = branchList;
-          _isLoading = false;
-        });
-        return; // Exit the function after successful response
-      } else {
-        print('Request failed with status: ${response.statusCode}');
+      } catch (error) {
+        print('Error: $error');
       }
-    } catch (error) {
-      print('Error: $error');
     }
-  }
     retries++;
     await Future.delayed(Duration(seconds: 2 * retries)); // Exponential backoff
   }
-
-
-
 
 // Handle the case where all retries failed
 // print('All retries failed. Unable to fetch data from the API.');
@@ -226,29 +229,47 @@ class BranchTemplate extends StatelessWidget {
   final BranchModel branchnames;
   final String imageUrl;
   final int userId;
-  const BranchTemplate({super.key, required this.branchnames, required this.imageUrl, required this.userId});
+  final String? isBranchFrom;
+  const BranchTemplate(
+      {super.key,
+      required this.branchnames,
+      required this.imageUrl,
+      required this.userId,
+      this.isBranchFrom});
 
   @override
   Widget build(BuildContext context) {
-    print('userId ===233: $userId' '$branchnames');
     return Container(
-
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       width: MediaQuery.of(context).size.width,
       child: GestureDetector(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => Agentappointmentlist(
-                  userId: userId,
-                  branchid: branchnames.id!,
-                  branchname: branchnames.name,
-                  filepath: branchnames.imageName != null ? branchnames.imageName! : 'assets/top_image.png',
-                  phonenumber: branchnames.mobileNumber,
-                  branchaddress: branchnames.address,
+            if (isBranchFrom == 'inventory') {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => InventoryScreen(
+                        userId: userId,
+                        branchName: branchnames.name,
+                        branchImage: imageUrl,
+                        branchNumber: branchnames.mobileNumber,
+                        branchAddress: branchnames.address)),
+              );
+            } else {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => Agentappointmentlist(
+                    userId: userId,
+                    branchid: branchnames.id!,
+                    branchname: branchnames.name,
+                    filepath: branchnames.imageName != null
+                        ? branchnames.imageName!
+                        : 'assets/top_image.png',
+                    phonenumber: branchnames.mobileNumber,
+                    branchaddress: branchnames.address,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
           child: Container(
             height: MediaQuery.of(context).size.height / 10,
@@ -272,41 +293,43 @@ class BranchTemplate extends StatelessWidget {
             ),
             child: Row(
               children: [
-            Container(
-              width: MediaQuery.of(context).size.width / 6,
-            margin: EdgeInsets.only(top: 10.0,left: 10.0,right: 10.0,bottom: 10.0),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.grey,
-                width: 2.5,
-              ),
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            child:
-            ClipRRect(
-              borderRadius: BorderRadius.circular(13.0),
-              child: Image.network(
-                imageUrl.isNotEmpty ? imageUrl : 'https://example.com/placeholder-image.jpg',
-                width: 65,
-                height: 60,
-                fit: BoxFit.fill,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
+                Container(
+                  width: MediaQuery.of(context).size.width / 6,
+                  margin: EdgeInsets.only(
+                      top: 10.0, left: 10.0, right: 10.0, bottom: 10.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 2.5,
+                    ),
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(13.0),
+                    child: Image.network(
+                      imageUrl.isNotEmpty
+                          ? imageUrl
+                          : 'https://example.com/placeholder-image.jpg',
+                      width: 65,
+                      height: 60,
+                      fit: BoxFit.fill,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
 
-                  return Center(child: CircularProgressIndicator.adaptive());
-                },
-              ),
-            ),
-          //  width: 65,
-            height: 60,
-          ),
-                  // width: MediaQuery.of(context).size.width / 4,
-
+                        return Center(
+                            child: CircularProgressIndicator.adaptive());
+                      },
+                    ),
+                  ),
+                  //  width: 65,
+                  height: 60,
+                ),
+                // width: MediaQuery.of(context).size.width / 4,
 
                 Container(
                   // height: MediaQuery.of(context).size.height / 4 / 2,
 
-                width: MediaQuery.of(context).size.width / 1.5,
+                  width: MediaQuery.of(context).size.width / 1.5,
                   padding: EdgeInsets.only(top: 7),
                   // width: MediaQuery.of(context).size.width / 4,
                   child: Column(
@@ -320,7 +343,10 @@ class BranchTemplate extends StatelessWidget {
                       SizedBox(
                         height: 5,
                       ),
-                      Text('${branchnames.address}', maxLines: 2, overflow: TextOverflow.ellipsis, style: CommonStyles.txSty_12b_f5),
+                      Text('${branchnames.address}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: CommonStyles.txSty_12b_f5),
                     ],
                   ),
                 )
