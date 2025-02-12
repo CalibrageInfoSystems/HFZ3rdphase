@@ -25,12 +25,14 @@ class AddConsulationscreen extends StatefulWidget {
   final int agentId;
   final AgentBranchModel branch;
   final Consultation? consultation;
+  final bool? screenForReschedule;
 
   const AddConsulationscreen(
       {super.key,
       required this.agentId,
       required this.branch,
-      this.consultation});
+      this.consultation,
+      this.screenForReschedule = false});
 
   @override
   AddConsulationscreen_screenState createState() =>
@@ -256,7 +258,9 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                 backgroundColor: Color(0xffe2f0fd),
                 automaticallyImplyLeading: false,
                 title: Text(
-                  'Add Consultation',
+                  widget.screenForReschedule!
+                      ? 'Reschedule Consultation'
+                      : 'Add Consultation',
                   style: CommonStyles.txSty_20b_fb,
                 ),
                 titleSpacing: 0.0,
@@ -792,7 +796,9 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                                   children: [
                                     Expanded(
                                       child: CustomButton(
-                                        buttonText: 'Add Consultation',
+                                        buttonText: widget.screenForReschedule!
+                                            ? 'Reschedule Consultation'
+                                            : 'Add Consultation',
                                         color: CommonUtils.primaryTextColor,
                                         onPressed: validating,
                                       ),
@@ -821,7 +827,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
       print(isBranchValidate);
 
       if (isFullNameValidate && isGenderValidate && isMobileNumberValidate) {
-        rescheduleConsultation();
+        widget.screenForReschedule! ? rescheduleConsultation() : updateUser();
         // updateUser();
       }
     }
@@ -1004,6 +1010,11 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
           if (response['isSuccess']) {
             CommonUtils.showCustomToastMessageLong(
                 '${response['statusMessage']}', context, 0, 5);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AgentHome(userId: widget.agentId)),
+            );
           } else {
             CommonUtils.showCustomToastMessageLong(
                 '${response['statusMessage']}', context, 0, 5);
