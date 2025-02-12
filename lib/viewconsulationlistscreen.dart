@@ -672,6 +672,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
