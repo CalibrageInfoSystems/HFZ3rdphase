@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -57,18 +56,19 @@ class _AgentLoginState extends State<AgentLogin> {
     FirebaseMessaging.instance.getInitialMessage().then((event) {
       if (event != null) {
         setState(() {
-          notificationMsg = "${event.notification!.title} ${event.notification!.body} I am coming from terminated state";
+          notificationMsg =
+              "${event.notification!.title} ${event.notification!.body} I am coming from terminated state";
         });
       }
     });
 
     // Foregrand State
     FirebaseMessaging.onMessage.listen((event) {
-  //    LocalNotificationService.showNotificationOnForeground(context, event);
+      //    LocalNotificationService.showNotificationOnForeground(context, event);
 
       setState(() {
-        notificationMsg = "${event.notification!.title} ${event.notification!.body} I am coming from foreground";
-
+        notificationMsg =
+            "${event.notification!.title} ${event.notification!.body} I am coming from foreground";
       });
     });
     // FirebaseMessaging.onMessage.listen((event){
@@ -84,7 +84,8 @@ class _AgentLoginState extends State<AgentLogin> {
     // background State
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       setState(() {
-        notificationMsg = "${event.notification!.title} ${event.notification!.body} I am coming from background";
+        notificationMsg =
+            "${event.notification!.title} ${event.notification!.body} I am coming from background";
       });
     });
     // Get Firebase Token
@@ -94,6 +95,8 @@ class _AgentLoginState extends State<AgentLogin> {
         print('firebaseToken==>61===>   $firebaseToken');
       });
     });
+    _emailController.text = "Arunagent";
+    _passwordController.text = "Abcd@123";
   }
 
   @override
@@ -164,13 +167,15 @@ class _AgentLoginState extends State<AgentLogin> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height - MediaQuery.of(context).size.height / 2,
+                  height: MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).size.height / 2,
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Form(
                       key: _formKey,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 40),
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
@@ -231,8 +236,10 @@ class _AgentLoginState extends State<AgentLogin> {
                                   },
                                   maxLength: 60,
                                   decoration: InputDecoration(
-                                    errorText: _emailError ? _emailErrorMsg : null,
-                                    errorStyle: CommonStyles.texthintstyle.copyWith(
+                                    errorText:
+                                        _emailError ? _emailErrorMsg : null,
+                                    errorStyle:
+                                        CommonStyles.texthintstyle.copyWith(
                                       color: Color.fromARGB(255, 175, 15, 4),
                                     ),
                                     errorBorder: OutlineInputBorder(
@@ -242,7 +249,11 @@ class _AgentLoginState extends State<AgentLogin> {
                                       borderRadius: BorderRadius.circular(6.0),
                                     ),
                                     errorMaxLines: 2,
-                                    contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 15,
+                                        bottom: 10,
+                                        left: 15,
+                                        right: 15),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: const BorderSide(
                                         color: CommonUtils.primaryTextColor,
@@ -260,7 +271,8 @@ class _AgentLoginState extends State<AgentLogin> {
                                         Radius.circular(10),
                                       ),
                                     ),
-                                    hintText: 'Enter User Name / Email / Mobile Number',
+                                    hintText:
+                                        'Enter User Name / Email / Mobile Number',
                                     counterText: "",
                                     hintStyle: CommonStyles.texthintstyle,
                                   ),
@@ -303,8 +315,7 @@ class _AgentLoginState extends State<AgentLogin> {
                                           fontFamily: "Outfit",
                                           fontWeight: FontWeight.w500,
                                           color: Colors.red,
-                                        )
-                                    ),
+                                        )),
                                   ],
                                 ),
                                 TextFormField(
@@ -321,8 +332,11 @@ class _AgentLoginState extends State<AgentLogin> {
 
                                   maxLength: 25,
                                   decoration: InputDecoration(
-                                    errorText: _passwordError ? _passwordErrorMsg : null,
-                                    errorStyle: CommonStyles.texthintstyle.copyWith(
+                                    errorText: _passwordError
+                                        ? _passwordErrorMsg
+                                        : null,
+                                    errorStyle:
+                                        CommonStyles.texthintstyle.copyWith(
                                       color: Color.fromARGB(255, 175, 15, 4),
                                     ),
                                     errorBorder: OutlineInputBorder(
@@ -332,7 +346,11 @@ class _AgentLoginState extends State<AgentLogin> {
                                       borderRadius: BorderRadius.circular(6.0),
                                     ),
                                     errorMaxLines: 2,
-                                    contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 15,
+                                        bottom: 10,
+                                        left: 15,
+                                        right: 15),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: const BorderSide(
                                         color: CommonUtils.primaryTextColor,
@@ -360,7 +378,9 @@ class _AgentLoginState extends State<AgentLogin> {
                                     // ),
                                     suffixIcon: IconButton(
                                       icon: Icon(
-                                        showPassword ? Icons.visibility_off : Icons.visibility,
+                                        showPassword
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
                                         color: Colors.black,
                                       ),
                                       onPressed: () {
@@ -410,8 +430,10 @@ class _AgentLoginState extends State<AgentLogin> {
                                         buttonText: 'Login',
                                         color: CommonUtils.primaryTextColor,
                                         onPressed: () {
-                                          if (_formKey.currentState!.validate()) {
-                                            if (validateUserEmail && validateUserPassword) {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            if (validateUserEmail &&
+                                                validateUserPassword) {
                                               _handleLogin();
                                             }
                                           }
@@ -529,14 +551,16 @@ class _AgentLoginState extends State<AgentLogin> {
     bool isValid = true;
     bool hasValidationFailed = false;
     if (username.isEmpty) {
-      CommonUtils.showCustomToastMessageLongbottom("Please Enter Username", context, 1, 4);
+      CommonUtils.showCustomToastMessageLongbottom(
+          "Please Enter Username", context, 1, 4);
       //CommonUtils.showCustomToastMessageLong('Please Enter Username', context, 1, 4);
       isValid = false;
       hasValidationFailed = true;
       // Hide the keyboard || password.isEmpty
       FocusScope.of(context).unfocus();
     } else if (password.isEmpty) {
-      CommonUtils.showCustomToastMessageLongbottom("Please Enter Password", context, 1, 4);
+      CommonUtils.showCustomToastMessageLongbottom(
+          "Please Enter Password", context, 1, 4);
       // CommonUtils.showCustomToastMessageLong('Please Enter Password', context, 1, 4);
       isValid = false;
       hasValidationFailed = true;
@@ -549,7 +573,8 @@ class _AgentLoginState extends State<AgentLogin> {
         FocusScope.of(context).unfocus();
         login(username, password);
       } else {
-        CommonUtils.showCustomToastMessageLongbottom("Please Check Your Internet Connection", context, 1, 4);
+        CommonUtils.showCustomToastMessageLongbottom(
+            "Please Check Your Internet Connection", context, 1, 4);
         // CommonUtils.showCustomToastMessageLong('Please Check Your Internet Connection', context, 1, 4);
         FocusScope.of(context).unfocus();
         print('Not connected to the internet');
@@ -597,12 +622,14 @@ class _AgentLoginState extends State<AgentLogin> {
           print('Full Name: ${user['firstName']}');
           print('Role ID: ${user['roleID']}');
 
-       //   LoadingProgress.stop(context);
+          //   LoadingProgress.stop(context);
           setState(() {
             progressDialog.dismiss();
           });
 
-          if (listResult != null && listResult.isNotEmpty && (listResult[0]['roleID'] == 3 || listResult[0]['roleID'] == 1)) {
+          if (listResult != null &&
+              listResult.isNotEmpty &&
+              (listResult[0]['roleID'] == 3 || listResult[0]['roleID'] == 1)) {
             agentId = listResult[0]["id"];
             await saveUserDataToSharedPreferences(user);
             final Map<String, dynamic> agentSlotsDetailsMap = {
@@ -623,7 +650,8 @@ class _AgentLoginState extends State<AgentLogin> {
               };
 
               print('agentSlotDetail==$agentSlotDetail');
-              print("Slot information added for User ID: ${userIds[i]}, Branch ID: ${branchIds[i]}");
+              print(
+                  "Slot information added for User ID: ${userIds[i]}, Branch ID: ${branchIds[i]}");
 
               agentSlotsDetailsMap["AgentSlotsdetails"].add(agentSlotDetail);
             }
@@ -635,16 +663,16 @@ class _AgentLoginState extends State<AgentLogin> {
             //   _isLoading = false;
 
             // });
-          //  LoadingProgress.stop(context);
+            //  LoadingProgress.stop(context);
             setState(() {
               progressDialog.dismiss();
               FocusScope.of(context).unfocus();
-              CommonUtils.showCustomToastMessageLongbottom('Invalid user ', context, 1, 4);
+              CommonUtils.showCustomToastMessageLongbottom(
+                  'Invalid user ', context, 1, 4);
               //   CommonUtils.showCustomToastMessageLong('Invalid user ', context, 1, 4);
               //  LoadingProgress.stop(context);
               print("ListResult is null ${listResult[0]['roleID']}");
             });
-
           }
         } else {
           // setState(() {
@@ -655,8 +683,12 @@ class _AgentLoginState extends State<AgentLogin> {
             FocusScope.of(context).unfocus();
             progressDialog.dismiss();
             // LoadingProgress.stop(context);
-              // CommonUtils.showCustomToastMessageLongbottom(responseData['statusMessage'], context, 1, 4);
-             CommonUtils.showCustomToastMessageLongbottom('Invalid User Name / Email / Mobile Number or Password', context, 1, 4);
+            // CommonUtils.showCustomToastMessageLongbottom(responseData['statusMessage'], context, 1, 4);
+            CommonUtils.showCustomToastMessageLongbottom(
+                'Invalid User Name / Email / Mobile Number or Password',
+                context,
+                1,
+                4);
           });
 
           //  CommonUtils.showCustomToastMessageLong("${responseData["statusMessage"]}", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
@@ -664,8 +696,6 @@ class _AgentLoginState extends State<AgentLogin> {
           print("API returned an error: ${responseData["statusMessage"]}");
         }
       } else {
-
-
         print("Error: ${response.statusCode}");
       }
     } catch (e) {
@@ -673,7 +703,8 @@ class _AgentLoginState extends State<AgentLogin> {
     }
   }
 
-  Future<void> addAgentSlotInformation(Map<String, dynamic> agentSlotsDetailsMap, int agentId) async {
+  Future<void> addAgentSlotInformation(
+      Map<String, dynamic> agentSlotsDetailsMap, int agentId) async {
     //  final String baseUrl = "http://182.18.157.215/SaloonApp/API/";
     final String addSlotUrl = "${baseUrl}AddAgentSlotInformation";
 
@@ -685,7 +716,8 @@ class _AgentLoginState extends State<AgentLogin> {
       );
       print('requestObject==483${jsonEncode(agentSlotsDetailsMap)}');
       if (addSlotResponse.statusCode == 200) {
-        final Map<String, dynamic> responseJson = jsonDecode(addSlotResponse.body);
+        final Map<String, dynamic> responseJson =
+            jsonDecode(addSlotResponse.body);
 
         if (responseJson["isSuccess"]) {
           // setState(() {
@@ -727,7 +759,8 @@ class _AgentLoginState extends State<AgentLogin> {
 
             // });
             FocusScope.of(context).unfocus();
-            CommonUtils.showCustomToastMessageLongbottom("${responseJson["statusMessage"]}", context, 1, 4);
+            CommonUtils.showCustomToastMessageLongbottom(
+                "${responseJson["statusMessage"]}", context, 1, 4);
             //CommonUtils.showCustomToastMessageLong("${responseJson["statusMessage"]}", context, 1, 4);
           }
         }
@@ -739,7 +772,8 @@ class _AgentLoginState extends State<AgentLogin> {
     }
   }
 
-  Future<void> saveUserDataToSharedPreferences(Map<String, dynamic> userData) async {
+  Future<void> saveUserDataToSharedPreferences(
+      Map<String, dynamic> userData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setInt('userId', userData['id']);

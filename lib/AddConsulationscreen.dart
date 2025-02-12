@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 
 import 'package:hairfixingzone/AgentHome.dart';
+import 'package:hairfixingzone/Consultation.dart';
 import 'package:hairfixingzone/services/notifi_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -22,12 +23,18 @@ import 'api_config.dart';
 
 class AddConsulationscreen extends StatefulWidget {
   final int agentId;
-  final AgentBranchModel  branch;
+  final AgentBranchModel branch;
+  final Consultation? consultation;
 
-  const AddConsulationscreen({super.key, required this.agentId, required this.branch});
+  const AddConsulationscreen(
+      {super.key,
+      required this.agentId,
+      required this.branch,
+      this.consultation});
 
   @override
-  AddConsulationscreen_screenState createState() => AddConsulationscreen_screenState();
+  AddConsulationscreen_screenState createState() =>
+      AddConsulationscreen_screenState();
 }
 
 class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
@@ -113,15 +120,27 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
       DeviceOrientation.portraitUp,
     ]);
 
+    if (widget.consultation != null) {
+      fullNameController.text = widget.consultation!.consultationName;
+      genderController.text = widget.consultation!.gender;
+      selectedValue = widget.consultation!.genderTypeId; // genderTypeId
+      mobileNumberController.text = widget.consultation!.phoneNumber;
+      emailController.text = widget.consultation!.email;
+      branchController.text = widget.consultation!.branchName;
+      cityController.text = widget.branch.city ?? '';
+      remarksController.text = widget.consultation!.remarks;
+    }
+
     CommonUtils.checkInternetConnectivity().then((isConnected) {
       if (isConnected) {
         print('The Internet Is Connected');
         setState(() {
           print('Branch Name: ${widget.branch.name}');
           print('city Name: ${widget.branch.city}');
-          cityController.text = widget.branch.city;
-          branchController.text = widget.branch.name;
-          _dateController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
+          cityController.text = widget.branch.city ?? '';
+          branchController.text = widget.branch.name ?? '';
+          _dateController.text =
+              DateFormat('dd-MM-yyyy').format(DateTime.now());
           visiteddate = DateFormat('yyyy-MM-dd').format(DateTime.now());
         });
         fetchRadioButtonOptions();
@@ -131,8 +150,6 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
         print('The Internet Is not Connected');
       }
     });
-
-
   }
 
   Future<void> fetchRadioButtonOptions() async {
@@ -208,14 +225,13 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
         child: Scaffold(
             backgroundColor: CommonStyles.whiteColor,
             appBar: AppBar(
-              backgroundColor:  Color(0xffe2f0fd),
-              automaticallyImplyLeading: false,
-              title:Text(
-                'Add Consultation',
-                style: CommonStyles.txSty_20b_fb,
-
-              ),
-                titleSpacing:0.0,
+                backgroundColor: Color(0xffe2f0fd),
+                automaticallyImplyLeading: false,
+                title: Text(
+                  'Add Consultation',
+                  style: CommonStyles.txSty_20b_fb,
+                ),
+                titleSpacing: 0.0,
                 leading: IconButton(
                   icon: const Icon(
                     Icons.arrow_back_ios,
@@ -224,392 +240,319 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                )
-            ),
+                )),
             body: SingleChildScrollView(
-              child: Form(
-                  key: _formKey,
-                  child: Container(
+                child: Form(
+                    key: _formKey,
+                    child: Container(
                       padding: const EdgeInsets.symmetric(
                           vertical: 5, horizontal: 15),
-                      child: Column(
-                        children: [
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          CustomeFormField(
-                            //MARK: Full Name
-                            label: 'Full Name',
-                            validator: validatefullname,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(
-                                  r'[a-zA-Z\s]')), // Including '\s' for space
-                            ],
-                            controller: fullNameController,
-                            maxLength: 50,
-                            keyboardType: TextInputType.name,
+                      child: Column(children: [
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        CustomeFormField(
+                          //MARK: Full Name
+                          label: 'Full Name',
+                          validator: validatefullname,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(
+                                r'[a-zA-Z\s]')), // Including '\s' for space
+                          ],
+                          controller: fullNameController,
+                          maxLength: 50,
+                          keyboardType: TextInputType.name,
 
-                            errorText:
-                                _fullNameError ? _fullNameErrorMsg : null,
-                            onChanged: (value) {
-                              //MARK: Space restrict
-                              setState(() {
-                                if (value.startsWith(' ')) {
-                                  fullNameController.value = TextEditingValue(
-                                    text: value.trimLeft(),
-                                    selection: TextSelection.collapsed(
-                                        offset: value.trimLeft().length),
-                                  );
-                                }
-                                _fullNameError = false;
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
+                          errorText: _fullNameError ? _fullNameErrorMsg : null,
+                          onChanged: (value) {
+                            //MARK: Space restrict
+                            setState(() {
+                              if (value.startsWith(' ')) {
+                                fullNameController.value = TextEditingValue(
+                                  text: value.trimLeft(),
+                                  selection: TextSelection.collapsed(
+                                      offset: value.trimLeft().length),
+                                );
+                              }
+                              _fullNameError = false;
+                            });
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
 
-                          // CustomeFormField(
-                          //   label: 'Date of Birth',
-                          //   validator: validatedob,
-                          //   controller: DateofBirth,
-                          //   focusNode: DateofBirthdFocus,
-                          //   onTap: () => _selectDate(context),
-                          // ),
+                        // CustomeFormField(
+                        //   label: 'Date of Birth',
+                        //   validator: validatedob,
+                        //   controller: DateofBirth,
+                        //   focusNode: DateofBirthdFocus,
+                        //   onTap: () => _selectDate(context),
+                        // ),
 
-                          // const SizedBox(
-                          //   height: 10,
-                          // ),
-                          const Row(
-                            children: [
-                              Text(
-                                'Gender ',
-                                style:CommonUtils.txSty_12b_fb,
+                        // const SizedBox(
+                        //   height: 10,
+                        // ),
+                        const Row(
+                          children: [
+                            Text(
+                              'Gender ',
+                              style: CommonUtils.txSty_12b_fb,
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 0, top: 0.0, right: 0),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: isGenderSelected
+                                    ? const Color.fromARGB(255, 175, 15, 4)
+                                    : CommonUtils.primaryTextColor,
                               ),
-                              Text(
-                                '*',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: ButtonTheme(
+                                alignedDropdown: true,
+                                child: DropdownButton<int>(
+                                    value: selectedTypeCdId,
+                                    iconSize: 30,
+                                    icon: null,
+                                    style: CommonUtils.txSty_12b_fb,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedTypeCdId = value!;
+                                        if (selectedTypeCdId != -1) {
+                                          selectedValue =
+                                              dropdownItems[selectedTypeCdId]
+                                                  ['typeCdId'];
+                                          selectedName =
+                                              dropdownItems[selectedTypeCdId]
+                                                  ['desc'];
 
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 0, top: 0.0, right: 0),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: isGenderSelected
-                                      ? const Color.fromARGB(255, 175, 15, 4)
-                                      : CommonUtils.primaryTextColor,
-                                ),
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: ButtonTheme(
-                                  alignedDropdown: true,
-                                  child: DropdownButton<int>(
-                                      value: selectedTypeCdId,
-                                      iconSize: 30,
-                                      icon: null,
-                                     style:CommonUtils.txSty_12b_fb,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          selectedTypeCdId = value!;
-                                          if (selectedTypeCdId != -1) {
-                                            selectedValue =
-                                                dropdownItems[selectedTypeCdId]
-                                                    ['typeCdId'];
-                                            selectedName =
-                                                dropdownItems[selectedTypeCdId]
-                                                    ['desc'];
-
-                                            print(
-                                                "selectedValue:$selectedValue");
-                                            print("selectedName:$selectedName");
-                                          } else {
-                                            print("==========");
-                                            print(selectedValue);
-                                            print(selectedName);
-                                          }
-                                          // isDropdownValid = selectedTypeCdId != -1;
-                                          isGenderSelected = false;
-                                        });
-                                      },
-                                      items: [
-                                        const DropdownMenuItem<int>(
-                                          value: -1,
-                                          child: Text(
-                                            'Select Gender',
-                                            style: CommonStyles.texthintstyle,
-                                          ),
+                                          print("selectedValue:$selectedValue");
+                                          print("selectedName:$selectedName");
+                                        } else {
+                                          print("==========");
+                                          print(selectedValue);
+                                          print(selectedName);
+                                        }
+                                        // isDropdownValid = selectedTypeCdId != -1;
+                                        isGenderSelected = false;
+                                      });
+                                    },
+                                    items: [
+                                      const DropdownMenuItem<int>(
+                                        value: -1,
+                                        child: Text(
+                                          'Select Gender',
+                                          style: CommonStyles.texthintstyle,
                                         ),
-                                        ...dropdownItems
-                                            .asMap()
-                                            .entries
-                                            .map((entry) {
-                                          final index = entry.key;
-                                          final item = entry.value;
-                                          return DropdownMenuItem<int>(
-                                            value: index,
-                                            child: Text(item['desc'],  style:CommonUtils.txSty_12b_fb,),
-                                          );
-                                        }).toList(),
-                                      ]),
-                                ),
+                                      ),
+                                      ...dropdownItems
+                                          .asMap()
+                                          .entries
+                                          .map((entry) {
+                                        final index = entry.key;
+                                        final item = entry.value;
+                                        return DropdownMenuItem<int>(
+                                          value: index,
+                                          child: Text(
+                                            item['desc'],
+                                            style: CommonUtils.txSty_12b_fb,
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ]),
                               ),
                             ),
                           ),
-                          //MARK: Gender condition
-                          if (isGenderSelected)
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 5),
-                                  child: Text(
-                                    'Please Select Gender',
-                                    style: CommonStyles.texterrorstyle
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                          const SizedBox(
-                            height: 10,
-                          ),
-
-                          CustomeFormField(
-                            //MARK: Mobile Number
-                            label: 'Mobile Number',
-                            validator: validateMobilenum,
-                            controller: mobileNumberController,
-                            maxLength: 10,
-
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9]')),
-                            ],
-                            keyboardType: TextInputType.phone,
-                            errorText: _mobileNumberError
-                                ? _mobileNumberErrorMsg
-                                : null,
-                            onChanged: (value) {
-                              setState(() {
-                                if (value.length == 1 &&
-                                    ['0', '1', '2', '3', '4'].contains(value)) {
-                                  mobileNumberController.clear();
-                                }
-                                if (value.startsWith(' ')) {
-                                  mobileNumberController.value =
-                                      TextEditingValue(
-                                    text: value.trimLeft(),
-                                    selection: TextSelection.collapsed(
-                                        offset: value.trimLeft().length),
-                                  );
-                                }
-                                _mobileNumberError = false;
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-
+                        ),
+                        //MARK: Gender condition
+                        if (isGenderSelected)
                           const Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text(
-                                'Email',
-                                style: CommonUtils.txSty_12b_fb)
-                              // Text(
-                              //   ' *',
-                              //   style: TextStyle(color: Colors.red),
-                              // ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 5),
+                                child: Text('Please Select Gender',
+                                    style: CommonStyles.texterrorstyle),
+                              ),
                             ],
-                          ),
-                          const SizedBox(
-                            height: 5.0,
-                          ),
-                          TextFormField(
-                            controller: emailController,
-                            maxLength: 60,
-                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                            keyboardType: TextInputType.emailAddress,
-                            onTap: () {},
-                            decoration: InputDecoration(
-                              errorText: _emailError ? _emailErrorMsg : null,
-                              contentPadding: const EdgeInsets.only(
-                                  top: 15, bottom: 10, left: 15, right: 15),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF0f75bc),
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: CommonUtils.primaryTextColor,
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
-                              ),
-                              hintText: 'Enter Email',
-                              counterText: "",
-                              hintStyle: const TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            //  validator: validateEmail,
-                            onChanged: (value) {
-                              setState(() {
-                                _emailError = false;
-                              });
-                            },
-                            style: CommonStyles.txSty_14b_fb,
-                          ),
-                          const SizedBox(
-                            height: 10,
                           ),
 
-                          CustomeFormField(
-                            label: 'City',
-                            validator: (value) {
-                              // Custom validation logic
-                              if (value == null || value.isEmpty) {
-                                return 'City cannot be empty';
-                              }
-                              return null;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
-                            ],
-                            controller: cityController,
-                            keyboardType: TextInputType.name,
-                            readOnly: true,
-                          ),
-                          const SizedBox(height: 10),
-                          CustomeFormField(
-                            label: 'Branch',
-                            validator: (value) {
-                              // Custom validation logic
-                              if (value == null || value.isEmpty) {
-                                return 'Branch cannot be empty';
-                              }
-                              return null;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
-                            ],
-                            controller: branchController,
-                            keyboardType: TextInputType.name,
-                            readOnly: true,
-                          ),
+                        const SizedBox(
+                          height: 10,
+                        ),
 
+                        CustomeFormField(
+                          //MARK: Mobile Number
+                          label: 'Mobile Number',
+                          validator: validateMobilenum,
+                          controller: mobileNumberController,
+                          maxLength: 10,
 
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Row(
-                            children: [
-                              Text(
-                                'Visiting Date ',
-                                style:CommonUtils.txSty_12b_fb,
-                              ),
-                              Text(
-                                '*',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5.0,
-                          ),
-                          TextFormField(
-                            controller: _dateController,
-                            keyboardType: TextInputType.visiblePassword,
-                            onTap: () {
-                              _openDatePicker();
-                            },
-                            // focusNode: DateofBirthdFocus,
-                            readOnly: true,
-                            validator: (value) {
-                              if (value!.isEmpty || value.isEmpty) {
-                                return 'Choose Date ';
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          ],
+                          keyboardType: TextInputType.phone,
+                          errorText:
+                              _mobileNumberError ? _mobileNumberErrorMsg : null,
+                          onChanged: (value) {
+                            setState(() {
+                              if (value.length == 1 &&
+                                  ['0', '1', '2', '3', '4'].contains(value)) {
+                                mobileNumberController.clear();
                               }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.only(
-                                  top: 15, bottom: 10, left: 15, right: 15),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF11528f),
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: CommonUtils.primaryTextColor,
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
-                              ),
-                              hintText: 'Date',
-                              counterText: "",
-                              hintStyle: CommonStyles.texthintstyle,
-                              suffixIcon: const Icon(
-                                Icons.calendar_today,
-                                color: Color(0xFF11528f),
-                              ),
-                            ),
-                            style: CommonStyles.txSty_14b_fb,
-                            //          validator: validateDate,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Row(
-                            children: [
-                              Text(
-                                'Visiting Time ',
-                                style:CommonUtils.txSty_12b_fb,
-                              ),
-                              Text(
-                                '*',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5.0,
-                          ),
-                Form(
-                    key: _formKey2,
-                    child: Column(
-                      children: [
+                              if (value.startsWith(' ')) {
+                                mobileNumberController.value = TextEditingValue(
+                                  text: value.trimLeft(),
+                                  selection: TextSelection.collapsed(
+                                      offset: value.trimLeft().length),
+                                );
+                              }
+                              _mobileNumberError = false;
+                            });
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+
+                        const Row(
+                          children: [
+                            Text('Email', style: CommonUtils.txSty_12b_fb)
+                            // Text(
+                            //   ' *',
+                            //   style: TextStyle(color: Colors.red),
+                            // ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5.0,
+                        ),
                         TextFormField(
-                          controller: _timeController,
+                          controller: emailController,
+                          maxLength: 60,
+                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                          keyboardType: TextInputType.emailAddress,
+                          onTap: () {},
+                          decoration: InputDecoration(
+                            errorText: _emailError ? _emailErrorMsg : null,
+                            contentPadding: const EdgeInsets.only(
+                                top: 15, bottom: 10, left: 15, right: 15),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color(0xFF0f75bc),
+                              ),
+                              borderRadius: BorderRadius.circular(6.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: CommonUtils.primaryTextColor,
+                              ),
+                              borderRadius: BorderRadius.circular(6.0),
+                            ),
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                            hintText: 'Enter Email',
+                            counterText: "",
+                            hintStyle: const TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          //  validator: validateEmail,
+                          onChanged: (value) {
+                            setState(() {
+                              _emailError = false;
+                            });
+                          },
+                          style: CommonStyles.txSty_14b_fb,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+
+                        CustomeFormField(
+                          label: 'City',
+                          validator: (value) {
+                            // Custom validation logic
+                            if (value == null || value.isEmpty) {
+                              return 'City cannot be empty';
+                            }
+                            return null;
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[a-zA-Z\s]')),
+                          ],
+                          controller: cityController,
+                          keyboardType: TextInputType.name,
+                          readOnly: true,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomeFormField(
+                          label: 'Branch',
+                          validator: (value) {
+                            // Custom validation logic
+                            if (value == null || value.isEmpty) {
+                              return 'Branch cannot be empty';
+                            }
+                            return null;
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[a-zA-Z\s]')),
+                          ],
+                          controller: branchController,
+                          keyboardType: TextInputType.name,
+                          readOnly: true,
+                        ),
+
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Row(
+                          children: [
+                            Text(
+                              'Visiting Date ',
+                              style: CommonUtils.txSty_12b_fb,
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5.0,
+                        ),
+                        TextFormField(
+                          controller: _dateController,
                           keyboardType: TextInputType.visiblePassword,
                           onTap: () {
-                            _openTimePicker();
+                            _openDatePicker();
                           },
+                          // focusNode: DateofBirthdFocus,
                           readOnly: true,
                           validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Choose Time';
+                            if (value!.isEmpty || value.isEmpty) {
+                              return 'Choose Date ';
                             }
                             return null;
                           },
@@ -633,128 +576,204 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                                 Radius.circular(10),
                               ),
                             ),
-                            hintText: 'Time',
+                            hintText: 'Date',
                             counterText: "",
                             hintStyle: CommonStyles.texthintstyle,
-                            errorStyle: CommonStyles.texterrorstyle,
                             suffixIcon: const Icon(
-                              Icons.access_time,
+                              Icons.calendar_today,
                               color: Color(0xFF11528f),
                             ),
                           ),
                           style: CommonStyles.txSty_14b_fb,
+                          //          validator: validateDate,
                         ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Row(
-                            children: [
-                              Text(
-                                'Remark ',
-                                style:CommonUtils.txSty_12b_fb,
-                              ),
-                              // Text(
-                              //   '*',
-                              //   style: TextStyle(color: Colors.red),
-                              // ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5.0,
-                          ),
-                          TextFormField(
-                            controller: remarksController,
-                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                            maxLength: 250,
-                            maxLines: 6,
-                            onTap: () {
-                              setState(() {
-                                remarksFocus.addListener(() {
-                                  if (remarksFocus.hasFocus) {
-                                    Future.delayed(
-                                        const Duration(milliseconds: 300), () {
-                                      // Scrollable.ensureVisible(
-                                      //   EmailFocus.context!,
-                                      //   duration: const Duration(
-                                      //       milliseconds: 300),
-                                      //   curve: Curves.easeInOut,
-                                      // );
-                                    });
-                                  }
-                                });
-                              });
-                            },
-                            decoration: InputDecoration(
-                              errorText:
-                                  _remarksError ? _remarksErrorMsg : null,
-                              contentPadding: const EdgeInsets.only(
-                                  top: 15, bottom: 10, left: 15, right: 15),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF0f75bc),
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: CommonUtils.primaryTextColor,
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
-                              ),
-                              hintText: 'Enter Remark ',
-                              counterText: "",
-                              // counterText: "",
-                              hintStyle:CommonStyles.texthintstyle,
-                              errorStyle: CommonStyles.texterrorstyle,
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        const Row(
+                          children: [
+                            Text(
+                              'Visiting Time ',
+                              style: CommonUtils.txSty_12b_fb,
                             ),
-                            //  validator: validateremarks,
-                            onChanged: (value) {
-                              setState(() {
-                                if (value.startsWith(' ')) {
-                                  remarksController.value = TextEditingValue(
-                                    text: value.trimLeft(),
-                                    selection: TextSelection.collapsed(
-                                        offset: value.trimLeft().length),
-                                  );
-                                }
-                                if (value.length > 250) {
-                                  // Trim the text if it exceeds 256 characters
-                                  remarksController.value = TextEditingValue(
-                                    text: value.substring(0, 250),
-                                    selection: const TextSelection.collapsed(
-                                        offset: 250),
-                                  );
-                                }
-                                _remarksError = false;
-
-                              }); // Update the UI when text changes
-                            },
-
-                            style: CommonStyles.txSty_14b_fb,
-                          ),
-
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomButton(
-                                  buttonText: 'Add Consultation',
-                                  color: CommonUtils.primaryTextColor,
-                                  onPressed: validating,
+                            Text(
+                              '*',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5.0,
+                        ),
+                        Form(
+                            key: _formKey2,
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  controller: _timeController,
+                                  keyboardType: TextInputType.visiblePassword,
+                                  onTap: () {
+                                    _openTimePicker();
+                                  },
+                                  readOnly: true,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Choose Time';
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 15,
+                                        bottom: 10,
+                                        left: 15,
+                                        right: 15),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: Color(0xFF11528f),
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.0),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: CommonUtils.primaryTextColor,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.0),
+                                    ),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    hintText: 'Time',
+                                    counterText: "",
+                                    hintStyle: CommonStyles.texthintstyle,
+                                    errorStyle: CommonStyles.texterrorstyle,
+                                    suffixIcon: const Icon(
+                                      Icons.access_time,
+                                      color: Color(0xFF11528f),
+                                    ),
+                                  ),
+                                  style: CommonStyles.txSty_14b_fb,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ))]),
-            )))));
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                const Row(
+                                  children: [
+                                    Text(
+                                      'Remark ',
+                                      style: CommonUtils.txSty_12b_fb,
+                                    ),
+                                    // Text(
+                                    //   '*',
+                                    //   style: TextStyle(color: Colors.red),
+                                    // ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 5.0,
+                                ),
+                                TextFormField(
+                                  controller: remarksController,
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.enforced,
+                                  maxLength: 250,
+                                  maxLines: 6,
+                                  onTap: () {
+                                    setState(() {
+                                      remarksFocus.addListener(() {
+                                        if (remarksFocus.hasFocus) {
+                                          Future.delayed(
+                                              const Duration(milliseconds: 300),
+                                              () {
+                                            // Scrollable.ensureVisible(
+                                            //   EmailFocus.context!,
+                                            //   duration: const Duration(
+                                            //       milliseconds: 300),
+                                            //   curve: Curves.easeInOut,
+                                            // );
+                                          });
+                                        }
+                                      });
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    errorText:
+                                        _remarksError ? _remarksErrorMsg : null,
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 15,
+                                        bottom: 10,
+                                        left: 15,
+                                        right: 15),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: Color(0xFF0f75bc),
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.0),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: CommonUtils.primaryTextColor,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.0),
+                                    ),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    hintText: 'Enter Remark ',
+                                    counterText: "",
+                                    // counterText: "",
+                                    hintStyle: CommonStyles.texthintstyle,
+                                    errorStyle: CommonStyles.texterrorstyle,
+                                  ),
+                                  //  validator: validateremarks,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      if (value.startsWith(' ')) {
+                                        remarksController.value =
+                                            TextEditingValue(
+                                          text: value.trimLeft(),
+                                          selection: TextSelection.collapsed(
+                                              offset: value.trimLeft().length),
+                                        );
+                                      }
+                                      if (value.length > 250) {
+                                        // Trim the text if it exceeds 256 characters
+                                        remarksController.value =
+                                            TextEditingValue(
+                                          text: value.substring(0, 250),
+                                          selection:
+                                              const TextSelection.collapsed(
+                                                  offset: 250),
+                                        );
+                                      }
+                                      _remarksError = false;
+                                    }); // Update the UI when text changes
+                                  },
+
+                                  style: CommonStyles.txSty_14b_fb,
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: CustomButton(
+                                        buttonText: 'Add Consultation',
+                                        color: CommonUtils.primaryTextColor,
+                                        onPressed: validating,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ))
+                      ]),
+                    )))));
   }
 
   Future<void> validating() async {
@@ -762,7 +781,8 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
     // validateCity(cityName);
     // validatebranch(branchName);
 
-    if (_formKey.currentState!.validate()  && _formKey2.currentState!.validate()) {
+    if (_formKey.currentState!.validate() &&
+        _formKey2.currentState!.validate()) {
       _printVisitingDateTime();
       print(isFullNameValidate);
       print(isGenderValidate);
@@ -771,9 +791,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
       print(isBranchValidate);
       //  print(isRemarksValidate);
 
-      if (isFullNameValidate &&
-          isGenderValidate &&
-          isMobileNumberValidate ) {
+      if (isFullNameValidate && isGenderValidate && isMobileNumberValidate) {
         updateUser();
       }
     }
@@ -918,9 +936,61 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
     return null;
   }
 
+//MARK: rescheduleConsultation 😊
+  Future<void> rescheduleConsultation() async {
+    validateGender(selectedName);
+    if (_formKey.currentState!.validate()) {
+      DateTime now = DateTime.now();
+
+      try {
+        final apiUrl = Uri.parse(baseUrl + addupdateconsulation);
+        jsonEncode({});
+        final requestBody = jsonEncode({
+          "id": null,
+          "name": fullNameController.text,
+          "genderTypeId": selectedValue,
+          "phoneNumber": mobileNumberController.text,
+          "email": emailController.text,
+          "branchId": widget.branch.id,
+          "isActive": true,
+          "remarks": remarksController.text,
+          "createdByUserId": widget.agentId,
+          "createdDate": '$now',
+          "updatedByUserId": null,
+          "updatedDate": null,
+          "visitingDate": visitingDateTime,
+          "statusTypeId": 1 // newly added
+        });
+        final jsonResponse = await http.post(
+          apiUrl,
+          body: requestBody,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (jsonResponse.statusCode == 200) {
+          final response = json.decode(jsonResponse.body);
+          if (response['isSuccess']) {
+            CommonUtils.showCustomToastMessageLong(
+                '${response['statusMessage']}', context, 0, 5);
+          } else {
+            CommonUtils.showCustomToastMessageLong(
+                '${response['statusMessage']}', context, 0, 5);
+          }
+        } else {
+          throw Exception('Failed to reschedule consultation');
+        }
+      } catch (e) {
+        print('Error slot: $e');
+        rethrow;
+      }
+    }
+  }
+
   Future<void> updateUser() async {
     validateGender(selectedName);
- //   validatebranch(branchName);
+    //   validatebranch(branchName);
     if (_formKey.currentState!.validate()) {
       DateTime now = DateTime.now();
       String mobilenumber = mobileNumberController.text;
@@ -948,7 +1018,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
       };
       print('Object: ${json.encode(request)}');
       try {
-      final String ee = baseUrl + addupdateconsulation;
+        final String ee = baseUrl + addupdateconsulation;
         //const String ee = 'http://182.18.157.215/SaloonApp/API/api/Consultation/AddUpdateConsultation';
         print(ee);
         final url1 = Uri.parse(ee);
@@ -1008,7 +1078,6 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
       }
     }
   }
-
 
   Future<void> _openDatePicker() async {
     selectedDate = await showDatePicker(
@@ -1099,4 +1168,3 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
     }
   }
 }
-

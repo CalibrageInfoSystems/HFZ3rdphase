@@ -32,7 +32,7 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
   late Timer _timer;
   String? marqueeText;
   final int _currentPage = 0;
-  late Future<List<AgentBranchModel >> apiData;
+  late Future<List<AgentBranchModel>> apiData;
   String userFullName = '';
   String email = '';
   String phonenumber = '';
@@ -77,23 +77,25 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
       // }
     });
   }
+
   void _fetchItems() async {
     final response = await http.get(Uri.parse(baseUrl + getbanner));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
-        if (data['listResult'] != null && (data['listResult'] as List).isNotEmpty) {
+        if (data['listResult'] != null &&
+            (data['listResult'] as List).isNotEmpty) {
           _items = (data['listResult'] as List)
               .map((item) => Item.fromJson(item))
               .toList();
         } else {
-          _items = [];  // Set to an empty list if listResult is null or empty
+          _items = []; // Set to an empty list if listResult is null or empty
         }
       });
     } else {
       setState(() {
-        _items = [];  // Set to an empty list in case of a failed request
+        _items = []; // Set to an empty list in case of a failed request
       });
     }
   }
@@ -145,50 +147,51 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CommonStyles.whiteColor,
-      body: SingleChildScrollView(child:Container(width: MediaQuery.of(context).size.width,
-      child:Column(
-        children: [
-          wishSection(context),
-          //MARK: Carousel view
-          carousel(context),
-          const SizedBox(height: 10),
-          //MARK: Marquee Text
-          //marqueeScroll(),
+        backgroundColor: CommonStyles.whiteColor,
+        body: SingleChildScrollView(
+            child: Container(
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            children: [
+              wishSection(context),
+              //MARK: Carousel view
+              carousel(context),
+              const SizedBox(height: 10),
+              //MARK: Marquee Text
+              //marqueeScroll(),
 
-          //MARK: Branches
-          // const SizedBox(
-          //   height: 15,
-          // ),
-      //     screens(),
-         //  const SizedBox(
-         //    height: 0,
-         //  ),
-          // const Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     Text(
-          //       'Branches',
-          //       style: CommonStyles.txSty_20p_fb,
-          //     ),
-          //   ],
-          // ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                "Branches",
-                style: CommonStyles.txSty_20b_fb,
-
+              //MARK: Branches
+              // const SizedBox(
+              //   height: 15,
+              // ),
+              //     screens(),
+              //  const SizedBox(
+              //    height: 0,
+              //  ),
+              // const Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     Text(
+              //       'Branches',
+              //       style: CommonStyles.txSty_20p_fb,
+              //     ),
+              //   ],
+              // ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    "Branches",
+                    style: CommonStyles.txSty_20b_fb,
+                  ),
+                ),
               ),
-            ),
+              agentBranches()
+              // newBranches()
+            ],
           ),
-          agentBranches()
-         // newBranches()
-        ],
-      ),
-    )));
+        )));
   }
 
   Padding wishSection(BuildContext context) {
@@ -205,7 +208,8 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
               ),
               Text(
                 userFullName,
-                  style: CommonStyles.txSty_20b_fb.copyWith(color: Color(0xFF11528f)),
+                style: CommonStyles.txSty_20b_fb
+                    .copyWith(color: Color(0xFF11528f)),
                 //  style: CommonStyles.txSty_20b_fb.copyWith(fontSize: 24),
               ),
             ],
@@ -251,7 +255,7 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
             child: Text(snapshot.error.toString()),
           );
         } else {
-          List<AgentBranchModel >? data = snapshot.data!;
+          List<AgentBranchModel>? data = snapshot.data!;
           return SizedBox(
             width: MediaQuery.of(context).size.width,
             // height: MediaQuery.of(context).size.height / 3.5,
@@ -260,9 +264,8 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
               shrinkWrap: true,
               itemCount: data.length,
               itemBuilder: (context, index) {
-                AgentBranchModel  branch = data[index];
-                return
-                  IntrinsicHeight(
+                AgentBranchModel branch = data[index];
+                return IntrinsicHeight(
                   child: GestureDetector(
                     onTap: () {
                       // print('branchid${branch.id}');
@@ -329,20 +332,20 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(branch.name,
+                                    Text('${branch.name}',
                                         style: CommonStyles.txSty_18b_fb),
                                     const SizedBox(height: 4.0),
                                     Expanded(
                                       child: Padding(
                                         padding:
-                                        const EdgeInsets.only(right: 10.0),
+                                            const EdgeInsets.only(right: 10.0),
                                         child: Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
+                                                  MainAxisAlignment.spaceEvenly,
                                               children: [
                                                 //MARK: location_icon
                                                 // Image.asset(
@@ -354,7 +357,8 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
                                                 //     width:
                                                 //         4.0),
                                                 Expanded(
-                                                  child: Text(branch.address,
+                                                  child: Text(
+                                                      '${branch.address}',
                                                       style: CommonStyles
                                                           .txSty_12b_fb),
                                                 ),
@@ -437,7 +441,8 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
         }
       },
     );
-}
+  }
+
   FutureBuilder<Object?> marqueeScroll() {
     return FutureBuilder(
       future: getMarqueeText(),
@@ -471,9 +476,11 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
       },
     );
   }
+
   Widget carousel(BuildContext context) {
     if (_items.isEmpty) {
-      return SizedBox.shrink(); // This hides the carousel by returning an empty widget
+      return SizedBox
+          .shrink(); // This hides the carousel by returning an empty widget
     }
 
     return Container(
@@ -486,11 +493,11 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
           height: 180,
           viewportFraction: 1.0,
           enlargeCenterPage: true,
-          autoPlay: _items.length>1,
-          enableInfiniteScroll: _items.length>1,
+          autoPlay: _items.length > 1,
+          enableInfiniteScroll: _items.length > 1,
           aspectRatio: 16 / 9,
           autoPlayCurve: Curves.fastOutSlowIn,
-        //  enableInfiniteScroll: true,
+          //  enableInfiniteScroll: true,
           slideIndicator: CircularSlideIndicator(
             slideIndicatorOptions: SlideIndicatorOptions(
               itemSpacing: 10,
@@ -838,23 +845,28 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
               child: Text(snapshot.error.toString()),
             );
           } else {
-            List<AgentBranchModel >? data = snapshot.data!;
+            List<AgentBranchModel>? data = snapshot.data!;
             return SizedBox(
-            //  width: MediaQuery.of(context).size.width,
+              //  width: MediaQuery.of(context).size.width,
               // height: MediaQuery.of(context).size.height / 3.5,
               child:
-              // ListView.builder(
-              //   scrollDirection: Axis.horizontal,
-              //   itemCount: data.length,
-              GridView.builder(
+                  // ListView.builder(
+                  //   scrollDirection: Axis.horizontal,
+                  //   itemCount: data.length,
+                  GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, crossAxisSpacing: 16.0, mainAxisSpacing: 16.0, mainAxisExtent: 250, childAspectRatio: 8 / 2),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16.0,
+                    mainAxisSpacing: 16.0,
+                    mainAxisExtent: 250,
+                    childAspectRatio: 8 / 2),
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   return BranchCard(
-                    branch: data[index], agentid: widget.agentid,
+                    branch: data[index],
+                    agentid: widget.agentid,
                   );
                 },
               ),
@@ -889,7 +901,7 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
   //     rethrow;
   //   }
   // }
-  Future<List<AgentBranchModel >> getBranches(int userId) async {
+  Future<List<AgentBranchModel>> getBranches(int userId) async {
     String apiUrl = '$baseUrl$GetBranchByUserId$userId/null';
 
     try {
@@ -899,8 +911,8 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
         final data = json.decode(response.body);
         List<dynamic>? listResult = data['listResult']; // Add a check for null
         if (listResult != null) {
-          List<AgentBranchModel > result =
-              listResult.map((e) => AgentBranchModel .fromJson(e)).toList();
+          List<AgentBranchModel> result =
+              listResult.map((e) => AgentBranchModel.fromJson(e)).toList();
           return result;
         } else {
           print('listResult is null');
@@ -1010,32 +1022,30 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
       ),
     );
   }
-
-
 }
 
 class BranchCard extends StatelessWidget {
-  final AgentBranchModel  branch;
+  final AgentBranchModel branch;
   final int agentid;
 
-  const BranchCard({super.key, required this.branch,required this.agentid});
+  const BranchCard({super.key, required this.branch, required this.agentid});
 
   @override
   Widget build(BuildContext context) {
-    return  GestureDetector(
+    return GestureDetector(
         onTap: () {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddConsulationscreen(agentId: agentid, branch: branch),
+                builder: (context) =>
+                    AddConsulationscreen(agentId: agentid, branch: branch),
               ));
 
           print('branchid${branch.id}');
-
         },
-        child:  Container(
+        child: Container(
 
-          //padding: EdgeInsets.only(top: 10),
+            //padding: EdgeInsets.only(top: 10),
             decoration: BoxDecoration(
               color: Color(0xFFdbeaff),
               borderRadius: BorderRadius.circular(15.0),
@@ -1049,17 +1059,16 @@ class BranchCard extends StatelessWidget {
                 // ),
               ],
             ),
-            child:
-            Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Align(
-                  alignment : Alignment.topLeft,
+                  alignment: Alignment.topLeft,
                   // top: 0,
                   //     right: 20,
                   child: Container(
-                    margin: EdgeInsets.only(top: 20,left: 10),
+                    margin: EdgeInsets.only(top: 20, left: 10),
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: Colors.grey,
@@ -1067,18 +1076,18 @@ class BranchCard extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(15.0),
                     ),
-                    child:
-                    ClipRRect(
+                    child: ClipRRect(
                       borderRadius: BorderRadius.circular(13.0),
                       child: Image.network(
                         branch.imageName!,
                         width: 65,
                         height: 60,
-                         fit: BoxFit.fill,
+                        fit: BoxFit.fill,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
 
-                          return Center(child: CircularProgressIndicator.adaptive());
+                          return Center(
+                              child: CircularProgressIndicator.adaptive());
                         },
                       ),
                     ),
@@ -1087,78 +1096,84 @@ class BranchCard extends StatelessWidget {
                   ),
                 ),
                 // SizedBox(height: 8.0),
-                Padding(padding: EdgeInsets.only(left: 10.0,right: 5.0,top: 5.0,bottom: 5.0),child: Text(
-                  branch.name,
-                  maxLines: 3,
-                  style: CommonStyles.txSty_20b_fb,
-                ),  ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: 10.0, right: 5.0, top: 5.0, bottom: 5.0),
+                  child: Text(
+                    '${branch.name}',
+                    maxLines: 3,
+                    style: CommonStyles.txSty_20b_fb,
+                  ),
+                ),
                 // SizedBox(height: 8.0),
-                Padding(padding: EdgeInsets.only(left: 10.0,right: 5.0,bottom: 5.0),
-                    child:   SizedBox(
+                Padding(
+                    padding:
+                        EdgeInsets.only(left: 10.0, right: 5.0, bottom: 5.0),
+                    child: SizedBox(
                       height: 70.0,
-                      child:  Text(
-                        branch.address,
+                      child: Text(
+                        '${branch.address}',
                         maxLines: 4,
-                        style: CommonStyles.txSty_12b_fb.copyWith(wordSpacing: 1.2,color: Colors.black.withOpacity(0.8)),
-                      //  style:  GoogleFonts.outfit(fontSize: 12,fontWeight: FontWeight.w500,wordSpacing: 1.2,color: Colors.black.withOpacity(0.8)),
-                      ), ) ),
+                        style: CommonStyles.txSty_12b_fb.copyWith(
+                            wordSpacing: 1.2,
+                            color: Colors.black.withOpacity(0.8)),
+                        //  style:  GoogleFonts.outfit(fontSize: 12,fontWeight: FontWeight.w500,wordSpacing: 1.2,color: Colors.black.withOpacity(0.8)),
+                      ),
+                    )),
                 //  SizedBox(height: 5.0),
                 // Display from date and to date multiple times
-                Expanded(child:
-                Align(
-                    alignment: Alignment.bottomLeft,
-                    child:
-                    Container(
-                      height: 30,
-                      margin: const EdgeInsets.only(bottom: 10.0, left: 10.0, top: 5.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Color(0xFF11528f),
-                        ),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AddConsulationscreen(agentId: agentid, branch: branch),));
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding:EdgeInsets.symmetric(horizontal: 10.0), // Adjust padding as needed, // Remove padding
-                          foregroundColor: Color(0xFF8d97e2),
-                          backgroundColor: Colors.transparent,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Add Consultation',
-                             style: CommonStyles.txSty_14blu_f5
-                            ),
-                            SizedBox(width: 5),
-                            SvgPicture.asset(
-                              'assets/calendarplus.svg',
-                              width: 12.0,
-                              height: 12.0,
+                Expanded(
+                    child: Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Container(
+                          height: 30,
+                          margin: const EdgeInsets.only(
+                              bottom: 10.0, left: 10.0, top: 5.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(
                               color: Color(0xFF11528f),
                             ),
-                          ],
-                        ),
-                      ),
-                    )
-
-                ))
-
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddConsulationscreen(
+                                        agentId: agentid, branch: branch),
+                                  ));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal:
+                                      10.0), // Adjust padding as needed, // Remove padding
+                              foregroundColor: Color(0xFF8d97e2),
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Add Consultation',
+                                    style: CommonStyles.txSty_14blu_f5),
+                                SizedBox(width: 5),
+                                SvgPicture.asset(
+                                  'assets/calendarplus.svg',
+                                  width: 12.0,
+                                  height: 12.0,
+                                  color: Color(0xFF11528f),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )))
               ],
-            )
-        ));
-
+            )));
   }
 }

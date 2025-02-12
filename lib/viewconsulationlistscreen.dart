@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hairfixingzone/AddConsulationscreen.dart';
+import 'package:hairfixingzone/AgentBranchModel.dart';
 import 'package:hairfixingzone/BranchModel.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
@@ -26,7 +28,7 @@ class viewconsulationlistscreen extends StatefulWidget {
   final int branchid;
   final String fromdate;
   final String todate;
-  final BranchModel agent;
+  final AgentBranchModel agent;
   final int userid;
 
   const viewconsulationlistscreen(
@@ -319,7 +321,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.agent.name,
+                                    '${widget.agent.name}',
                                     style: const TextStyle(
                                       color: Color(0xFF0f75bc),
                                       fontSize: 16.0,
@@ -330,7 +332,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                                     height: 10,
                                   ),
                                   Text(
-                                    widget.agent.address,
+                                    '${widget.agent.address}',
                                     style: CommonStyles.txSty_12b_f5,
                                   ),
                                 ],
@@ -527,8 +529,8 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
               const VerticalDivider(
                 color: CommonUtils.primaryTextColor,
               ),
-              Expanded(child:
-              Column(
+              Expanded(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -670,6 +672,78 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                       ),
                     ),
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              // AgentBranchModel
+                              builder: (context) => AddConsulationscreen(
+                                  agentId: widget.userid,
+                                  branch: widget.agent,
+                                  consultation: consultationslist[index]),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(3),
+                            border: Border.all(
+                              color: CommonStyles.primaryTextColor,
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2, horizontal: 8),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                'assets/calendar-_3_.svg',
+                                width: 13,
+                                color: CommonUtils.primaryTextColor,
+                              ),
+                              Text(
+                                '  Reschedule',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: CommonUtils.primaryTextColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          border: Border.all(
+                            color: CommonStyles.statusRedText,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 2, horizontal: 8),
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/calendar-xmark.svg',
+                              width: 13,
+                              color: CommonStyles.statusRedText,
+                            ),
+                            Text(
+                              '  Cancel',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: CommonStyles.statusRedText,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               )),
             ],
@@ -691,19 +765,6 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
             fontFamily: "Outfit",
           ),
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: SvgPicture.asset(
-        //       'assets/sign-out-alt.svg', // Path to your SVG asset
-        //       color: const Color(0xFF662e91),
-        //       width: 24, // Adjust width as needed
-        //       height: 24, // Adjust height as needed
-        //     ),
-        //     onPressed: () {
-        //       Navigator.of(context).pop();
-        //     },
-        //   ),
-        // ],
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,
@@ -749,7 +810,8 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
       initialDate: initialDate,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       firstDate: DateTime(2000), // Allow dates starting from the year 2000
-      lastDate: DateTime(currentDate.year + 1, currentDate.month, currentDate.day),
+      lastDate:
+          DateTime(currentDate.year + 1, currentDate.month, currentDate.day),
       initialDatePickerMode: DatePickerMode.day,
     );
 
@@ -757,7 +819,8 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
       print('pickedDay.toString(): ${pickedDay.toString()}');
       setState(() {
         selectedDate = pickedDay;
-        _fromToDatesController.text = DateFormat('dd-MM-yyyy').format(pickedDay);
+        _fromToDatesController.text =
+            DateFormat('dd-MM-yyyy').format(pickedDay);
         String apiFromDate = DateFormat('yyyy-MM-dd').format(pickedDay);
         String apiToDate = DateFormat('yyyy-MM-dd').format(pickedDay);
         ConsultationData = getviewconsulationlist(apiFromDate, apiToDate);
@@ -767,5 +830,4 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
       });
     }
   }
-
 }
