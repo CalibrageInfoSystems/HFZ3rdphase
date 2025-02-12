@@ -122,10 +122,15 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
       print('xxx widget.consultation: ${jsonEncode(widget.consultation)}');
       fullNameController.text = widget.consultation!.consultationName;
       genderController.text = widget.consultation!.gender;
-      // if (dropdownItems.isNotEmpty) {
-      selectedTypeCdId = widget.consultation!.genderTypeId == 1 ? 1 : 0;
-      // }
-      selectedValue = widget.consultation!.genderTypeId;
+      if (dropdownItems.isEmpty) {
+        selectedTypeCdId = widget.consultation!.genderTypeId == 1 ? 1 : 0;
+        selectedValue = widget.consultation!.genderTypeId;
+        print('xxx widget.selectedValue: $selectedValue');
+      } else {
+        selectedTypeCdId = -1; // Default safe value
+      }
+      print('xxx widget.genderTypeId: $selectedTypeCdId');
+
       mobileNumberController.text = widget.consultation!.phoneNumber;
       emailController.text = widget.consultation!.email;
       branchController.text = widget.consultation!.branchName;
@@ -358,57 +363,57 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                               child: ButtonTheme(
                                 alignedDropdown: true,
                                 child: DropdownButton<int>(
-                                    value: selectedTypeCdId,
-                                    iconSize: 30,
-                                    icon: null,
-                                    style: CommonUtils.txSty_12b_fb,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedTypeCdId = value!;
-                                        print('RRR: $selectedTypeCdId');
-                                        if (selectedTypeCdId != -1) {
-                                          selectedValue =
-                                              dropdownItems[selectedTypeCdId!]
-                                                  ['typeCdId'];
-                                          selectedName =
-                                              dropdownItems[selectedTypeCdId!]
-                                                  ['desc'];
+                                  value: dropdownItems.isNotEmpty && selectedTypeCdId! >= 0 && selectedTypeCdId! < dropdownItems.length
+                                      ? selectedTypeCdId
+                                      : -1, // Default to -1 if selectedTypeCdId is invalid
+                                  iconSize: 30,
+                                  icon: null,
+                                  style: CommonUtils.txSty_12b_fb,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedTypeCdId = value!;
+                                      print('RRR: $selectedTypeCdId');
 
-                                          print("selectedValue:$selectedValue");
-                                          print("selectedName:$selectedName");
-                                        } else {
-                                          print("==========");
-                                          print(selectedValue);
-                                          print(selectedName);
-                                        }
-                                        // isDropdownValid = selectedTypeCdId != -1;
-                                        isGenderSelected = false;
-                                      });
-                                    },
-                                    items: [
-                                      DropdownMenuItem<int>(
-                                        value: -1,
-                                        child: Text(
-                                          'Select Gender',
-                                          style: CommonStyles.texthintstyle,
-                                        ),
+                                      if (selectedTypeCdId != -1 && selectedTypeCdId! < dropdownItems.length) {
+                                        selectedValue = dropdownItems[selectedTypeCdId!]['typeCdId'];
+                                        selectedName = dropdownItems[selectedTypeCdId!]['desc'];
+
+                                        print("selectedValue: $selectedValue");
+                                        print("selectedName: $selectedName");
+                                      } else {
+                                        selectedValue = null;
+                                        selectedName = null;
+                                        print("==========");
+                                        print(selectedValue);
+                                        print(selectedName);
+                                      }
+
+                                      isGenderSelected = false;
+                                    });
+                                  },
+                                  items: [
+                                    DropdownMenuItem<int>(
+                                      value: -1,
+                                      child: Text(
+                                        'Select Gender',
+                                        style: CommonStyles.texthintstyle,
                                       ),
-                                      ...dropdownItems
-                                          .asMap()
-                                          .entries
-                                          .map((entry) {
-                                        final index = entry.key;
-                                        final item = entry.value;
-                                        return DropdownMenuItem<int>(
-                                          value: index,
-                                          child: Text(
-                                            item['desc'],
-                                            style: CommonUtils.txSty_12b_fb,
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ]),
-                              ),
+                                    ),
+                                    ...dropdownItems.asMap().entries.map((entry) {
+                                      final index = entry.key;
+                                      final item = entry.value;
+                                      return DropdownMenuItem<int>(
+                                        value: index,
+                                        child: Text(
+                                          item['desc'],
+                                          style: CommonUtils.txSty_12b_fb,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ],
+                                ),
+                              )
+
                             ),
                           ),
                         ),

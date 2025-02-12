@@ -1627,6 +1627,195 @@ class _OpCardState extends State<OpCard> {
         );
 
       case 5: // Accepted
+
+        if (isSlotTimeReached(data.date, data.slotDuration)) {
+          return Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  closePopUp(context, data, 17, userId);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(3),
+                    border: Border.all(
+                      color: CommonStyles.statusRedText,
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/calendar-xmark.svg',
+                        width: 12,
+                        color: CommonStyles.statusRedText,
+                      ),
+                      const Text(
+                        '  Close',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Outfit",
+                          fontWeight: FontWeight.w500,
+                          color: CommonStyles.statusRedText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8), // Add spacing between buttons
+              GestureDetector(
+                onTap: () async {
+                  await postAppointment(data, 28, 0.0, userId);
+                  // Add appropriate action for "Not visited" if needed
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(3),
+                    border: Border.all(
+                      color: CommonStyles.statusRedText, // Use a different color for differentiation
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/not_visted.svg',
+                        width: 12,
+                        color: CommonStyles.statusorangeText,
+                      ),
+                      const SizedBox(width: 2 ),
+                      const Text(
+                        'Not visited',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Outfit",
+                          fontWeight: FontWeight.w500,
+                          color: CommonStyles.statusorangeText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        } else {
+          return Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  int timeDifference =
+                  calculateTimeDifference(data.date, data.slotDuration);
+
+                  if (timeDifference <= 60) {
+                    CommonUtils.showCustomToastMessageLong(
+                      'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
+                      context,
+                      0,
+                      2,
+                    );
+                  } else {
+                    print('====?${widget.userId}');
+                    // Navigate to reschedule screen if time difference is greater than 60 minutes
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Agentrescheduleslotscreen( userId: userId!,
+                          data: data,
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: IgnorePointer(
+                  ignoring: isPastDate(data.date, data.slotDuration),
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      border: Border.all(
+                        color: isPastDate(data.date, data.slotDuration)
+                            ? Colors.grey
+                            : CommonStyles.primaryTextColor,
+                      ),
+                    ),
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/calendar-_3_.svg',
+                          width: 13,
+                          color: isPastDate(data.date, data.slotDuration)
+                              ? Colors.grey
+                              : CommonUtils.primaryTextColor,
+                        ),
+                        Text(
+                          '  Reschedule',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: isPastDate(data.date, data.slotDuration)
+                                ? Colors.grey
+                                : CommonUtils.primaryTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  if (!isPastDate(data.date, data.slotDuration)) {
+                    conformation(context, data);
+                    // Add your logic here for when the 'Cancel' container is tapped
+                  }
+                },
+                child: IgnorePointer(
+                  ignoring: isPastDate(data.date, data.slotDuration),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      border: Border.all(
+                        color: isPastDate(data.date, data.slotDuration)
+                            ? Colors.grey
+                            : CommonStyles.statusRedText,
+                      ),
+                    ),
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/calendar-xmark.svg',
+                          width: 12,
+                          color: isPastDate(data.date, data.slotDuration)
+                              ? Colors.grey
+                              : CommonStyles.statusRedText,
+                        ),
+                        Text(
+                          '  Cancel',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: "Outfit",
+                            fontWeight: FontWeight.w500,
+                            color: isPastDate(data.date, data.slotDuration)
+                                ? Colors.grey
+                                : CommonStyles.statusRedText,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
         return Row(
           children: [
             GestureDetector(
@@ -1741,6 +1930,7 @@ class _OpCardState extends State<OpCard> {
             ),
           ],
         );
+
         // if (isSlotTimeReached(data.date, data.slotDuration)) {
         //   return Row(
         //     children: [
