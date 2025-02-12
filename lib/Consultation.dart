@@ -49,7 +49,25 @@ class Consultation {
       createdByUser: json['createdByUser'],
       createdDate: json['createdDate'],
       // visitingDate: json['updatedByUser'] ?? 0,
-    visitingDate: json['visitingDate'] ?? '',
+      visitingDate: json['visitingDate'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'consultationId': consultationId,
+      'consultationName': consultationName,
+      'genderTypeId': genderTypeId,
+      'gender': gender,
+      'phoneNumber': phoneNumber,
+      'email': email,
+      'branchId': branchId,
+      'branchName': branchName,
+      'isActive': isActive,
+      'remarks': remarks,
+      'createdByUser': createdByUser,
+      'createdDate': createdDate,
+      'visitingDate': visitingDate,
+    };
   }
 }

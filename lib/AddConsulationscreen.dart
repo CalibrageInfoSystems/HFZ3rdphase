@@ -42,16 +42,17 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
   List<dynamic> BranchesdropdownItems = [];
   List<dynamic> cityDropdownItems = [];
   String? selectedName;
-  late int selectedValue;
+  int? selectedValue;
   FocusNode remarksFocus = FocusNode();
   String? branchName;
   int? branchValue;
-  int selectedTypeCdId = -1;
+  int? selectedTypeCdId = -1;
   int branchselectedTypeCdId = -1;
   String formattedDate = '';
   String? cityName;
   int? cityValue;
   int citySelectedTypeCdId = -1;
+  int selectedDdGender = -1;
   bool isCitySelected = false;
   bool isCityValidate = false;
 
@@ -115,21 +116,26 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.portraitUp,
-    ]);
-
     if (widget.consultation != null) {
+      print('xxx widget.consultation: ${jsonEncode(widget.consultation)}');
       fullNameController.text = widget.consultation!.consultationName;
       genderController.text = widget.consultation!.gender;
-      selectedValue = widget.consultation!.genderTypeId; // genderTypeId
+      // if (dropdownItems.isNotEmpty) {
+      selectedTypeCdId = widget.consultation!.genderTypeId == 1 ? 1 : 0;
+      // }
+      selectedValue = widget.consultation!.genderTypeId;
       mobileNumberController.text = widget.consultation!.phoneNumber;
       emailController.text = widget.consultation!.email;
       branchController.text = widget.consultation!.branchName;
       cityController.text = widget.branch.city ?? '';
       remarksController.text = widget.consultation!.remarks;
+      parseDateTime(widget.consultation!.visitingDate);
     }
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+    ]);
 
     CommonUtils.checkInternetConnectivity().then((isConnected) {
       if (isConnected) {
@@ -149,6 +155,28 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
             'Please Check Your Internet Connection', context, 1, 4);
         print('The Internet Is not Connected');
       }
+    });
+  }
+
+  void parseDateTime(String dateTimeString) {
+    // Parse the string into a DateTime object
+    DateTime parsedDateTime = DateTime.parse(dateTimeString);
+
+    // Assign DateTime to selectedDate
+    DateTime? selectedDate =
+        DateTime(parsedDateTime.year, parsedDateTime.month, parsedDateTime.day);
+
+    // Assign TimeOfDay to selectedTime
+
+    setState(() {
+      _dateController.text = DateFormat('dd-MM-yyyy').format(selectedDate);
+
+      DateTime parsedDateTime = DateTime.parse(dateTimeString);
+      String formattedTime = DateFormat('hh:mm a').format(parsedDateTime);
+      _timeController.text = formattedTime;
+      // Extract only the time and assign it to a TimeOfDay variable
+      _selectedTime =
+          TimeOfDay(hour: parsedDateTime.hour, minute: parsedDateTime.minute);
     });
   }
 
@@ -333,12 +361,13 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                                     onChanged: (value) {
                                       setState(() {
                                         selectedTypeCdId = value!;
+                                        print('RRR: $selectedTypeCdId');
                                         if (selectedTypeCdId != -1) {
                                           selectedValue =
-                                              dropdownItems[selectedTypeCdId]
+                                              dropdownItems[selectedTypeCdId!]
                                                   ['typeCdId'];
                                           selectedName =
-                                              dropdownItems[selectedTypeCdId]
+                                              dropdownItems[selectedTypeCdId!]
                                                   ['desc'];
 
                                           print("selectedValue:$selectedValue");
@@ -353,7 +382,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                                       });
                                     },
                                     items: [
-                                      const DropdownMenuItem<int>(
+                                      DropdownMenuItem<int>(
                                         value: -1,
                                         child: Text(
                                           'Select Gender',
@@ -777,7 +806,9 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
   }
 
   Future<void> validating() async {
-    validateGender(selectedName);
+    // validateGender(selectedName);
+
+    validateGender(selectedValue.toString());
     // validateCity(cityName);
     // validatebranch(branchName);
 
@@ -787,18 +818,16 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
       print(isFullNameValidate);
       print(isGenderValidate);
       print(isMobileNumberValidate);
-      //  print(isEmailValidate);
       print(isBranchValidate);
-      //  print(isRemarksValidate);
 
       if (isFullNameValidate && isGenderValidate && isMobileNumberValidate) {
-        updateUser();
+        rescheduleConsultation();
+        // updateUser();
       }
     }
   }
 
 //MARK: Validations
-
   String? validatefullname(String? value) {
     if (value!.isEmpty) {
       setState(() {
@@ -867,6 +896,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
   }
 
   void validateGender(String? value) {
+    print('validateGender: $value');
     if (value == null || value.isEmpty) {
       isGenderSelected = true;
       isGenderValidate = false;
@@ -938,15 +968,14 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
 
 //MARK: rescheduleConsultation 😊
   Future<void> rescheduleConsultation() async {
-    validateGender(selectedName);
+    print('rescheduleConsultation called');
     if (_formKey.currentState!.validate()) {
       DateTime now = DateTime.now();
 
       try {
         final apiUrl = Uri.parse(baseUrl + addupdateconsulation);
-        jsonEncode({});
         final requestBody = jsonEncode({
-          "id": null,
+          "id": widget.consultation?.consultationId,
           "name": fullNameController.text,
           "genderTypeId": selectedValue,
           "phoneNumber": mobileNumberController.text,
@@ -956,11 +985,12 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
           "remarks": remarksController.text,
           "createdByUserId": widget.agentId,
           "createdDate": '$now',
-          "updatedByUserId": null,
-          "updatedDate": null,
+          "updatedByUserId": widget.agentId,
+          "updatedDate": DateFormat('yyyy-MM-dd').format(DateTime.now()),
           "visitingDate": visitingDateTime,
-          "statusTypeId": 1 // newly added
+          "statusTypeId": 18
         });
+        print('rescheduleConsultation: $requestBody');
         final jsonResponse = await http.post(
           apiUrl,
           body: requestBody,
@@ -988,6 +1018,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
     }
   }
 
+// add consultation
   Future<void> updateUser() async {
     validateGender(selectedName);
     //   validatebranch(branchName);
@@ -1137,8 +1168,6 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
   }
 
   void _printVisitingDateTime() {
-    print('selectedDate $selectedDate');
-    print('selected Time $slot_time');
     if (selectedDate != null && _selectedTime != null) {
       //   final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate!);
       final formattedTime = _formatTimeOfDay(_selectedTime!);

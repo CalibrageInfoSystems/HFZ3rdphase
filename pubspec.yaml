@@ -71,6 +71,8 @@ dependencies:
   dropdown_button2: ^2.3.9 # This is current latest package
   webview_flutter: ^4.8.0
   upgrader: ^4.8.1
+  http: ^0.13.4
+  intl: ^0.17.0
   change_app_package_name: ^1.4.0
 #  google_fonts: ^4.0.4
 dev_dependencies:
@@ -83,11 +85,8 @@ dev_dependencies:
   # package. See that file for informatio n about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  flutter_svg: ^0.22.0
   flutter_test:
     sdk: flutter
-  http: ^0.13.4 # This is 3 years below version
-  intl: ^0.17.0 # This is 3 years below version
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

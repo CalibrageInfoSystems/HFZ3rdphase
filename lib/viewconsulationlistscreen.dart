@@ -715,31 +715,36 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 10),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
-                          border: Border.all(
-                            color: CommonStyles.statusRedText,
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 2, horizontal: 8),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/calendar-xmark.svg',
-                              width: 13,
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: () {
+                          cancelConsultationDialog(consultationslist[index]);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(3),
+                            border: Border.all(
                               color: CommonStyles.statusRedText,
                             ),
-                            Text(
-                              '  Cancel',
-                              style: TextStyle(
-                                fontSize: 15,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2, horizontal: 8),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                'assets/calendar-xmark.svg',
+                                width: 13,
                                 color: CommonStyles.statusRedText,
                               ),
-                            ),
-                          ],
+                              Text(
+                                '  Cancel',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: CommonStyles.statusRedText,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -830,4 +835,157 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
       });
     }
   }
+
+  void cancelConsultationDialog(Consultation consultation) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 130,
+                child: Image.asset('assets/check.png'),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Center(
+                // Center the text
+                child: Text(
+                  'Are You Sure You Want to Cancel the Appointment at ${consultation.branchName} Branch for ${consultation.consultationName}?',
+                  style: CommonUtils.txSty_18b_fb,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                textStyle: const TextStyle(
+                  color: CommonUtils.primaryTextColor,
+                ),
+                side: const BorderSide(
+                  color: CommonUtils.primaryTextColor,
+                ),
+                backgroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5),
+                  ),
+                ),
+              ),
+              child: const Text(
+                'No',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: CommonUtils.primaryTextColor,
+                  fontFamily: 'Outfit',
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: () {
+                cancelConsultation(consultation);
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                textStyle: const TextStyle(
+                  color: CommonUtils.primaryTextColor,
+                ),
+                side: const BorderSide(
+                  color: CommonUtils.primaryTextColor,
+                ),
+                backgroundColor: CommonUtils.primaryTextColor,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5),
+                  ),
+                ),
+              ),
+              child: const Text(
+                'Yes',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontFamily: 'Outfit',
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> cancelConsultation(Consultation consultation) async {
+    print('cancelConsultation: ${jsonEncode(consultation)}');
+    try {
+      final apiUrl = Uri.parse(baseUrl + addupdateconsulation);
+      final requestBody = jsonEncode({
+        "id": consultation.consultationId,
+        "name": consultation.consultationName,
+        "genderTypeId": consultation.genderTypeId,
+        "phoneNumber": consultation.phoneNumber,
+        "email": consultation.email,
+        "branchId": consultation.branchId,
+        "isActive": false,
+        "remarks": consultation.remarks,
+        "createdByUserId": consultation.createdByUser,
+        "createdDate": consultation.createdDate,
+        "updatedByUserId": widget.userid,
+        "updatedDate": DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        "visitingDate": consultation.visitingDate,
+        "statusTypeId": 6 // newly added
+      });
+      print('rescheduleConsultation: $requestBody');
+      final jsonResponse = await http.post(
+        apiUrl,
+        body: requestBody,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (jsonResponse.statusCode == 200) {
+        final response = json.decode(jsonResponse.body);
+        if (response['isSuccess']) {
+          CommonUtils.showCustomToastMessageLong(
+              'Consultation Cancelled Successfully', context, 0, 5);
+          final formattedDate =
+              DateFormat('yyyy-MM-dd').format(selectedDate ?? DateTime.now());
+          setState(() {
+            ConsultationData =
+                getviewconsulationlist(formattedDate, formattedDate);
+          });
+        } else {
+          CommonUtils.showCustomToastMessageLong(
+              '${response['statusMessage']}', context, 0, 5);
+        }
+      } else {
+        throw Exception('Failed to reschedule consultation');
+      }
+    } catch (e) {
+      print('Error slot: $e');
+      rethrow;
+    }
+  }
+
+  /*  void cancelConsultation(Consultation consultation) {
+    // cancel consulatation and fetch consultation list
+    // ConsultationData = getviewconsulationlist(
+  /*     DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      DateFormat('yyyy-MM-dd').format(DateTime.now()),
+   */
+  } */
 }
