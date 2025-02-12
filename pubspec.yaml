@@ -184,6 +184,7 @@ flutter:
     - assets/privacy_policy_image_2.jpg
     - assets/privacy_policy_image_3.jpg
     - assets/not_visted.svg
+    - assets/invertory.svg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

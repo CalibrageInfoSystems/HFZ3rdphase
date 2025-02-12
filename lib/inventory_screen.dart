@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 
 class InventoryScreen extends StatefulWidget {
   final int userId;
-  final int? branchId;
+  final int branchId;
   final String branchName;
   final String branchImage;
   final String branchNumber;
@@ -19,7 +19,7 @@ class InventoryScreen extends StatefulWidget {
 
   const InventoryScreen({
     super.key,
-    this.branchId,
+    required  this.branchId,
     required this.userId,
     required this.branchName,
     required this.branchImage,

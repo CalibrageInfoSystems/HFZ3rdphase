@@ -248,6 +248,7 @@ class BranchTemplate extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                     builder: (context) => InventoryScreen(
+                      branchId: branchnames.id!,
                         userId: userId,
                         branchName: branchnames.name,
                         branchImage: imageUrl,

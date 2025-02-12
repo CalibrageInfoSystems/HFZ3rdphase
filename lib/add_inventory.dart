@@ -14,8 +14,9 @@ import 'package:http/http.dart' as http;
 
 class AddInventory extends StatefulWidget {
   final int userId;
-  final int? branchId;
+
   final InventoryModel? inventory;
+  final int branchId;
   const AddInventory(
       {super.key,
       required this.userId,
@@ -95,7 +96,7 @@ class _AddInventoryState extends State<AddInventory> {
     } */
 
           );
-
+      print('requestBody: $requestBody');
       final jsonResponse = await http.post(
         Uri.parse(apiUrl),
         headers: {"Content-Type": "application/json"},

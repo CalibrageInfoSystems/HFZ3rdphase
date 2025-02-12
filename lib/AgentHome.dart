@@ -205,13 +205,13 @@ class _AgentHomeState extends State<AgentHome> {
             ),
             BottomNavigationBarItem(
               icon: SvgPicture.asset(
-                'assets/overview.svg',
+                'assets/invertory.svg',
                 width: 20,
                 height: 20,
                 color: Colors.black.withOpacity(0.6),
               ),
               activeIcon: SvgPicture.asset(
-                'assets/overview.svg',
+                'assets/invertory.svg',
                 width: 20,
                 height: 20,
                 color: CommonUtils.primaryTextColor,
