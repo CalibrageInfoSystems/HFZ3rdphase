@@ -684,6 +684,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                               builder: (context) => AddConsulationscreen(
                                   agentId: widget.userid,
                                   branch: widget.agent,
+                                  screenForReschedule: true,
                                   consultation: consultationslist[index]),
                             ),
                           );
