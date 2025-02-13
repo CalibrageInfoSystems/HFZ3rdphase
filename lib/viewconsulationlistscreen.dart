@@ -54,7 +54,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
   String? month;
   String? date;
   String? year;
-  late Future<List<Consultation>> ConsultationData;
+  late Future<List<Consultation>> consultationData;
 
   @override
   void initState() {
@@ -66,13 +66,12 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
 
     print(
         'branchid ${widget.branchid} fromdate${widget.fromdate} todate ${widget.todate}');
-    ConsultationData = getviewconsulationlist(
+    consultationData = getviewconsulationlist(
       DateFormat('yyyy-MM-dd').format(DateTime.now()),
       DateFormat('yyyy-MM-dd').format(DateTime.now()),
     );
   }
 
-// http://182.18.157.215/SaloonApp/API/api/Consultation/GetConsultationsByBranchId
   Future<List<Consultation>> getviewconsulationlist(
       String fromdate, String todate) async {
     // const String apiUrl =
@@ -86,15 +85,6 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
       "toDate": todate,
       "isActive": true, //widget.todate
     };
-    print('test rqbody: $requestObject');
-    // {
-    //   "branchId": widget.branchid,
-    //   "fromDate": widget.fromdate,
-    //   "toDate": widget.todate
-    // };
-
-    print('requestObject==${jsonEncode(requestObject)}');
-
     try {
       final http.Response response = await http.post(
         Uri.parse(apiUrl),
@@ -111,19 +101,11 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
           if (listResult != null && listResult is List<dynamic>) {
             List<Consultation> consultations =
                 jsonList.map((e) => Consultation.fromJson(e)).toList();
-            // for (var consultation in consultations) {
-            //   DateTime createdDateTime = DateTime.parse(consultation.createdDate);
-            //   month = DateFormat('MMM').format(createdDateTime);
-            //   date = DateFormat('dd').format(createdDateTime);
-            //   year = DateFormat('yyyy').format(createdDateTime);
-            //
-            //   print('month: $month, Date: $date, Year: $year');
-            // }
+
             setState(() {
               consultationslist = consultations;
             });
             return consultations;
-            print(consultations);
           } else {
             print("ListResult is null or not a List<dynamic>");
           }
@@ -414,7 +396,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
               ),
 
               FutureBuilder(
-                future: ConsultationData,
+                future: consultationData,
                 builder: (BuildContext context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -440,9 +422,10 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                                 ? 1
                                 : consultationslist.length,
                             itemBuilder: (context, index) {
-                              DateTime createdDateTime = DateTime.parse(
-                                consultationslist[index].visitingDate,
-                              );
+                              DateTime createdDateTime =
+                                  consultationslist[index].visitingDate!;
+                              /* DateTime.parse(
+                              ); */
                               final GlobalKey mobilenumber = GlobalKey();
 
                               month = DateFormat('MMM').format(createdDateTime);
@@ -483,48 +466,37 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
-            // border: Border.all(
-            //   color: Colors.grey,
-            //   //  color: const Color(0xFF8d97e2), // Add your desired border color here
-            //   width:
-            //   1.0, // Set the border width
-            // ),
-            borderRadius: BorderRadius.circular(
-                10.0), // Optional: Add border radius if needed
+            borderRadius: BorderRadius.circular(10.0),
           ),
           child: Row(
             children: [
-              Container(
-                //  height: MediaQuery.of(context).size.height,
-                //  width: MediaQuery.of(context).size.height / 16,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      '$month',
-                      style: CommonUtils.txSty_18p_f7,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '$month',
+                    style: CommonUtils.txSty_18p_f7,
+                  ),
+                  Text(
+                    '$date',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontFamily: "Outfit",
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0f75bc),
                     ),
-                    Text(
-                      '$date',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontFamily: "Outfit",
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF0f75bc),
-                      ),
+                  ),
+                  Text(
+                    '$year',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontFamily: "Outfit",
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0f75bc),
                     ),
-                    Text(
-                      '$year',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontFamily: "Outfit",
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF0f75bc),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               const VerticalDivider(
                 color: CommonUtils.primaryTextColor,
@@ -535,115 +507,117 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                 children: [
                   Row(
                     children: [
-                      SizedBox(
-                        //width: MediaQuery.of(context).size.width / 2.5,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              formatVisitingDate(
-                                  consultationslist[index].visitingDate),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontFamily: "Outfit",
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
+                      Expanded(
+                        child: SizedBox(
+                          //width: MediaQuery.of(context).size.width / 2.5,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${formatVisitingDate2(consultationslist[index].visitingDate)}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: "Outfit",
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 2.0,
-                            ),
-                            Text(
-                              consultationslist[index].consultationName,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontFamily: "Outfit",
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
+                              const SizedBox(
+                                height: 2.0,
                               ),
-                            ),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    makePhoneCall(
-                                        'tel:+91${consultationslist[index].phoneNumber}');
-                                  },
-                                  child: RichText(
-                                    text: TextSpan(
-                                      text:
-                                          consultationslist[index].phoneNumber,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontFamily: "Outfit",
-                                        fontWeight: FontWeight.w500,
-                                        color: Color(0xFF0f75bc),
-                                        decoration: TextDecoration.underline,
-                                        decorationColor: Color(
-                                            0xFF0f75bc), // Change this to your desired underline color
+                              Text(
+                                '${consultationslist[index].consultationName}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: "Outfit",
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5.0,
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      makePhoneCall(
+                                          'tel:+91${consultationslist[index].phoneNumber}');
+                                    },
+                                    child: RichText(
+                                      text: TextSpan(
+                                        text: consultationslist[index]
+                                            .phoneNumber,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: "Outfit",
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFF0f75bc),
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: Color(
+                                              0xFF0f75bc), // Change this to your desired underline color
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  width: 5.0,
-                                ),
-                                GestureDetector(
-                                  key: mobilenumber,
-                                  child: const Icon(
-                                    Icons.copy,
-                                    size: 14,
-                                    color: Colors.black,
+                                  const SizedBox(
+                                    width: 5.0,
                                   ),
-                                  onTap: () {
-                                    Clipboard.setData(ClipboardData(
-                                        text: consultationslist[index]
-                                            .phoneNumber));
-                                    showTooltip(
-                                        context, "Copied", mobilenumber);
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
+                                  GestureDetector(
+                                    key: mobilenumber,
+                                    child: const Icon(
+                                      Icons.copy,
+                                      size: 14,
+                                      color: Colors.black,
+                                    ),
+                                    onTap: () {
+                                      Clipboard.setData(ClipboardData(
+                                          text: consultationslist[index]
+                                              .phoneNumber!));
+                                      showTooltip(
+                                          context, "Copied", mobilenumber);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      // const SizedBox(
-                      //   height: 5.0,
-                      // ),
-                      SizedBox(
-                        //width: MediaQuery.of(context).size.width / 3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              consultationslist[index].gender,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontFamily: "Outfit",
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF5f5f5f),
-                              ),
+                      const SizedBox(
+                        width: 5.0,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          statusBasedBgById(
+                              consultationslist[index].statusTypeId,
+                              consultationslist[index].status),
+                          const SizedBox(height: 5.0),
+                          Text(
+                            '${consultationslist[index].gender}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontFamily: "Outfit",
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF5f5f5f),
                             ),
-                            Text(
-                              consultationslist[index].email,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontFamily: "Outfit",
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF5f5f5f),
-                              ),
+                          ),
+                          Text(
+                            '${consultationslist[index].email}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontFamily: "Outfit",
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF5f5f5f),
                             ),
-                            //Text('', style: CommonStyles.txSty_16black_f5),
-                            // Text(consultationslist[index].gender, style: CommonStyles.txSty_16black_f5),
-                          ],
-                        ),
+                          ),
+                          //Text('', style: CommonStyles.txSty_16black_f5),
+                          // Text(consultationslist[index].gender, style: CommonStyles.txSty_16black_f5),
+                        ],
                       ),
                     ],
                   ),
@@ -652,7 +626,8 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                   ),
                   Flexible(
                     child: Visibility(
-                      visible: consultationslist[index].remarks.isNotEmpty,
+                      visible: (consultationslist[index].remarks != null &&
+                          consultationslist[index].remarks!.isNotEmpty),
                       child: RichText(
                         text: TextSpan(
                           text: 'Remark : ',
@@ -673,89 +648,200 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              // AgentBranchModel
-                              builder: (context) => AddConsulationscreen(
-                                  agentId: widget.userid,
-                                  branch: widget.agent,
-                                  screenForReschedule: true,
-                                  consultation: consultationslist[index]),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(3),
-                            border: Border.all(
-                              color: CommonStyles.primaryTextColor,
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 2, horizontal: 8),
-                          child: Row(
+                  if (consultationslist[index].statusTypeId != 28) ...[
+                    (DateTime.now()
+                            .isAfter(consultationslist[index].visitingDate!))
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              SvgPicture.asset(
-                                'assets/calendar-_3_.svg',
-                                width: 13,
-                                color: CommonUtils.primaryTextColor,
+                              GestureDetector(
+                                onTap: () {
+                                  print('clicked-------------');
+                                  notVisitedConsultation(
+                                      consultationslist[index]);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(3),
+                                    border: Border.all(
+                                      color: CommonStyles
+                                          .statusRedText, // Use a different color for differentiation
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2, horizontal: 8),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/not_visted.svg',
+                                        width: 12,
+                                        color: CommonStyles.statusorangeText,
+                                      ),
+                                      const SizedBox(width: 2),
+                                      const Text(
+                                        'Not visited',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: "Outfit",
+                                          fontWeight: FontWeight.w500,
+                                          color: CommonStyles.statusorangeText,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                              Text(
-                                '  Reschedule',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: CommonUtils.primaryTextColor,
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      // AgentBranchModel
+                                      builder: (context) =>
+                                          AddConsulationscreen(
+                                              agentId: widget.userid,
+                                              branch: widget.agent,
+                                              screenForReschedule: true,
+                                              consultation:
+                                                  consultationslist[index]),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(3),
+                                    border: Border.all(
+                                      color: CommonStyles.primaryTextColor,
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2, horizontal: 8),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/calendar-_3_.svg',
+                                        width: 13,
+                                        color: CommonUtils.primaryTextColor,
+                                      ),
+                                      Text(
+                                        '  Reschedule',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: CommonUtils.primaryTextColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  cancelConsultationDialog(
+                                      consultationslist[index]);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(3),
+                                    border: Border.all(
+                                      color: CommonStyles.statusRedText,
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2, horizontal: 8),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/calendar-xmark.svg',
+                                        width: 13,
+                                        color: CommonStyles.statusRedText,
+                                      ),
+                                      Text(
+                                        '  Cancel',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: CommonStyles.statusRedText,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      GestureDetector(
-                        onTap: () {
-                          cancelConsultationDialog(consultationslist[index]);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(3),
-                            border: Border.all(
-                              color: CommonStyles.statusRedText,
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 2, horizontal: 8),
-                          child: Row(
-                            children: [
-                              SvgPicture.asset(
-                                'assets/calendar-xmark.svg',
-                                width: 13,
-                                color: CommonStyles.statusRedText,
-                              ),
-                              Text(
-                                '  Cancel',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: CommonStyles.statusRedText,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  ]
                 ],
               )),
             ],
           ),
         )),
+      ),
+    );
+  }
+
+  Widget statusBasedBgById(int? statusTypeId, String? status) {
+    final Color statusColor;
+    final Color statusBgColor;
+    if (statusTypeId == 11) {
+      status = "Closed";
+    }
+
+    switch (statusTypeId) {
+      case 4: // Submited
+        statusColor = CommonStyles.statusBlueText;
+        statusBgColor = CommonStyles.statusBlueBg;
+        break;
+      case 5: // Accepted
+        statusColor = CommonStyles.statusGreenText;
+        statusBgColor = CommonStyles.statusGreenBg;
+        break;
+      case 6: // Declined
+        statusColor = CommonStyles.statusRedText;
+        statusBgColor = CommonStyles.statusRedBg;
+        break;
+      case 11: // FeedBack
+        statusColor = const Color.fromARGB(255, 33, 129, 70);
+        statusBgColor = CommonStyles.statusYellowBg;
+        break;
+      case 17: // Closed
+        statusColor = CommonStyles.statusYellowText;
+        statusBgColor = CommonStyles.statusYellowBg;
+        break;
+      case 28: // Not Visited
+        statusColor = CommonStyles.statusYellowText;
+        statusBgColor = CommonStyles.statusYellowBg;
+        break;
+      case 100: // Rejected
+        statusColor = CommonStyles.statusYellowText;
+        statusBgColor = CommonStyles.statusYellowBg;
+        break;
+      default:
+        statusColor = Colors.black26;
+        statusBgColor = Colors.black26.withOpacity(0.2);
+        break;
+    }
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15), color: statusBgColor),
+      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
+      child: Row(
+        children: [
+          // statusBasedBgById(widget.data.statusTypeId),
+          Text(
+            '$status',
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: "Outfit",
+              fontWeight: FontWeight.w500,
+              color: statusColor,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -808,6 +894,14 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
     return formattedTime;
   }
 
+  String? formatVisitingDate2(DateTime? parsedDate) {
+    if (parsedDate == null) {
+      return '';
+    }
+    String formattedTime = DateFormat.jm().format(parsedDate);
+    return formattedTime;
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime currentDate = DateTime.now();
     final DateTime initialDate = selectedDate ?? currentDate;
@@ -830,7 +924,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
             DateFormat('dd-MM-yyyy').format(pickedDay);
         String apiFromDate = DateFormat('yyyy-MM-dd').format(pickedDay);
         String apiToDate = DateFormat('yyyy-MM-dd').format(pickedDay);
-        ConsultationData = getviewconsulationlist(apiFromDate, apiToDate);
+        consultationData = getviewconsulationlist(apiFromDate, apiToDate);
         print('test: $selectedDate');
         print('test apiFromDate: $apiFromDate');
         print('test apiToDate: $apiToDate');
@@ -967,7 +1061,59 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
           final formattedDate =
               DateFormat('yyyy-MM-dd').format(selectedDate ?? DateTime.now());
           setState(() {
-            ConsultationData =
+            consultationData =
+                getviewconsulationlist(formattedDate, formattedDate);
+          });
+        } else {
+          CommonUtils.showCustomToastMessageLong(
+              '${response['statusMessage']}', context, 0, 5);
+        }
+      } else {
+        throw Exception('Failed to reschedule consultation');
+      }
+    } catch (e) {
+      print('Error slot: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> notVisitedConsultation(Consultation consultation) async {
+    try {
+      final apiUrl = Uri.parse(baseUrl + addupdateconsulation);
+      final requestBody = jsonEncode({
+        "id": consultation.consultationId,
+        "name": consultation.consultationName,
+        "genderTypeId": consultation.genderTypeId,
+        "phoneNumber": consultation.phoneNumber,
+        "email": consultation.email,
+        "branchId": consultation.branchId,
+        "isActive": true,
+        "remarks": consultation.remarks,
+        "createdByUserId": consultation.createdByUser,
+        "createdDate":
+            DateFormat('yyyy-MM-dd').format(consultation.createdDate!),
+        "updatedByUserId": widget.userid,
+        "updatedDate": DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        "visitingDate":
+            DateFormat('yyyy-MM-dd').format(consultation.visitingDate!),
+        "statusTypeId": 28
+      });
+      print('rescheduleConsultation: $requestBody');
+      final jsonResponse = await http.post(
+        apiUrl,
+        body: requestBody,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (jsonResponse.statusCode == 200) {
+        final response = json.decode(jsonResponse.body);
+        if (response['isSuccess']) {
+          CommonUtils.showCustomToastMessageLong(
+              'Consultation Cancelled Successfully', context, 0, 5);
+          final formattedDate =
+              DateFormat('yyyy-MM-dd').format(selectedDate ?? DateTime.now());
+          setState(() {
+            consultationData =
                 getviewconsulationlist(formattedDate, formattedDate);
           });
         } else {

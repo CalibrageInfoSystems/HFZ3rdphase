@@ -120,8 +120,8 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
     super.initState();
     if (widget.consultation != null) {
       print('xxx widget.consultation: ${jsonEncode(widget.consultation)}');
-      fullNameController.text = widget.consultation!.consultationName;
-      genderController.text = widget.consultation!.gender;
+      fullNameController.text = widget.consultation!.consultationName ?? '';
+      genderController.text = widget.consultation!.gender ?? '';
       if (dropdownItems.isEmpty) {
         selectedTypeCdId = widget.consultation!.genderTypeId == 1 ? 1 : 0;
         selectedValue = widget.consultation!.genderTypeId;
@@ -131,12 +131,12 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
       }
       print('xxx widget.genderTypeId: $selectedTypeCdId');
 
-      mobileNumberController.text = widget.consultation!.phoneNumber;
-      emailController.text = widget.consultation!.email;
-      branchController.text = widget.consultation!.branchName;
+      mobileNumberController.text = widget.consultation!.phoneNumber ?? '';
+      emailController.text = widget.consultation!.email ?? '';
+      branchController.text = widget.consultation!.branchName ?? '';
       cityController.text = widget.branch.city ?? '';
-      remarksController.text = widget.consultation!.remarks;
-      parseDateTime(widget.consultation!.visitingDate);
+      remarksController.text = widget.consultation!.remarks ?? '';
+      parseDateTimeFromDate(widget.consultation!.visitingDate);
     }
 
     SystemChrome.setPreferredOrientations([
@@ -162,6 +162,20 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
             'Please Check Your Internet Connection', context, 1, 4);
         print('The Internet Is not Connected');
       }
+    });
+  }
+
+  void parseDateTimeFromDate(DateTime? parsedDate) {
+    if (parsedDate == null) return;
+
+    setState(() {
+      _dateController.text = DateFormat('dd-MM-yyyy').format(parsedDate);
+
+      String formattedTime = DateFormat('hh:mm a').format(parsedDate);
+      _timeController.text = formattedTime;
+      // Extract only the time and assign it to a TimeOfDay variable
+      _selectedTime =
+          TimeOfDay(hour: parsedDate.hour, minute: parsedDate.minute);
     });
   }
 
@@ -288,8 +302,8 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         const SizedBox(
                           height: 5,
                         ),
+                        //MARK: Full Name
                         CustomeFormField(
-                          //MARK: Full Name
                           label: 'Full Name',
                           validator: validatefullname,
                           inputFormatters: [
@@ -299,7 +313,8 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                           controller: fullNameController,
                           maxLength: 50,
                           keyboardType: TextInputType.name,
-
+                          enabled: !widget.screenForReschedule!,
+                          readOnly: widget.screenForReschedule!,
                           errorText: _fullNameError ? _fullNameErrorMsg : null,
                           onChanged: (value) {
                             //MARK: Space restrict
@@ -318,18 +333,6 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         const SizedBox(
                           height: 10,
                         ),
-
-                        // CustomeFormField(
-                        //   label: 'Date of Birth',
-                        //   validator: validatedob,
-                        //   controller: DateofBirth,
-                        //   focusNode: DateofBirthdFocus,
-                        //   onTap: () => _selectDate(context),
-                        // ),
-
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
                         const Row(
                           children: [
                             Text(
@@ -352,69 +355,78 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                           child: Container(
                             width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
                               border: Border.all(
-                                color: isGenderSelected
-                                    ? const Color.fromARGB(255, 175, 15, 4)
-                                    : CommonUtils.primaryTextColor,
+                                color: widget.screenForReschedule!
+                                    ? Colors.grey.shade300
+                                    : isGenderSelected
+                                        ? const Color.fromARGB(255, 175, 15, 4)
+                                        : CommonUtils.primaryTextColor,
                               ),
-                              borderRadius: BorderRadius.circular(5.0),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: ButtonTheme(
-                                alignedDropdown: true,
-                                child: DropdownButton<int>(
-                                  value: dropdownItems.isNotEmpty && selectedTypeCdId! >= 0 && selectedTypeCdId! < dropdownItems.length
-                                      ? selectedTypeCdId
-                                      : -1, // Default to -1 if selectedTypeCdId is invalid
-                                  iconSize: 30,
-                                  icon: null,
-                                  style: CommonUtils.txSty_12b_fb,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedTypeCdId = value!;
-                                      print('RRR: $selectedTypeCdId');
+                                child: ButtonTheme(
+                              alignedDropdown: true,
+                              child: DropdownButton<int>(
+                                value: dropdownItems.isNotEmpty &&
+                                        selectedTypeCdId! >= 0 &&
+                                        selectedTypeCdId! < dropdownItems.length
+                                    ? selectedTypeCdId
+                                    : -1, // Default to -1 if selectedTypeCdId is invalid
+                                iconSize: 30,
+                                icon: null,
+                                style: CommonUtils.txSty_12b_fb,
+                                onChanged: (value) {
+                                  if (widget.screenForReschedule!) return;
+                                  setState(() {
+                                    selectedTypeCdId = value!;
+                                    print('RRR: $selectedTypeCdId');
 
-                                      if (selectedTypeCdId != -1 && selectedTypeCdId! < dropdownItems.length) {
-                                        selectedValue = dropdownItems[selectedTypeCdId!]['typeCdId'];
-                                        selectedName = dropdownItems[selectedTypeCdId!]['desc'];
+                                    if (selectedTypeCdId != -1 &&
+                                        selectedTypeCdId! <
+                                            dropdownItems.length) {
+                                      selectedValue =
+                                          dropdownItems[selectedTypeCdId!]
+                                              ['typeCdId'];
+                                      selectedName =
+                                          dropdownItems[selectedTypeCdId!]
+                                              ['desc'];
 
-                                        print("selectedValue: $selectedValue");
-                                        print("selectedName: $selectedName");
-                                      } else {
-                                        selectedValue = null;
-                                        selectedName = null;
-                                        print("==========");
-                                        print(selectedValue);
-                                        print(selectedName);
-                                      }
+                                      print("selectedValue: $selectedValue");
+                                      print("selectedName: $selectedName");
+                                    } else {
+                                      selectedValue = null;
+                                      selectedName = null;
+                                      print("==========");
+                                      print(selectedValue);
+                                      print(selectedName);
+                                    }
 
-                                      isGenderSelected = false;
-                                    });
-                                  },
-                                  items: [
-                                    DropdownMenuItem<int>(
-                                      value: -1,
-                                      child: Text(
-                                        'Select Gender',
-                                        style: CommonStyles.texthintstyle,
-                                      ),
+                                    isGenderSelected = false;
+                                  });
+                                },
+                                items: [
+                                  DropdownMenuItem<int>(
+                                    value: -1,
+                                    child: Text(
+                                      'Select Gender',
+                                      style: CommonStyles.texthintstyle,
                                     ),
-                                    ...dropdownItems.asMap().entries.map((entry) {
-                                      final index = entry.key;
-                                      final item = entry.value;
-                                      return DropdownMenuItem<int>(
-                                        value: index,
-                                        child: Text(
-                                          item['desc'],
-                                          style: CommonUtils.txSty_12b_fb,
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ],
-                                ),
-                              )
-
-                            ),
+                                  ),
+                                  ...dropdownItems.asMap().entries.map((entry) {
+                                    final index = entry.key;
+                                    final item = entry.value;
+                                    return DropdownMenuItem<int>(
+                                      value: index,
+                                      child: Text(
+                                        item['desc'],
+                                        style: CommonUtils.txSty_12b_fb,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ],
+                              ),
+                            )),
                           ),
                         ),
                         //MARK: Gender condition
@@ -441,7 +453,8 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                           validator: validateMobilenum,
                           controller: mobileNumberController,
                           maxLength: 10,
-
+                          enabled: !widget.screenForReschedule!,
+                          readOnly: widget.screenForReschedule!,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                           ],
@@ -472,10 +485,6 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         const Row(
                           children: [
                             Text('Email', style: CommonUtils.txSty_12b_fb)
-                            // Text(
-                            //   ' *',
-                            //   style: TextStyle(color: Colors.red),
-                            // ),
                           ],
                         ),
                         const SizedBox(
@@ -484,6 +493,8 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         TextFormField(
                           controller: emailController,
                           maxLength: 60,
+                          enabled: !widget.screenForReschedule!,
+                          readOnly: widget.screenForReschedule!,
                           maxLengthEnforcement: MaxLengthEnforcement.enforced,
                           keyboardType: TextInputType.emailAddress,
                           onTap: () {},
@@ -528,6 +539,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
 
                         CustomeFormField(
                           label: 'City',
+                          enabled: !widget.screenForReschedule!,
                           validator: (value) {
                             // Custom validation logic
                             if (value == null || value.isEmpty) {
@@ -546,6 +558,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         const SizedBox(height: 10),
                         CustomeFormField(
                           label: 'Branch',
+                          enabled: !widget.screenForReschedule!,
                           validator: (value) {
                             // Custom validation logic
                             if (value == null || value.isEmpty) {
@@ -697,27 +710,16 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                const Row(
-                                  children: [
-                                    Text(
-                                      'Remark ',
-                                      style: CommonUtils.txSty_12b_fb,
-                                    ),
-                                    // Text(
-                                    //   '*',
-                                    //   style: TextStyle(color: Colors.red),
-                                    // ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 5.0,
-                                ),
-                                TextFormField(
+                                CustomeFormField(
+                                  label: 'Remark',
+                                  isMandatory: false,
                                   controller: remarksController,
                                   maxLengthEnforcement:
                                       MaxLengthEnforcement.enforced,
                                   maxLength: 250,
                                   maxLines: 6,
+                                  enabled: !widget.screenForReschedule!,
+                                  readOnly: widget.screenForReschedule!,
                                   onTap: () {
                                     setState(() {
                                       remarksFocus.addListener(() {
@@ -736,66 +738,11 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                                       });
                                     });
                                   },
-                                  decoration: InputDecoration(
-                                    errorText:
-                                        _remarksError ? _remarksErrorMsg : null,
-                                    contentPadding: const EdgeInsets.only(
-                                        top: 15,
-                                        bottom: 10,
-                                        left: 15,
-                                        right: 15),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFF0f75bc),
-                                      ),
-                                      borderRadius: BorderRadius.circular(6.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: CommonUtils.primaryTextColor,
-                                      ),
-                                      borderRadius: BorderRadius.circular(6.0),
-                                    ),
-                                    border: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                    ),
-                                    hintText: 'Enter Remark ',
-                                    counterText: "",
-                                    // counterText: "",
-                                    hintStyle: CommonStyles.texthintstyle,
-                                    errorStyle: CommonStyles.texterrorstyle,
-                                  ),
-                                  //  validator: validateremarks,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value.startsWith(' ')) {
-                                        remarksController.value =
-                                            TextEditingValue(
-                                          text: value.trimLeft(),
-                                          selection: TextSelection.collapsed(
-                                              offset: value.trimLeft().length),
-                                        );
-                                      }
-                                      if (value.length > 250) {
-                                        // Trim the text if it exceeds 256 characters
-                                        remarksController.value =
-                                            TextEditingValue(
-                                          text: value.substring(0, 250),
-                                          selection:
-                                              const TextSelection.collapsed(
-                                                  offset: 250),
-                                        );
-                                      }
-                                      _remarksError = false;
-                                    }); // Update the UI when text changes
-                                  },
-
-                                  style: CommonStyles.txSty_14b_fb,
+                                  errorText:
+                                      _remarksError ? _remarksErrorMsg : null,
                                 ),
                                 const SizedBox(
-                                  height: 10,
+                                  height: 12.0,
                                 ),
                                 Row(
                                   children: [
@@ -1061,7 +1008,8 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
         "createdDate": '$now',
         "updatedByUserId": null,
         "updatedDate": null,
-        "visitingDate": visitingDateTime
+        "visitingDate": visitingDateTime,
+        "statusTypeId": 5
       };
       print('Object: ${json.encode(request)}');
       try {

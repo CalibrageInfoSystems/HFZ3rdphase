@@ -22,6 +22,7 @@ class CustomeFormField extends StatelessWidget {
   final FocusNode? focusNode;
   final int? maxLines;
   final bool isMandatory;
+  final bool enabled;
 
   const CustomeFormField({
     Key? key,
@@ -33,6 +34,7 @@ class CustomeFormField extends StatelessWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.onTap,
+    this.enabled = true,
     this.errorText,
     this.maxLines = 1,
     this.onChanged,
@@ -71,6 +73,7 @@ class CustomeFormField extends StatelessWidget {
         TextFormField(
           controller: controller,
           decoration: InputDecoration(
+            enabled: enabled,
             suffixIcon: suffixIcon,
             contentPadding:
                 const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
