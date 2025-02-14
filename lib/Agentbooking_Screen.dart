@@ -14,20 +14,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Booking_Screen.dart';
 import 'Common/common_styles.dart';
 
-
 class AgentbookingScreen extends StatefulWidget {
-final int branchId;
-final int AgentId;
-final String branchname;
-final String branchaddress;
-final String branchImage;
-AgentbookingScreen({required this.branchId,required this.branchname,required this.branchaddress,required this.AgentId,required this.branchImage});
+  final int branchId;
+  final int AgentId;
+  final String branchname;
+  final String branchaddress;
+  final String branchImage;
+  AgentbookingScreen(
+      {required this.branchId,
+      required this.branchname,
+      required this.branchaddress,
+      required this.AgentId,
+      required this.branchImage});
   @override
   _AgentbookingscreenState createState() => _AgentbookingscreenState();
 }
 
 class _AgentbookingscreenState extends State<AgentbookingScreen> {
-
   List<String> timeSlots = [];
   List<String> availableSlots = [];
   List<String?> timeSlotParts = [];
@@ -100,7 +103,8 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
   bool ispurposeselected = false;
   String? _selectedTimeSlot24;
   int? genderttypeid;
-  final TextEditingController _textEditingController = TextEditingController(text: "Hair fixing Appointment");
+  final TextEditingController _textEditingController =
+      TextEditingController(text: "Hair fixing Appointment");
   DateTime currentDate = DateTime.now();
   DateTime? eventDate;
   TimeOfDay currentTime = TimeOfDay.now();
@@ -113,9 +117,9 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
   @override
   void dispose() {
     _dateController.dispose();
-print('branchaddress${widget.branchaddress}');
-print('branchname${widget.branchname}');
-print('branchId${widget.branchId}');
+    print('branchaddress${widget.branchaddress}');
+    print('branchname${widget.branchname}');
+    print('branchId${widget.branchId}');
     super.dispose();
   }
 
@@ -131,7 +135,7 @@ print('branchId${widget.branchId}');
     CommonUtils.checkInternetConnectivity().then((isConnected) async {
       if (isConnected) {
         print('Connected to the internet');
-      //fetchHolidayListByBranchId(widget.branchId);
+        //fetchHolidayListByBranchId(widget.branchId);
 
         try {
           final holidayResponse = await fetchHolidayListByBranchId();
@@ -140,7 +144,8 @@ print('branchId${widget.branchId}');
         } catch (e) {
           print('Error: $e');
         }
-        fetchTimeSlots(DateTime.parse(selecteddate), widget.branchId).then((value) {
+        fetchTimeSlots(DateTime.parse(selecteddate), widget.branchId)
+            .then((value) {
           setState(() {
             slots = value;
           });
@@ -150,7 +155,8 @@ print('branchId${widget.branchId}');
         //   fetchRadioButtonOptions();
         fetchData();
       } else {
-        CommonUtils.showCustomToastMessageLong('Not connected to the internet', context, 1, 4);
+        CommonUtils.showCustomToastMessageLong(
+            'Not connected to the internet', context, 1, 4);
         print('Not connected to the internet');
       }
     });
@@ -179,7 +185,12 @@ print('branchId${widget.branchId}');
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(<String, dynamic>{'id': widget.branchId, 'isActive': true, "fromdate": null, "todate": null}),
+        body: jsonEncode(<String, dynamic>{
+          'id': widget.branchId,
+          'isActive': true,
+          "fromdate": null,
+          "todate": null
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -210,7 +221,6 @@ print('branchId${widget.branchId}');
     }
   }
 
-
   Future<void> _openDatePicker(bool isTodayHoliday) async {
     setState(() {
       _isTodayHoliday = isTodayHoliday;
@@ -220,7 +230,8 @@ print('branchId${widget.branchId}');
 
     // Adjust the initial date if it doesn't satisfy the selectableDayPredicate
     if (_isTodayHoliday && initialDate.isBefore(DateTime.now())) {
-      initialDate = getNextNonHoliday(DateTime.now()); // Use getNextNonHoliday to get the next available non-holiday day
+      initialDate = getNextNonHoliday(DateTime
+          .now()); // Use getNextNonHoliday to get the next available non-holiday day
     }
 
     // Ensure that the initialDate satisfies the selectableDayPredicate
@@ -252,7 +263,6 @@ print('branchId${widget.branchId}');
       _dateController.text = DateFormat('dd-MM-yyyy').format(_selectedDate);
       selecteddate = DateFormat('yyyy-MM-dd').format(_selectedDate);
       _selectedTimeSlot = '';
-
     });
 
     setState(() {
@@ -275,16 +285,18 @@ print('branchId${widget.branchId}');
         print('Error fetching time slots: $error');
       });
     } else {
-      CommonUtils.showCustomToastMessageLong('Please Check Your Internet Connection', context, 1, 4);
+      CommonUtils.showCustomToastMessageLong(
+          'Please Check Your Internet Connection', context, 1, 4);
       print('Not connected to the internet');
     }
   }
+
   String? validateMobilenum(String? value) {
     if (value!.isEmpty) {
       setState(() {
         _mobileNumberError = true;
         _mobileNumberErrorMsg = 'Please Enter Mobile Number';
-     //   _scrollToAndFocus(MobilenumberFocus, 1);
+        //   _scrollToAndFocus(MobilenumberFocus, 1);
       });
       isMobileNumberValidate = false;
       return null;
@@ -293,7 +305,7 @@ print('branchId${widget.branchId}');
       setState(() {
         _mobileNumberError = true;
         _mobileNumberErrorMsg = 'Mobile Number Should Not Start with 1-4';
-       // _scrollToAndFocus(MobilenumberFocus, 2);
+        // _scrollToAndFocus(MobilenumberFocus, 2);
       });
       isMobileNumberValidate = false;
       return null;
@@ -302,7 +314,7 @@ print('branchId${widget.branchId}');
       setState(() {
         _mobileNumberError = true;
         _mobileNumberErrorMsg = 'Mobile Number Should Contain Only Digits';
-       // _scrollToAndFocus(MobilenumberFocus, 3);
+        // _scrollToAndFocus(MobilenumberFocus, 3);
       });
       isMobileNumberValidate = false;
       return null;
@@ -311,7 +323,7 @@ print('branchId${widget.branchId}');
       setState(() {
         _mobileNumberError = true;
         _mobileNumberErrorMsg = 'Mobile Number Must Have 10 Digits';
-       // _scrollToAndFocus(MobilenumberFocus, 4);
+        // _scrollToAndFocus(MobilenumberFocus, 4);
       });
       isMobileNumberValidate = false;
       return null;
@@ -319,6 +331,7 @@ print('branchId${widget.branchId}');
     isMobileNumberValidate = true;
     return null;
   }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -343,7 +356,10 @@ print('branchId${widget.branchId}');
                 backgroundColor: CommonStyles.whiteColor,
                 title: const Text(
                   'Book Appointment',
-                  style: TextStyle(color: Color(0xFF0f75bc), fontSize: 16.0, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: Color(0xFF0f75bc),
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600),
                 ),
                 // actions: [
                 //   IconButton(
@@ -377,7 +393,9 @@ print('branchId${widget.branchId}');
                   padding: const EdgeInsets.only(top: 10, left: 15, right: 15),
                   child: Column(
                     children: [
-SizedBox(height: 5,),
+                      SizedBox(
+                        height: 5,
+                      ),
                       IntrinsicHeight(
                         child: Container(
                           //  height: MediaQuery.of(context).size.height / 6,
@@ -397,7 +415,8 @@ SizedBox(height: 5,),
                               //  color: const Color(0xFF8d97e2), // Add your desired border color here
                               width: 1.0, // Set the border width
                             ),
-                            borderRadius: BorderRadius.circular(10.0), // Optional: Add border radius if needed
+                            borderRadius: BorderRadius.circular(
+                                10.0), // Optional: Add border radius if needed
                           ),
                           // borderRadius: BorderRadius.circular(30), //border corner radius
                           // boxShadow: [
@@ -419,16 +438,26 @@ SizedBox(height: 5,),
                                 child: ClipRRect(
                                   //  borderRadius: BorderRadius.circular(10.0),
                                   child: Image.network(
-                                    widget.branchImage.isNotEmpty ? widget.branchImage : 'https://example.com/placeholder-image.jpg',
+                                    widget.branchImage.isNotEmpty
+                                        ? widget.branchImage
+                                        : 'https://example.com/placeholder-image.jpg',
                                     fit: BoxFit.cover,
-                                    height: MediaQuery.of(context).size.height / 5.5 / 2,
-                                    width: MediaQuery.of(context).size.width / 3.2,
+                                    height: MediaQuery.of(context).size.height /
+                                        5.5 /
+                                        2,
+                                    width:
+                                        MediaQuery.of(context).size.width / 3.2,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Image.asset(
                                         'assets/hairfixing_logo.png', // Path to your PNG placeholder image
                                         fit: BoxFit.cover,
-                                        height: MediaQuery.of(context).size.height / 4 / 2,
-                                        width: MediaQuery.of(context).size.width / 3.2,
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                4 /
+                                                2,
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                3.2,
                                       );
                                     },
                                   ),
@@ -473,7 +502,9 @@ SizedBox(height: 5,),
                           ),
                         ),
                       ),
-                      SizedBox(height: 10,),
+                      SizedBox(
+                        height: 10,
+                      ),
                       const Row(
                         children: [
                           Text(
@@ -485,22 +516,19 @@ SizedBox(height: 5,),
                               color: Color(0xFF11528f),
                             ),
                           ),
-                          Text(
-                              ' *',
-                              style:  TextStyle(
+                          Text(' *',
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontFamily: "Outfit",
                                 fontWeight: FontWeight.w500,
                                 color: Colors.red,
-                              )
-                          ),
+                              )),
                         ],
                       ),
-                      const SizedBox(
-                        height: 5.0,
-                      ),
+                      const SizedBox(height: 5.0),
                       TextFormField(
-                        controller: _fullnameController1, // Assigning the controller
+                        controller:
+                            _fullnameController1, // Assigning the controller
                         keyboardType: TextInputType.name,
                         // obscureText: true,
                         onChanged: (value) {
@@ -509,7 +537,8 @@ SizedBox(height: 5,),
                             if (value.startsWith(' ')) {
                               _fullnameController1.value = TextEditingValue(
                                 text: value.trimLeft(),
-                                selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                                selection: TextSelection.collapsed(
+                                    offset: value.trimLeft().length),
                               );
                             }
                             _fullNameError = false;
@@ -540,7 +569,7 @@ SizedBox(height: 5,),
                           ),
                           hintText: 'Enter Customer Name',
                           counterText: "",
-                          hintStyle:  CommonStyles.texthintstyle ,
+                          hintStyle: CommonStyles.texthintstyle,
                         ),
                         validator: validatefullname,
                         style: CommonStyles.txSty_14b_fb,
@@ -559,22 +588,21 @@ SizedBox(height: 5,),
                               color: Color(0xFF11528f),
                             ),
                           ),
-                          Text(
-                              ' *',
-                              style:  TextStyle(
+                          Text(' *',
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontFamily: "Outfit",
                                 fontWeight: FontWeight.w500,
                                 color: Colors.red,
-                              )
-                          ),
+                              )),
                         ],
                       ),
                       const SizedBox(
                         height: 5.0,
                       ),
                       TextFormField(
-                        controller: _phonenumberController2, // Assigning the controller
+                        controller:
+                            _phonenumberController2, // Assigning the controller
                         keyboardType: TextInputType.phone,
                         // obscureText: true,
                         validator: validateMobilenum,
@@ -583,13 +611,15 @@ SizedBox(height: 5,),
                         ],
                         onChanged: (value) {
                           setState(() {
-                            if (value.length == 1 && ['0', '1', '2', '3', '4'].contains(value)) {
+                            if (value.length == 1 &&
+                                ['0', '1', '2', '3', '4'].contains(value)) {
                               _phonenumberController2.clear();
                             }
                             if (value.startsWith(' ')) {
                               _phonenumberController2.value = TextEditingValue(
                                 text: value.trimLeft(),
-                                selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                                selection: TextSelection.collapsed(
+                                    offset: value.trimLeft().length),
                               );
                             }
                             _mobileNumberError = false;
@@ -597,7 +627,8 @@ SizedBox(height: 5,),
                         },
                         maxLength: 10,
                         decoration: InputDecoration(
-                          errorText: _mobileNumberError ? _mobileNumberErrorMsg : null,
+                          errorText:
+                              _mobileNumberError ? _mobileNumberErrorMsg : null,
                           errorMaxLines: 2,
                           contentPadding: const EdgeInsets.only(
                               top: 15, bottom: 2, left: 15, right: 15),
@@ -620,7 +651,7 @@ SizedBox(height: 5,),
                           ),
                           hintText: 'Enter Mobile Number',
                           counterText: "",
-                          hintStyle:  CommonStyles.texthintstyle ,
+                          hintStyle: CommonStyles.texthintstyle,
                         ),
                         // validator: validatefullname,
                         style: CommonStyles.txSty_14b_fb,
@@ -664,7 +695,8 @@ SizedBox(height: 5,),
                           return null;
                         },
                         decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                          contentPadding: const EdgeInsets.only(
+                              top: 15, bottom: 10, left: 15, right: 15),
                           focusedBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                               color: Color(0xFF11528f),
@@ -684,7 +716,8 @@ SizedBox(height: 5,),
                           ),
                           hintText: 'Date',
                           counterText: "",
-                          hintStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400),
+                          hintStyle: const TextStyle(
+                              color: Colors.grey, fontWeight: FontWeight.w400),
                           suffixIcon: const Icon(
                             Icons.calendar_today,
                             color: Color(0xFF11528f),
@@ -698,127 +731,188 @@ SizedBox(height: 5,),
                       Scrollbar(
                         child: isLoading
                             ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
+                                child: CircularProgressIndicator(),
+                              )
                             : isSlotsAvailable
-                            ? GridView.builder(
-                          shrinkWrap: true,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            childAspectRatio: 2.5,
-                          ),
-                          itemCount: getVisibleSlots(slots, isTodayHoliday).length,
-                          itemBuilder: (BuildContext context, int i) {
-                            final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                            if (i >= visibleSlots.length) {
-                              return const SizedBox.shrink();
-                            }
+                                ? GridView.builder(
+                                    shrinkWrap: true,
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      childAspectRatio: 2.5,
+                                    ),
+                                    itemCount:
+                                        getVisibleSlots(slots, isTodayHoliday)
+                                            .length,
+                                    itemBuilder: (BuildContext context, int i) {
+                                      final visibleSlots = getVisibleSlots(
+                                          slots, isTodayHoliday);
+                                      if (i >= visibleSlots.length) {
+                                        return const SizedBox.shrink();
+                                      }
 
-                            final slot = visibleSlots[i];
+                                      final slot = visibleSlots[i];
+                                      return Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 2, horizontal: 2),
+                                        child: ElevatedButton(
+                                          onPressed: slot.availableSlots <= 0
+                                              ? null
+                                              : () {
+                                                  setState(() {
+                                                    _selectedTimeSlot =
+                                                        slot.SlotTimeSpan;
+                                                    _selectedSlot = slot.slot;
+                                                    AvailableSlots = slot
+                                                        .availableSlots
+                                                        .toString();
+                                                    timeSlotParts =
+                                                        _selectedSlot
+                                                            .split(' - ');
+                                                    // if (timeSlotParts
+                                                    //     .isNotEmpty) {
+                                                    //   fetchTechnicians();
+                                                    //   selectedTechnician = -1;
+                                                    // }
+                                                    // fetchTechnicians();
+                                                    selectedTechnician = -1;
+                                                    slotselection = true;
+                                                    _selectedTimeSlot24 =
+                                                        DateFormat('HH:mm')
+                                                            .format(DateFormat(
+                                                                    'h:mm a')
+                                                                .parse(
+                                                                    _selectedTimeSlot));
+                                                    print(
+                                                        '_selectedTimeSlot24 $_selectedTimeSlot24');
+                                                    String formattedDate =
+                                                        DateFormat("yyyy-MM-dd")
+                                                            .format(
+                                                                _selectedDate);
+                                                    String datePart =
+                                                        formattedDate.substring(
+                                                            0, 10);
+                                                    String
+                                                        selectedDateTimeString =
+                                                        '$datePart $_selectedTimeSlot24';
+                                                    slotSelected_DateTime = DateFormat(
+                                                            'yyyy-MM-dd HH:mm')
+                                                        .parse(
+                                                            selectedDateTimeString);
+                                                    print(
+                                                        'SlotselectedDateTime: $slotSelected_DateTime');
+                                                    slotSelectedDateTime =
+                                                        slotSelected_DateTime!
+                                                            .subtract(
+                                                                const Duration(
+                                                                    hours: 1));
+                                                    print(
+                                                        '-1 hour Modified DateTime: $slotSelectedDateTime');
+                                                    newDateTime =
+                                                        slotSelected_DateTime!
+                                                            .add(const Duration(
+                                                                days: 20));
+                                                    print(
+                                                        'New DateTime after adding 20 days: $newDateTime');
+                                                    // Parse the concatenated string into a DateTime object
+                                                    //  DateTime SlotselectedDateTime = DateFormat('yyyy-MM-dd hh:mm a').parse(selectedDateTimeString);
+                                                    print(
+                                                        'SlotselectedDateTime==613==$selectedDateTimeString');
+                                                    print(
+                                                        '==234==$_selectedTimeSlot');
+                                                    print(
+                                                        '==234==$_selectedTimeSlot');
+                                                    print(
+                                                        '===567==$_selectedSlot');
+                                                    print(
+                                                        '==900==$AvailableSlots');
+                                                  });
+                                                },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 1.0, horizontal: 1.0),
+                                            backgroundColor:
+                                                _selectedTimeSlot ==
+                                                        slot.SlotTimeSpan
+                                                    ? CommonUtils
+                                                        .primaryTextColor
+                                                    : (slot.availableSlots <= 0
+                                                        ? Colors.grey
+                                                        : Colors.white),
+                                            side: BorderSide(
+                                              color: _selectedTimeSlot ==
+                                                      slot.SlotTimeSpan
+                                                  ? CommonUtils.primaryTextColor
+                                                  : (slot.availableSlots <= 0
+                                                      ? Colors.transparent
+                                                      : CommonUtils
+                                                          .primaryTextColor),
+                                              width: 1.0,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                            ),
+                                            textStyle: TextStyle(
+                                              color: _selectedTimeSlot ==
+                                                      slot.SlotTimeSpan
+                                                  ? Colors.white
+                                                  : Colors.black,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            slot.SlotTimeSpan,
+                                            style: TextStyle(
+                                              color: _selectedTimeSlot ==
+                                                      slot.SlotTimeSpan
+                                                  ? Colors.white
+                                                  : (slot.availableSlots <= 0
+                                                      ? Colors.white
+                                                      : Colors.black),
+                                              fontFamily: 'Outfit',
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : isTodayHoliday
+                                    ? const Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'Today is a Holiday',
+                                              style: TextStyle(
+                                                fontFamily: 'Outfit',
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    // Show your regular widget when today is not a holiday
 
-                            return Container(
-                              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-                              child: ElevatedButton(
-                                onPressed: slot.availableSlots <= 0
-                                    ? null
-                                    : () {
-                                  setState(() {
-                                    _selectedTimeSlot = slot.SlotTimeSpan;
-                                    _selectedSlot = slot.slot;
-                                    AvailableSlots = slot.availableSlots.toString();
-                                    timeSlotParts = _selectedSlot.split(' - ');
-                                    // if (timeSlotParts
-                                    //     .isNotEmpty) {
-                                    //   fetchTechnicians();
-                                    //   selectedTechnician = -1;
-                                    // }
-                                    // fetchTechnicians();
-                                    selectedTechnician = -1;
-                                    slotselection = true;
-                                    _selectedTimeSlot24 = DateFormat('HH:mm').format(DateFormat('h:mm a').parse(_selectedTimeSlot));
-                                    print('_selectedTimeSlot24 $_selectedTimeSlot24');
-                                    String formattedDate = DateFormat("yyyy-MM-dd").format(_selectedDate);
-                                    String datePart = formattedDate.substring(0, 10);
-                                    String selectedDateTimeString = '$datePart $_selectedTimeSlot24';
-                                    slotSelected_DateTime = DateFormat('yyyy-MM-dd HH:mm').parse(selectedDateTimeString);
-                                    print('SlotselectedDateTime: $slotSelected_DateTime');
-                                    slotSelectedDateTime = slotSelected_DateTime!.subtract(const Duration(hours: 1));
-                                    print('-1 hour Modified DateTime: $slotSelectedDateTime');
-                                    newDateTime = slotSelected_DateTime!.add(const Duration(days: 20));
-                                    print('New DateTime after adding 20 days: $newDateTime');
-                                    // Parse the concatenated string into a DateTime object
-                                    //  DateTime SlotselectedDateTime = DateFormat('yyyy-MM-dd hh:mm a').parse(selectedDateTimeString);
-                                    print('SlotselectedDateTime==613==$selectedDateTimeString');
-                                    print('==234==$_selectedTimeSlot');
-                                    print('==234==$_selectedTimeSlot');
-                                    print('===567==$_selectedSlot');
-                                    print('==900==$AvailableSlots');
-                                  });
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
-                                  backgroundColor:
-                                  _selectedTimeSlot == slot.SlotTimeSpan ? CommonUtils.primaryTextColor : (slot.availableSlots <= 0 ? Colors.grey : Colors.white),
-                                  side: BorderSide(
-                                    color: _selectedTimeSlot == slot.SlotTimeSpan
-                                        ? CommonUtils.primaryTextColor
-                                        : (slot.availableSlots <= 0 ? Colors.transparent : CommonUtils.primaryTextColor),
-                                    width: 1.0,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                  ),
-                                  textStyle: TextStyle(
-                                    color: _selectedTimeSlot == slot.SlotTimeSpan ? Colors.white : Colors.black,
-                                  ),
-                                ),
-                                child: Text(
-                                  slot.SlotTimeSpan,
-                                  style: TextStyle(
-                                    color: _selectedTimeSlot == slot.SlotTimeSpan ? Colors.white : (slot.availableSlots <= 0 ? Colors.white : Colors.black),
-                                    fontFamily: 'Outfit',
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                            : isTodayHoliday
-                            ? const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Today is a Holiday',
-                                style: TextStyle(
-                                  fontFamily: 'Outfit',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                        // Show your regular widget when today is not a holiday
-
-                            : const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'No Slots are Available Today',
-                                style: TextStyle(
-                                  fontFamily: 'Outfit',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                                    : const Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'No Slots are Available Today',
+                                              style: TextStyle(
+                                                fontFamily: 'Outfit',
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                       ),
-
 
                       const SizedBox(
                         height: 15,
@@ -842,7 +936,8 @@ SizedBox(height: 5,),
                       ),
                       const SizedBox(height: 5),
                       Padding(
-                        padding: const EdgeInsets.only(left: 0, top: .0, right: 0),
+                        padding:
+                            const EdgeInsets.only(left: 0, top: .0, right: 0),
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
@@ -851,7 +946,9 @@ SizedBox(height: 5,),
                             //   color: CommonUtils.primaryTextColor,
                             // ),
                             border: Border.all(
-                              color: ispurposeselected ? const Color.fromARGB(255, 175, 15, 4) : CommonUtils.primaryTextColor,
+                              color: ispurposeselected
+                                  ? const Color.fromARGB(255, 175, 15, 4)
+                                  : CommonUtils.primaryTextColor,
                             ),
                           ),
                           child: DropdownButtonHideUnderline(
@@ -866,7 +963,8 @@ SizedBox(height: 5,),
                                     child: Text(
                                       ' Select Purpose of Visit',
                                       style: TextStyle(
-                                        color: Colors.grey, fontSize: 14, fontFamily: 'Outfit',
+                                        color: Colors.grey, fontSize: 14,
+                                        fontFamily: 'Outfit',
                                         //  fontWeight: FontWeight.w500
                                       ),
                                     ),
@@ -936,8 +1034,12 @@ SizedBox(height: 5,),
                                   setState(() {
                                     selectedTypeCdId = value!;
                                     if (selectedTypeCdId != -1) {
-                                      selectedValue = dropdownItems[selectedTypeCdId]['typeCdId'];
-                                      selectedName = dropdownItems[selectedTypeCdId]['desc'];
+                                      selectedValue =
+                                          dropdownItems[selectedTypeCdId]
+                                              ['typeCdId'];
+                                      selectedName =
+                                          dropdownItems[selectedTypeCdId]
+                                              ['desc'];
 
                                       //   // Clear previously selected next slot
                                       //   _nextTimeSlot = null;
@@ -985,7 +1087,6 @@ SizedBox(height: 5,),
                                   });
                                 },
 
-
                                 buttonStyleData: ButtonStyleData(
                                   height: 45,
                                   width: double.infinity,
@@ -1008,8 +1109,10 @@ SizedBox(height: 5,),
                                   iconDisabledColor: Color(0xFF11528f),
                                 ),
                                 dropdownStyleData: DropdownStyleData(
-                                  maxHeight: MediaQuery.of(context).size.height / 4,
-                                  width: MediaQuery.of(context).size.width / 1.1,
+                                  maxHeight:
+                                      MediaQuery.of(context).size.height / 4,
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.1,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
                                     color: Colors.grey.shade50,
@@ -1017,8 +1120,10 @@ SizedBox(height: 5,),
                                   //  offset: const Offset(-20, 0),
                                   scrollbarTheme: ScrollbarThemeData(
                                     radius: Radius.circular(40),
-                                    thickness: MaterialStateProperty.all<double>(6),
-                                    thumbVisibility: MaterialStateProperty.all<bool>(true),
+                                    thickness:
+                                        MaterialStateProperty.all<double>(6),
+                                    thumbVisibility:
+                                        MaterialStateProperty.all<bool>(true),
                                   ),
                                 ),
                                 menuItemStyleData: const MenuItemStyleData(
@@ -1035,7 +1140,8 @@ SizedBox(height: 5,),
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 5),
                               child: Text(
                                 'Please Select Purpose of Visit',
                                 style: TextStyle(
@@ -1048,11 +1154,8 @@ SizedBox(height: 5,),
                         ),
                       //MARK: Technicians DropDown
                       const SizedBox(
-                        height: 15,
+                        height: 20,
                       ),
-
-
-                      const SizedBox(height: 40),
 
                       Visibility(
                         visible: !isLoading,
@@ -1072,6 +1175,7 @@ SizedBox(height: 5,),
                         ),
                       ),
 
+                      const SizedBox(height: 12.0),
                     ],
                   ),
                 ),
@@ -1092,7 +1196,7 @@ SizedBox(height: 5,),
       setState(() {
         _fullNameError = true;
         _fullNameErrorMsg = 'Please Enter Customer Name';
-       // _scrollToAndFocus(FullnameFocus, 0);
+        // _scrollToAndFocus(FullnameFocus, 0);
       });
       isFullNameValidate = false;
       return null;
@@ -1101,8 +1205,7 @@ SizedBox(height: 5,),
       setState(() {
         _fullNameError = true;
         _fullNameErrorMsg = 'Full Name Should Contains Minimum 2 Characters';
-      //  _scrollToAndFocus(FullnameFocus, 0);
-
+        //  _scrollToAndFocus(FullnameFocus, 0);
       });
       isFullNameValidate = false;
       return null;
@@ -1115,8 +1218,7 @@ SizedBox(height: 5,),
       setState(() {
         _fullNameError = true;
         _fullNameErrorMsg = 'Full Name Should Only Contain Alphabets';
-      //  _scrollToAndFocus(FullnameFocus, 0);
-
+        //  _scrollToAndFocus(FullnameFocus, 0);
       });
       isFullNameValidate = false;
       return null;
@@ -1126,12 +1228,11 @@ SizedBox(height: 5,),
   }
 
   Future<void> validatePurpose(String? value) async {
-
-    if(_formKey.currentState!.validate()){
-
-      if(isFullNameValidate&&isMobileNumberValidate){
+    if (_formKey.currentState!.validate()) {
+      if (isFullNameValidate && isMobileNumberValidate) {
         if (!isSlotsAvailable) {
-          showCustomToastMessageLong('No Slots Are Available Today', context, 1, 4);
+          showCustomToastMessageLong(
+              'No Slots Are Available Today', context, 1, 4);
           return; // Stop further execution if no slots are available
         }
         if (!slotselection) {
@@ -1141,7 +1242,8 @@ SizedBox(height: 5,),
         if (value == null || value.isEmpty) {
           ispurposeselected = true; // Flag purpose as not selected
           setState(() {}); // Trigger UI update for validation message
-          showCustomToastMessageLong('Please Select A Purpose of Visit', context, 1, 4);
+          showCustomToastMessageLong(
+              'Please Select A Purpose of Visit', context, 1, 4);
           return; // Stop execution if purpose is not selected
         }
 
@@ -1150,7 +1252,6 @@ SizedBox(height: 5,),
       }
 
       // Check if no slots are available
-
 
       // Check if the selected purpose is "New Hair Patch"
 
@@ -1162,7 +1263,7 @@ SizedBox(height: 5,),
       //     return; // Stop execution since next slot is needed for "New Hair Patch"
       //   }
       // }
-     // print('_isLastSlotSelected:$_isLastSlotSelected');
+      // print('_isLastSlotSelected:$_isLastSlotSelected');
       // if ((selectedValue != 7 && !isnextSlotsAvailable) || (selectedValue == 7 && !isnextSlotsAvailable && !_isLastSlotSelected)) {
       //   showCustomToastMessageLong('Next Slot is not Available', context, 1, 4);
       //   return;
@@ -1185,13 +1286,8 @@ SizedBox(height: 5,),
       // }
       // Check if a slot has been selected
 
-
       // Check if the purpose of visit has been selected
-
     }
-
-
-
   }
 
   // Future<void> validatePurpose(String? value) async {
@@ -1238,210 +1334,216 @@ SizedBox(height: 5,),
   Future<void> bookappointment() async {
     // validatislot();
 
-   // if (_formKey.currentState!.validate()) {
+    // if (_formKey.currentState!.validate()) {
 
-      final url = Uri.parse(baseUrl + postApiAppointment);
-      print('url==>890: $url');
-      String fullName = _fullnameController1.text;
-      phonenumber = _phonenumberController2.text;
-      DateTime now = DateTime.now();
-      // CommonStyles.startProgress(context);
-      ProgressDialog progressDialog = ProgressDialog(context);
+    final url = Uri.parse(baseUrl + postApiAppointment);
+    print('url==>890: $url');
+    String fullName = _fullnameController1.text;
+    phonenumber = _phonenumberController2.text;
+    DateTime now = DateTime.now();
+    // CommonStyles.startProgress(context);
+    ProgressDialog progressDialog = ProgressDialog(context);
 
-      // Show the progress dialog
-      progressDialog.show();
+    // Show the progress dialog
+    progressDialog.show();
 
-      String dateTimeString = now.toString();
-      print('DateTime as String: $dateTimeString');
-      print('DateTime as String: $selecteddate');
-      print('_selectedTimeSlot892 $_selectedTimeSlot');
-      String slotdate = DateFormat('dd MMM yyyy').format(_selectedDate);
-      print('slotdate $slotdate');
-      print('date _selectedDate ====$_selectedDate');
-      print('slotSelectedDateTime:897 $slotSelectedDateTime');
-      // print('appointmentId1214: ${widget.appointmentId}');
-      // CommonStyles.progressBar(context);
-      final request = {
-        "id": null,
-        "branchId": widget.branchId,
-        "date": selecteddate,
-        "slotTime": timeSlotParts[0],
-        "customerName": fullName,//agentname
-        "phoneNumber": phonenumber,
-        "email": email,
-        "genderTypeId": null, //Sharedprefs  //null
-        "statusTypeId": 5,//agent-5
-        "purposeOfVisitId": selectedValue, //dropdown
-        "isActive": true,
-        "createdDate": dateTimeString,
-        "updatedDate": dateTimeString,
-        "updatedByUserId": widget.AgentId,//agentid
-        "rating": null,
-        "review": null,
-        "reviewSubmittedDate": null,
-        "timeofslot": timeSlotParts[0],
-        // "timeofslot": '$_selectedTimeSlot24',
-        "customerId": null,//null
-        "paymentTypeId": null,//null
-        "technicianId": null,
-      };
+    String dateTimeString = now.toString();
+    print('DateTime as String: $dateTimeString');
+    print('DateTime as String: $selecteddate');
+    print('_selectedTimeSlot892 $_selectedTimeSlot');
+    String slotdate = DateFormat('dd MMM yyyy').format(_selectedDate);
+    print('slotdate $slotdate');
+    print('date _selectedDate ====$_selectedDate');
+    print('slotSelectedDateTime:897 $slotSelectedDateTime');
+    // print('appointmentId1214: ${widget.appointmentId}');
+    // CommonStyles.progressBar(context);
+    final request = {
+      "id": null,
+      "branchId": widget.branchId,
+      "date": selecteddate,
+      "slotTime": timeSlotParts[0],
+      "customerName": fullName, //agentname
+      "phoneNumber": phonenumber,
+      "email": email,
+      "genderTypeId": null, //Sharedprefs  //null
+      "statusTypeId": 5, //agent-5
+      "purposeOfVisitId": selectedValue, //dropdown
+      "isActive": true,
+      "createdDate": dateTimeString,
+      "updatedDate": dateTimeString,
+      "updatedByUserId": widget.AgentId, //agentid
+      "rating": null,
+      "review": null,
+      "reviewSubmittedDate": null,
+      "timeofslot": timeSlotParts[0],
+      // "timeofslot": '$_selectedTimeSlot24',
+      "customerId": null, //null
+      "paymentTypeId": null, //null
+      "technicianId": null,
+    };
 
-      print('bookappointment: ${json.encode(request)}');
-      try {
-        final response = await http.post(
-          url,
-          body: json.encode(request),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
-        // Check the response status code
-        // if (response.statusCode == 200) {
-        //   print('Request sent successfully');
-        //   showCustomToastMessageLong('Slot booked successfully', context, 0, 2);
-        //   Navigator.pop(context);
-        // } else {
-        //   showCustomToastMessageLong('Failed to send the request', context, 1, 2);
-        //   print('Failed to send the request. Status code: ${response.statusCode}');
-        // }
+    print('bookappointment: ${json.encode(request)}');
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode(request),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      // Check the response status code
+      // if (response.statusCode == 200) {
+      //   print('Request sent successfully');
+      //   showCustomToastMessageLong('Slot booked successfully', context, 0, 2);
+      //   Navigator.pop(context);
+      // } else {
+      //   showCustomToastMessageLong('Failed to send the request', context, 1, 2);
+      //   print('Failed to send the request. Status code: ${response.statusCode}');
+      // }
 
-        if (response.statusCode == 200) {
-          Map<String, dynamic> data = json.decode(response.body);
-          // LoadingProgress.stop(context);
-          // Extract the necessary information
-          bool isSuccess = data['isSuccess'];
-          progressDialog.dismiss();
-          DateTime testdate = DateTime.now();
-          print(' testdate ====$testdate');
-          if (isSuccess == true) {
-            // final int notificationId1 = UniqueKey().hashCode;
-            // // debugPrint('Notification Scheduled for $testdate with ID: $notificationId1');
-            // debugPrint('Notification Scheduled for $slotSelectedDateTime with ID: $notificationId1');
-            // // Hey Sai, Today your Appointment is Scheduled for 10.45 AM at the JNTU Branch, Located at Jntu Stop.
-            // await NotificationService().scheduleNotification(
-            //   title: 'Reminder Notification',
-            //   body: 'Hey $userFullName, Today Your Appointment is Scheduled for  $_selectedTimeSlot at the ${widget.branchname} Branch, Located at ${widget.branchaddress}.',
-            //   //   scheduledNotificationDateTime: testdate!,
-            //   scheduledNotificationDateTime: slotSelectedDateTime!,
-            //   id: notificationId1,
-            // );
-            // //  Hey  Sai, It has Been 20 Days Since Your Tape with Glue Service was Done. Please Revisit the service at Hair Fixing Zone at the JNTU Branch
-            // if (selectedValue == 8 || selectedValue == 9 || selectedValue == 10 || selectedValue == 11) {
-            //   DateTime testdate = DateTime.now();
-            //   print(' testdate ====1072$testdate');
-            //   // Handle each case separately
-            //   switch (selectedValue) {
-            //     case 8:
-            //       final int notificationId2 = UniqueKey().hashCode;
-            //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
-            //       await NotificationService().scheduleNotification(
-            //         title: 'Reminder Notification',
-            //         body:
-            //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
-            //         scheduledNotificationDateTime: newDateTime!,
-            //         //   scheduledNotificationDateTime: testdate!,
-            //         id: notificationId2,
-            //       );
-            //       // Handle value 8
-            //       break;
-            //     case 9:
-            //       final int notificationId2 = UniqueKey().hashCode;
-            //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
-            //       await NotificationService().scheduleNotification(
-            //         title: 'Reminder Notification',
-            //         body:
-            //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
-            //         scheduledNotificationDateTime: newDateTime!,
-            //         //  scheduledNotificationDateTime: testdate!,
-            //         id: notificationId2,
-            //       );
-            //       // Handle value 9
-            //       break;
-            //     case 10:
-            //     // Handle value 10
-            //       final int notificationId2 = UniqueKey().hashCode;
-            //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
-            //       await NotificationService().scheduleNotification(
-            //         title: 'Reminder Notification',
-            //         body:
-            //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
-            //         scheduledNotificationDateTime: newDateTime!,
-            //         //   scheduledNotificationDateTime: testdate!,
-            //         id: notificationId2,
-            //       );
-            //       break;
-            //     case 11:
-            //       final int notificationId2 = UniqueKey().hashCode;
-            //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
-            //       await NotificationService().scheduleNotification(
-            //         title: 'Reminder Notification',
-            //         body:
-            //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
-            //         scheduledNotificationDateTime: newDateTime!,
-            //         // scheduledNotificationDateTime: testdate!,
-            //         id: notificationId2,
-            //       );
-            //       // Handle value 11
-            //       break;
-            //     default:
-            //     // Handle other cases if needed
-            //       break;
-            //   }
-            // }
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        // LoadingProgress.stop(context);
+        // Extract the necessary information
+        bool isSuccess = data['isSuccess'];
+        progressDialog.dismiss();
+        DateTime testdate = DateTime.now();
+        print(' testdate ====$testdate');
+        if (isSuccess == true) {
+          // final int notificationId1 = UniqueKey().hashCode;
+          // // debugPrint('Notification Scheduled for $testdate with ID: $notificationId1');
+          // debugPrint('Notification Scheduled for $slotSelectedDateTime with ID: $notificationId1');
+          // // Hey Sai, Today your Appointment is Scheduled for 10.45 AM at the JNTU Branch, Located at Jntu Stop.
+          // await NotificationService().scheduleNotification(
+          //   title: 'Reminder Notification',
+          //   body: 'Hey $userFullName, Today Your Appointment is Scheduled for  $_selectedTimeSlot at the ${widget.branchname} Branch, Located at ${widget.branchaddress}.',
+          //   //   scheduledNotificationDateTime: testdate!,
+          //   scheduledNotificationDateTime: slotSelectedDateTime!,
+          //   id: notificationId1,
+          // );
+          // //  Hey  Sai, It has Been 20 Days Since Your Tape with Glue Service was Done. Please Revisit the service at Hair Fixing Zone at the JNTU Branch
+          // if (selectedValue == 8 || selectedValue == 9 || selectedValue == 10 || selectedValue == 11) {
+          //   DateTime testdate = DateTime.now();
+          //   print(' testdate ====1072$testdate');
+          //   // Handle each case separately
+          //   switch (selectedValue) {
+          //     case 8:
+          //       final int notificationId2 = UniqueKey().hashCode;
+          //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
+          //       await NotificationService().scheduleNotification(
+          //         title: 'Reminder Notification',
+          //         body:
+          //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
+          //         scheduledNotificationDateTime: newDateTime!,
+          //         //   scheduledNotificationDateTime: testdate!,
+          //         id: notificationId2,
+          //       );
+          //       // Handle value 8
+          //       break;
+          //     case 9:
+          //       final int notificationId2 = UniqueKey().hashCode;
+          //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
+          //       await NotificationService().scheduleNotification(
+          //         title: 'Reminder Notification',
+          //         body:
+          //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
+          //         scheduledNotificationDateTime: newDateTime!,
+          //         //  scheduledNotificationDateTime: testdate!,
+          //         id: notificationId2,
+          //       );
+          //       // Handle value 9
+          //       break;
+          //     case 10:
+          //     // Handle value 10
+          //       final int notificationId2 = UniqueKey().hashCode;
+          //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
+          //       await NotificationService().scheduleNotification(
+          //         title: 'Reminder Notification',
+          //         body:
+          //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
+          //         scheduledNotificationDateTime: newDateTime!,
+          //         //   scheduledNotificationDateTime: testdate!,
+          //         id: notificationId2,
+          //       );
+          //       break;
+          //     case 11:
+          //       final int notificationId2 = UniqueKey().hashCode;
+          //       debugPrint('Notification Scheduled for $newDateTime with ID: $notificationId2');
+          //       await NotificationService().scheduleNotification(
+          //         title: 'Reminder Notification',
+          //         body:
+          //         'Hey $userFullName, It Has Been 20 Days Since Your  ${selectedName!} Was Done. Please Revisit the service at Hairfixing Zone at the ${widget.branchname} Branch',
+          //         scheduledNotificationDateTime: newDateTime!,
+          //         // scheduledNotificationDateTime: testdate!,
+          //         id: notificationId2,
+          //       );
+          //       // Handle value 11
+          //       break;
+          //     default:
+          //     // Handle other cases if needed
+          //       break;
+          //   }
+          // }
 
-            // if (selectedValue == 10) {
-            //   final int notificationId2 = UniqueKey().hashCode;
-            //   debugPrint(
-            //       'Notification Scheduled for $newDateTime with ID: $notificationId2');
-            //   //  debugPrint('Notification Scheduled for $testdate with ID: $notificationId2');
-            //   await NotificationService().scheduleNotification(
-            //     title: 'Reminder Notification',
-            //     body:
-            //     'Hey $userFullName, It Has Been 20 Days Since Your New Patch Was Done. Please Revisit the Hairfixing Zone at The ${widget.branchname}',
-            //     // scheduledNotificationDateTime: testdate!,
-            //     scheduledNotificationDateTime: newDateTime!,
-            //     id: notificationId2,
-            //   );
-            // }
+          // if (selectedValue == 10) {
+          //   final int notificationId2 = UniqueKey().hashCode;
+          //   debugPrint(
+          //       'Notification Scheduled for $newDateTime with ID: $notificationId2');
+          //   //  debugPrint('Notification Scheduled for $testdate with ID: $notificationId2');
+          //   await NotificationService().scheduleNotification(
+          //     title: 'Reminder Notification',
+          //     body:
+          //     'Hey $userFullName, It Has Been 20 Days Since Your New Patch Was Done. Please Revisit the Hairfixing Zone at The ${widget.branchname}',
+          //     // scheduledNotificationDateTime: testdate!,
+          //     scheduledNotificationDateTime: newDateTime!,
+          //     id: notificationId2,
+          //   );
+          // }
 
-            // Your existing code...
-            // LoadingProgress.stop(context,rootNavigator);Appointment Added Successfully
-            print('Request sent successfully');
-            CommonUtils.showCustomToastMessageLong('Appointment Added Successfully', context, 0, 5);
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => AgentHome(userId: widget.AgentId,
-                   ),
+          // Your existing code...
+          // LoadingProgress.stop(context,rootNavigator);Appointment Added Successfully
+          print('Request sent successfully');
+          CommonUtils.showCustomToastMessageLong(
+              'Appointment Added Successfully', context, 0, 5);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => AgentHome(
+                userId: widget.AgentId,
               ),
-            );
-          } else {
-            progressDialog.dismiss();
-            print('statusmesssage${data['statusMessage']}');
-            CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 1, 5);
-          }
-
-
-          setState(() {
-            isButtonEnabled = true;
-            progressDialog.dismiss();
-          });
+            ),
+          );
         } else {
           progressDialog.dismiss();
-          // ProgressManager.stopProgress();
-          //showCustomToastMessageLong(
-          // 'Failed to send the request', context, 1, 2);
-          print('Failed to send the request. Status code: ${response.statusCode}');
+          print('statusmesssage${data['statusMessage']}');
+          CommonUtils.showCustomToastMessageLong(
+              '${data['statusMessage']}', context, 1, 5);
         }
-      } catch (e) {
+
+        setState(() {
+          isButtonEnabled = true;
+          progressDialog.dismiss();
+        });
+      } else {
         progressDialog.dismiss();
         // ProgressManager.stopProgress();
-        print('Error slot: $e');
+        //showCustomToastMessageLong(
+        // 'Failed to send the request', context, 1, 2);
+        print(
+            'Failed to send the request. Status code: ${response.statusCode}');
       }
-   // }
+    } catch (e) {
+      progressDialog.dismiss();
+      // ProgressManager.stopProgress();
+      print('Error slot: $e');
+    }
+    // }
   }
 
   bool isHoliday(DateTime date) {
-    return holidayList.any((holiday) => date.year == holiday.holidayDate.year && date.month == holiday.holidayDate.month && date.day == holiday.holidayDate.day);
+    return holidayList.any((holiday) =>
+        date.year == holiday.holidayDate.year &&
+        date.month == holiday.holidayDate.month &&
+        date.day == holiday.holidayDate.day);
   }
 
   DateTime getNextNonHoliday(DateTime currentDate) {
@@ -1453,7 +1555,8 @@ SizedBox(height: 5,),
   }
 
   bool selectableDayPredicate(DateTime date) {
-    final isPastDate = date.isBefore(DateTime.now().subtract(const Duration(days: 1)));
+    final isPastDate =
+        date.isBefore(DateTime.now().subtract(const Duration(days: 1)));
     final isHolidayDate = isHoliday(date);
     final isPreviousYear = date.year < DateTime.now().year;
 
@@ -1464,7 +1567,10 @@ SizedBox(height: 5,),
     }
 
     // Return false if any of the conditions are met
-    return !isPastDate && !isHolidayDate && !isPreviousYear && date.year >= DateTime.now().year;
+    return !isPastDate &&
+        !isHolidayDate &&
+        !isPreviousYear &&
+        date.year >= DateTime.now().year;
   }
 
   List<Slot> getVisibleSlots(List<Slot> slots, bool isTodayHoliday) {
@@ -1479,10 +1585,12 @@ SizedBox(height: 5,),
     DateTime currentDate = DateTime.now();
 
     // Combine the current date and formatted time
-    String combinedDateTimeString = '${DateFormat('yyyy-MM-dd').format(currentDate)} $formattedTime';
+    String combinedDateTimeString =
+        '${DateFormat('yyyy-MM-dd').format(currentDate)} $formattedTime';
 
     // Parse the combined date and time string into a DateTime object
-    DateTime combinedDateTime = DateFormat('yyyy-MM-dd hh:mm a').parse(combinedDateTimeString);
+    DateTime combinedDateTime =
+        DateFormat('yyyy-MM-dd hh:mm a').parse(combinedDateTimeString);
 
     if (isTodayHoliday) {
       // Today is a holiday, return an empty list
@@ -1497,7 +1605,8 @@ SizedBox(height: 5,),
     return slots.where((slot) {
       String timespan = slot.SlotTimeSpan;
       // Combine the current date and formatted time
-      String SlotDateTimeString = '${DateFormat('yyyy-MM-dd').format(currentDate)} $timespan';
+      String SlotDateTimeString =
+          '${DateFormat('yyyy-MM-dd').format(currentDate)} $timespan';
 
       DateFormat dateformat = DateFormat('yyyy-MM-dd');
       String currentdate = dateformat.format(DateTime.now());
@@ -1509,19 +1618,21 @@ SizedBox(height: 5,),
         String timespan = slot.SlotTimeSpan;
 
         // Combine the current date and time span
-        String SlotDateTimeString = '${DateFormat('yyyy-MM-dd').format(currentDate)} $timespan';
+        String SlotDateTimeString =
+            '${DateFormat('yyyy-MM-dd').format(currentDate)} $timespan';
 
         // Parse the combined date and time string into a DateTime object
-        slotDateTime = DateFormat('yyyy-MM-dd hh:mm a').parse(SlotDateTimeString);
+        slotDateTime =
+            DateFormat('yyyy-MM-dd hh:mm a').parse(SlotDateTimeString);
       } else {
         // If the slot is for a different date, use the slot's date and time
-        slotDateTime = DateFormat('yyyy-MM-dd HH:mm').parse('$formattedapiDate $timespan');
+        slotDateTime =
+            DateFormat('yyyy-MM-dd HH:mm').parse('$formattedapiDate $timespan');
       }
 
       return !slotDateTime.isBefore(combinedDateTime);
     }).toList();
   }
-
 
   List<Slot> getDisabledSlots(List<Slot> slots) {
     // Get the current time
@@ -1537,15 +1648,19 @@ SizedBox(height: 5,),
     DateTime currentDate = DateTime.now();
 
     // Combine the current date and formatted time
-    String combinedDateTimeString = '${DateFormat('yyyy-MM-dd').format(currentDate)} $formattedTime';
+    String combinedDateTimeString =
+        '${DateFormat('yyyy-MM-dd').format(currentDate)} $formattedTime';
 
     // Parse the combined date and time string into a DateTime object
-    DateTime combinedDateTime = DateFormat('yyyy-MM-dd hh:mm a').parse(combinedDateTimeString);
+    DateTime combinedDateTime =
+        DateFormat('yyyy-MM-dd hh:mm a').parse(combinedDateTimeString);
 
     // Filter the slots based on visibility criteria
     List<Slot> disabledSlots = slots.where((slot) {
-      DateTime slotDateTime = DateFormat('yyyy-MM-dd HH:mm').parse('${slot.date} ${slot.date}');
-      return !slotDateTime.isBefore(combinedDateTime) && slot.availableSlots <= 0;
+      DateTime slotDateTime =
+          DateFormat('yyyy-MM-dd HH:mm').parse('${slot.date} ${slot.date}');
+      return !slotDateTime.isBefore(combinedDateTime) &&
+          slot.availableSlots <= 0;
     }).toList();
 
     return disabledSlots;
@@ -1553,14 +1668,14 @@ SizedBox(height: 5,),
 
   // List<Slot> filteredSlots = [];
 
-
   Future<List<Slot>> fetchTimeSlots(DateTime selectedDate, int branchId) async {
     setState(() {
       isLoading = true; // Set isLoading to true before making the API request
     });
 
     final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-    final url = Uri.parse("$baseUrl$GetSlotsByDateAndBranch$formattedDate/$branchId");
+    final url =
+        Uri.parse("$baseUrl$GetSlotsByDateAndBranch$formattedDate/$branchId");
     print('url==>969: $url');
 
     try {
@@ -1569,7 +1684,8 @@ SizedBox(height: 5,),
         final jsonResult = json.decode(response.body);
         final List<dynamic> slotData = jsonResult['listResult'];
 
-        List<Slot> slots = slotData.map((slotJson) => Slot.fromJson(slotJson)).toList();
+        List<Slot> slots =
+            slotData.map((slotJson) => Slot.fromJson(slotJson)).toList();
 
         setState(() {
           isLoading = false; // Set isLoading to false after data is fetched
@@ -1588,7 +1704,12 @@ SizedBox(height: 5,),
     }
   }
 
-  void showCustomToastMessageLong(String message,BuildContext context,int backgroundColorType,int length,) {
+  void showCustomToastMessageLong(
+    String message,
+    BuildContext context,
+    int backgroundColorType,
+    int length,
+  ) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double textWidth = screenWidth / 1.5; // Adjust multiplier as needed
 
@@ -1613,7 +1734,8 @@ SizedBox(height: 5,),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
               child: Center(
                 child: Text(
                   message,
@@ -1662,29 +1784,27 @@ SizedBox(height: 5,),
       print('Failed to fetch data');
     }
   }
-
 }
 
-  Future<bool> onBackPressed(BuildContext context) {
-    // Navigate back when the back button is pressed
-    Navigator.pop(context);
-    // Return false to indicate that we handled the back button press
-    return Future.value(false);
+Future<bool> onBackPressed(BuildContext context) {
+  // Navigate back when the back button is pressed
+  Navigator.pop(context);
+  // Return false to indicate that we handled the back button press
+  return Future.value(false);
+}
+
+TimeOfDay convertStringToTimeOfDay(String timeString) {
+  // Split the timeString into hour, minute, and period (AM/PM)
+  List<String> timeParts = timeString.split(':');
+  int hour = int.parse(timeParts[0]);
+  int minute = int.parse(timeParts[1].split(' ')[0]);
+  String period = timeParts[1].split(' ')[1];
+
+  // Adjust hour if it's PM
+  if (period == 'PM' && hour != 12) {
+    hour += 12;
   }
 
-
-  TimeOfDay convertStringToTimeOfDay(String timeString) {
-    // Split the timeString into hour, minute, and period (AM/PM)
-    List<String> timeParts = timeString.split(':');
-    int hour = int.parse(timeParts[0]);
-    int minute = int.parse(timeParts[1].split(' ')[0]);
-    String period = timeParts[1].split(' ')[1];
-
-    // Adjust hour if it's PM
-    if (period == 'PM' && hour != 12) {
-      hour += 12;
-    }
-
-    // Create and return a TimeOfDay object
-    return TimeOfDay(hour: hour, minute: minute);
-  }
+  // Create and return a TimeOfDay object
+  return TimeOfDay(hour: hour, minute: minute);
+}

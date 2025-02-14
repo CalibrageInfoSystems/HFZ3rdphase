@@ -31,7 +31,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
   TextEditingController dobController = TextEditingController();
   TextEditingController genderController = TextEditingController();
   TextEditingController mobileNumberController = TextEditingController();
-  TextEditingController alernateMobileNumberController = TextEditingController();
+  TextEditingController alernateMobileNumberController =
+      TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -116,7 +117,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime currentDate = DateTime.now();
-    final DateTime oldestDate = DateTime(currentDate.year - 100); // Example: Allow selection from 100 years ago
+    final DateTime oldestDate = DateTime(
+        currentDate.year - 100); // Example: Allow selection from 100 years ago
     final DateTime? pickedDay = await showDatePicker(
       context: context,
       initialDate: selectedDate,
@@ -135,6 +137,7 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
       });
     }
   }
+
   void _scrollToAndFocus(FocusNode focusNode, int index) {
     _scrollController.animateTo(
       index * 100.0, // Adjust as per the position of the field
@@ -143,6 +146,7 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
     );
     focusNode.requestFocus();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,9 +160,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) =>  CustomerLoginScreen()),
+              MaterialPageRoute(builder: (context) => CustomerLoginScreen()),
             );
-
           },
         ),
         backgroundColor: Colors.transparent, // Transparent app bar
@@ -196,7 +199,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
             Form(
               key: _formKey,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -209,7 +213,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
-                        height: MediaQuery.of(context).size.height - MediaQuery.of(context).size.height / 2.5,
+                        height: MediaQuery.of(context).size.height -
+                            MediaQuery.of(context).size.height / 2.5,
                         //      height: MediaQuery.of(context).size.height,
                         child: SingleChildScrollView(
                             controller: _scrollController,
@@ -224,20 +229,24 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                   label: 'Full Name',
                                   maxLength: 50,
                                   validator: validatefullname,
-                                  focusNode:FullnameFocus,
+                                  focusNode: FullnameFocus,
                                   inputFormatters: [
-                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')), // Including '\s' for space
+                                    FilteringTextInputFormatter.allow(RegExp(
+                                        r'[a-zA-Z\s]')), // Including '\s' for space
                                   ],
                                   controller: fullNameController,
                                   keyboardType: TextInputType.name,
-                                  errorText: _fullNameError ? _fullNameErrorMsg : null,
+                                  errorText:
+                                      _fullNameError ? _fullNameErrorMsg : null,
                                   onChanged: (value) {
                                     //MARK: Space restrict
                                     setState(() {
                                       if (value.startsWith(' ')) {
-                                        fullNameController.value = TextEditingValue(
+                                        fullNameController.value =
+                                            TextEditingValue(
                                           text: value.trimLeft(),
-                                          selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                                          selection: TextSelection.collapsed(
+                                              offset: value.trimLeft().length),
                                         );
                                       }
                                       _fullNameError = false;
@@ -279,7 +288,11 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                   decoration: InputDecoration(
                                     errorText: _dobError ? _dobErrorMsg : null,
                                     errorStyle: CommonStyles.texterrorstyle,
-                                    contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 15,
+                                        bottom: 10,
+                                        left: 15,
+                                        right: 15),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: const BorderSide(
                                         color: CommonUtils.primaryTextColor,
@@ -300,7 +313,7 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                     hintText: 'Select Date of Birth',
                                     counterText: "",
                                     hintStyle: CommonStyles.texthintstyle,
-                                    suffixIcon:  Icon(Icons.calendar_today),
+                                    suffixIcon: Icon(Icons.calendar_today),
                                   ),
                                   validator: validateDOB,
                                   onChanged: (value) {
@@ -322,17 +335,23 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                     ),
                                     Text(
                                       ' *',
-                                      style: TextStyle(color: Color.fromARGB(255, 175, 15, 4)),
+                                      style: TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 175, 15, 4)),
                                     ),
                                   ],
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 0, top: 5.0, right: 0),
+                                  padding: const EdgeInsets.only(
+                                      left: 0, top: 5.0, right: 0),
                                   child: Container(
                                     width: MediaQuery.of(context).size.width,
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                        color: isGenderSelected ? const Color.fromARGB(255, 175, 15, 4) : CommonUtils.primaryTextColor,
+                                        color: isGenderSelected
+                                            ? const Color.fromARGB(
+                                                255, 175, 15, 4)
+                                            : CommonUtils.primaryTextColor,
                                       ),
                                       borderRadius: BorderRadius.circular(5.0),
                                       color: Colors.white,
@@ -349,11 +368,16 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                               setState(() {
                                                 selectedTypeCdId = value!;
                                                 if (selectedTypeCdId != -1) {
-                                                  selectedValue = dropdownItems[selectedTypeCdId]['typeCdId'];
-                                                  selectedName = dropdownItems[selectedTypeCdId]['desc'];
+                                                  selectedValue = dropdownItems[
+                                                          selectedTypeCdId]
+                                                      ['typeCdId'];
+                                                  selectedName = dropdownItems[
+                                                      selectedTypeCdId]['desc'];
 
-                                                  print("selectedValue:$selectedValue");
-                                                  print("selectedName:$selectedName");
+                                                  print(
+                                                      "selectedValue:$selectedValue");
+                                                  print(
+                                                      "selectedName:$selectedName");
                                                 } else {
                                                   print("==========");
                                                   print(selectedValue);
@@ -368,9 +392,13 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                                   value: -1,
                                                   child: Text(
                                                     'Select Gender',
-                                                    style: CommonStyles.texthintstyle,
+                                                    style: CommonStyles
+                                                        .texthintstyle,
                                                   )),
-                                              ...dropdownItems.asMap().entries.map((entry) {
+                                              ...dropdownItems
+                                                  .asMap()
+                                                  .entries
+                                                  .map((entry) {
                                                 final index = entry.key;
                                                 final item = entry.value;
                                                 return DropdownMenuItem<int>(
@@ -389,11 +417,12 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 5),
                                         child: Text(
                                           'Please Select Gender',
                                           // style: CommonStyles.texthintstyle,
-                                          style:  CommonStyles.texterrorstyle,
+                                          style: CommonStyles.texterrorstyle,
                                         ),
                                       ),
                                     ],
@@ -410,19 +439,26 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                   maxLength: 10,
 
                                   inputFormatters: [
-                                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[0-9]')),
                                   ],
                                   keyboardType: TextInputType.phone,
-                                  errorText: _mobileNumberError ? _mobileNumberErrorMsg : null,
+                                  errorText: _mobileNumberError
+                                      ? _mobileNumberErrorMsg
+                                      : null,
                                   onChanged: (value) {
                                     setState(() {
-                                      if (value.length == 1 && ['0', '1', '2', '3', '4'].contains(value)) {
+                                      if (value.length == 1 &&
+                                          ['0', '1', '2', '3', '4']
+                                              .contains(value)) {
                                         mobileNumberController.clear();
                                       }
                                       if (value.startsWith(' ')) {
-                                        mobileNumberController.value = TextEditingValue(
+                                        mobileNumberController.value =
+                                            TextEditingValue(
                                           text: value.trimLeft(),
-                                          selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                                          selection: TextSelection.collapsed(
+                                              offset: value.trimLeft().length),
                                         );
                                       }
                                       _mobileNumberError = false;
@@ -454,16 +490,23 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                       height: 5.0,
                                     ),
                                     TextFormField(
-                                      controller: alernateMobileNumberController,
+                                      controller:
+                                          alernateMobileNumberController,
                                       keyboardType: TextInputType.phone,
                                       onTap: () {
                                         setState(() {
-                                          AlernateMobilenumFocus.addListener(() {
-                                            if (AlernateMobilenumFocus.hasFocus) {
-                                              Future.delayed(const Duration(milliseconds: 300), () {
+                                          AlernateMobilenumFocus.addListener(
+                                              () {
+                                            if (AlernateMobilenumFocus
+                                                .hasFocus) {
+                                              Future.delayed(
+                                                  const Duration(
+                                                      milliseconds: 300), () {
                                                 Scrollable.ensureVisible(
-                                                  AlernateMobilenumFocus.context!,
-                                                  duration: const Duration(milliseconds: 300),
+                                                  AlernateMobilenumFocus
+                                                      .context!,
+                                                  duration: const Duration(
+                                                      milliseconds: 300),
                                                   curve: Curves.easeInOut,
                                                 );
                                               });
@@ -474,42 +517,60 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                       focusNode: AlernateMobilenumFocus,
                                       decoration: InputDecoration(
                                         counterText: '',
-                                        errorText: _altNumberError ? _altNumberErrorMsg : null,
-                                        contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                                        errorText: _altNumberError
+                                            ? _altNumberErrorMsg
+                                            : null,
+                                        contentPadding: const EdgeInsets.only(
+                                            top: 15,
+                                            bottom: 10,
+                                            left: 15,
+                                            right: 15),
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: const BorderSide(
                                             color: Color(0xFF0f75bc),
                                           ),
-                                          borderRadius: BorderRadius.circular(6.0),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: const BorderSide(
                                             color: CommonUtils.primaryTextColor,
                                           ),
-                                          borderRadius: BorderRadius.circular(6.0),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
                                         border: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                             Radius.circular(10),
                                           ),
                                         ),
-                                        hintText: 'Enter Alternate Mobile Number',
+                                        hintText:
+                                            'Enter Alternate Mobile Number',
                                         hintStyle: CommonStyles.texthintstyle,
                                       ),
                                       maxLength: 10,
                                       inputFormatters: [
-                                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'[0-9]')),
                                       ],
                                       validator: validateAlterMobilenum,
                                       onChanged: (value) {
                                         setState(() {
-                                          if (value.length == 1 && ['0', '1', '2', '3', '4'].contains(value)) {
-                                            alernateMobileNumberController.clear();
+                                          if (value.length == 1 &&
+                                              ['0', '1', '2', '3', '4']
+                                                  .contains(value)) {
+                                            alernateMobileNumberController
+                                                .clear();
                                           }
                                           if (value.startsWith(' ')) {
-                                            alernateMobileNumberController.value = TextEditingValue(
+                                            alernateMobileNumberController
+                                                .value = TextEditingValue(
                                               text: value.trimLeft(),
-                                              selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                                              selection:
+                                                  TextSelection.collapsed(
+                                                      offset: value
+                                                          .trimLeft()
+                                                          .length),
                                             );
                                           }
                                           _altNumberError = false;
@@ -546,16 +607,20 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                     TextFormField(
                                       controller: emailController,
                                       maxLength: 60,
-                                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                                      maxLengthEnforcement:
+                                          MaxLengthEnforcement.enforced,
                                       keyboardType: TextInputType.emailAddress,
                                       onTap: () {
                                         setState(() {
                                           EmailFocus.addListener(() {
                                             if (EmailFocus.hasFocus) {
-                                              Future.delayed(const Duration(milliseconds: 300), () {
+                                              Future.delayed(
+                                                  const Duration(
+                                                      milliseconds: 300), () {
                                                 Scrollable.ensureVisible(
                                                   EmailFocus.context!,
-                                                  duration: const Duration(milliseconds: 300),
+                                                  duration: const Duration(
+                                                      milliseconds: 300),
                                                   curve: Curves.easeInOut,
                                                 );
                                               });
@@ -565,20 +630,27 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                       },
                                       focusNode: EmailFocus,
                                       decoration: InputDecoration(
-                                        errorText: _emailError ? _emailErrorMsg : null,
+                                        errorText:
+                                            _emailError ? _emailErrorMsg : null,
                                         errorStyle: CommonStyles.texterrorstyle,
-                                        contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                                        contentPadding: const EdgeInsets.only(
+                                            top: 15,
+                                            bottom: 10,
+                                            left: 15,
+                                            right: 15),
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: const BorderSide(
                                             color: Color(0xFF0f75bc),
                                           ),
-                                          borderRadius: BorderRadius.circular(6.0),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: const BorderSide(
                                             color: CommonUtils.primaryTextColor,
                                           ),
-                                          borderRadius: BorderRadius.circular(6.0),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
                                         border: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
@@ -620,23 +692,28 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                         ),
                                       ],
                                     ),
-                                     SizedBox(
+                                    SizedBox(
                                       height: 5.0,
                                     ),
                                     TextFormField(
                                       controller: userNameController,
                                       maxLength: 50,
-                                      keyboardType: TextInputType.visiblePassword,
+                                      keyboardType:
+                                          TextInputType.visiblePassword,
                                       onTap: () {
                                         setState(
                                           () {
                                             usernameFocus.addListener(
                                               () {
                                                 if (usernameFocus.hasFocus) {
-                                                  Future.delayed(const Duration(milliseconds: 300), () {
+                                                  Future.delayed(
+                                                      const Duration(
+                                                          milliseconds: 300),
+                                                      () {
                                                     Scrollable.ensureVisible(
                                                       usernameFocus.context!,
-                                                      duration: const Duration(milliseconds: 300),
+                                                      duration: const Duration(
+                                                          milliseconds: 300),
                                                       curve: Curves.easeInOut,
                                                     );
                                                   });
@@ -648,18 +725,24 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                       },
                                       //     focusNode: usernameFocus,
                                       decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                                        contentPadding: const EdgeInsets.only(
+                                            top: 15,
+                                            bottom: 10,
+                                            left: 15,
+                                            right: 15),
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: const BorderSide(
                                             color: Color(0xFF0f75bc),
                                           ),
-                                          borderRadius: BorderRadius.circular(6.0),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: const BorderSide(
                                             color: CommonUtils.primaryTextColor,
                                           ),
-                                          borderRadius: BorderRadius.circular(6.0),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
                                         border: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
@@ -669,18 +752,26 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                         hintText: 'Enter User Name',
                                         counterText: "",
                                         hintStyle: CommonStyles.texthintstyle,
-                                        errorText: _userNameError ? _userNameErrorMsg : null,
+                                        errorText: _userNameError
+                                            ? _userNameErrorMsg
+                                            : null,
                                         errorStyle: CommonStyles.texterrorstyle,
                                       ),
                                       inputFormatters: [
-                                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9!@#$%^&*(),.?":{}|<>_-]')),
+                                        FilteringTextInputFormatter.allow(RegExp(
+                                            r'[a-zA-Z0-9!@#$%^&*(),.?":{}|<>_-]')),
                                       ],
                                       onChanged: (value) {
                                         setState(() {
                                           if (value.startsWith(' ')) {
-                                            userNameController.value = TextEditingValue(
+                                            userNameController.value =
+                                                TextEditingValue(
                                               text: value.trimLeft(),
-                                              selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                                              selection:
+                                                  TextSelection.collapsed(
+                                                      offset: value
+                                                          .trimLeft()
+                                                          .length),
                                             );
                                             return;
                                           }
@@ -720,18 +811,24 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                       children: [
                                         TextFormField(
                                           controller: passwordController,
-                                          keyboardType: TextInputType.visiblePassword,
+                                          keyboardType:
+                                              TextInputType.visiblePassword,
                                           obscureText: showPassword,
                                           maxLength: 25,
-                                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                                          maxLengthEnforcement:
+                                              MaxLengthEnforcement.enforced,
                                           onTap: () {
                                             setState(() {
                                               PasswordFocus.addListener(() {
                                                 if (PasswordFocus.hasFocus) {
-                                                  Future.delayed(const Duration(milliseconds: 300), () {
+                                                  Future.delayed(
+                                                      const Duration(
+                                                          milliseconds: 300),
+                                                      () {
                                                     Scrollable.ensureVisible(
                                                       PasswordFocus.context!,
-                                                      duration: const Duration(milliseconds: 300),
+                                                      duration: const Duration(
+                                                          milliseconds: 300),
                                                       curve: Curves.easeInOut,
                                                     );
                                                   });
@@ -742,28 +839,41 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                           focusNode: PasswordFocus,
                                           decoration: InputDecoration(
                                             errorMaxLines: 5,
-                                            errorText: _passwordError ? _passwordErrorMsg : null,
-                                            errorStyle: CommonStyles.texterrorstyle,
+                                            errorText: _passwordError
+                                                ? _passwordErrorMsg
+                                                : null,
+                                            errorStyle:
+                                                CommonStyles.texterrorstyle,
                                             suffixIcon: GestureDetector(
                                               onTap: () {
                                                 setState(() {
                                                   showPassword = !showPassword;
                                                 });
                                               },
-                                              child: Icon(showPassword ? Icons.visibility_off : Icons.visibility),
+                                              child: Icon(showPassword
+                                                  ? Icons.visibility_off
+                                                  : Icons.visibility),
                                             ),
-                                            contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                                            contentPadding:
+                                                const EdgeInsets.only(
+                                                    top: 15,
+                                                    bottom: 10,
+                                                    left: 15,
+                                                    right: 15),
                                             focusedBorder: OutlineInputBorder(
                                               borderSide: const BorderSide(
                                                 color: Color(0xFF0f75bc),
                                               ),
-                                              borderRadius: BorderRadius.circular(6.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(6.0),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderSide: const BorderSide(
-                                                color: CommonUtils.primaryTextColor,
+                                                color: CommonUtils
+                                                    .primaryTextColor,
                                               ),
-                                              borderRadius: BorderRadius.circular(6.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(6.0),
                                             ),
                                             border: const OutlineInputBorder(
                                               borderRadius: BorderRadius.all(
@@ -772,18 +882,26 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                             ),
                                             hintText: 'Enter Password',
                                             counterText: "",
-                                            hintStyle: CommonStyles.texthintstyle,
+                                            hintStyle:
+                                                CommonStyles.texthintstyle,
                                           ),
                                           validator: validatePassword,
                                           inputFormatters: [
-                                            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9!@#$%^&*(),.?":{}|<>_-]')),
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp(
+                                                    r'[a-zA-Z0-9!@#$%^&*(),.?":{}|<>_-]')),
                                           ],
                                           onChanged: (value) {
                                             setState(() {
                                               if (value.startsWith(' ')) {
-                                                passwordController.value = TextEditingValue(
+                                                passwordController.value =
+                                                    TextEditingValue(
                                                   text: value.trimLeft(),
-                                                  selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                                                  selection:
+                                                      TextSelection.collapsed(
+                                                          offset: value
+                                                              .trimLeft()
+                                                              .length),
                                                 );
                                                 return;
                                               }
@@ -798,13 +916,18 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                         ),
                                         if (isPasswordValidate)
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
                                             children: [
                                               Padding(
-                                                padding: const EdgeInsets.only(top: 5, left: 12),
+                                                padding: const EdgeInsets.only(
+                                                    top: 5, left: 12),
                                                 child: Text(
                                                   _passwordStrengthMessage,
-                                                  style: TextStyle(color: _passwordStrengthColor, fontSize: 12),
+                                                  style: TextStyle(
+                                                      color:
+                                                          _passwordStrengthColor,
+                                                      fontSize: 12),
                                                 ),
                                               ),
                                             ],
@@ -839,18 +962,23 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                     ),
                                     TextFormField(
                                       controller: confirmPasswordController,
-                                      keyboardType: TextInputType.visiblePassword,
+                                      keyboardType:
+                                          TextInputType.visiblePassword,
                                       obscureText: showConfirmPassword,
                                       maxLength: 25,
-                                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                                      maxLengthEnforcement:
+                                          MaxLengthEnforcement.enforced,
                                       onTap: () {
                                         setState(() {
                                           ConfrimPasswordFocus.addListener(() {
                                             if (ConfrimPasswordFocus.hasFocus) {
-                                              Future.delayed(const Duration(milliseconds: 300), () {
+                                              Future.delayed(
+                                                  const Duration(
+                                                      milliseconds: 300), () {
                                                 Scrollable.ensureVisible(
                                                   ConfrimPasswordFocus.context!,
-                                                  duration: const Duration(milliseconds: 300),
+                                                  duration: const Duration(
+                                                      milliseconds: 300),
                                                   curve: Curves.easeInOut,
                                                 );
                                               });
@@ -861,28 +989,39 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                       focusNode: ConfrimPasswordFocus,
                                       decoration: InputDecoration(
                                         errorMaxLines: 3,
-                                        errorText: _confirmPasswordError ? _confirmPasswordErrorMsg : null,
+                                        errorText: _confirmPasswordError
+                                            ? _confirmPasswordErrorMsg
+                                            : null,
                                         errorStyle: CommonStyles.texterrorstyle,
                                         suffixIcon: GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              showConfirmPassword = !showConfirmPassword;
+                                              showConfirmPassword =
+                                                  !showConfirmPassword;
                                             });
                                           },
-                                          child: Icon(showConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                                          child: Icon(showConfirmPassword
+                                              ? Icons.visibility_off
+                                              : Icons.visibility),
                                         ),
-                                        contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                                        contentPadding: const EdgeInsets.only(
+                                            top: 15,
+                                            bottom: 10,
+                                            left: 15,
+                                            right: 15),
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: const BorderSide(
                                             color: CommonUtils.primaryTextColor,
                                           ),
-                                          borderRadius: BorderRadius.circular(6.0),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: const BorderSide(
                                             color: CommonUtils.primaryTextColor,
                                           ),
-                                          borderRadius: BorderRadius.circular(6.0),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
                                         border: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
@@ -895,14 +1034,20 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                       ),
                                       validator: validateconfirmpassword,
                                       inputFormatters: [
-                                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9!@#$%^&*(),.?":{}|<>_-]')),
+                                        FilteringTextInputFormatter.allow(RegExp(
+                                            r'[a-zA-Z0-9!@#$%^&*(),.?":{}|<>_-]')),
                                       ],
                                       onChanged: (value) {
                                         setState(() {
                                           if (value.startsWith(' ')) {
-                                            confirmPasswordController.value = TextEditingValue(
+                                            confirmPasswordController.value =
+                                                TextEditingValue(
                                               text: value.trimLeft(),
-                                              selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                                              selection:
+                                                  TextSelection.collapsed(
+                                                      offset: value
+                                                          .trimLeft()
+                                                          .length),
                                             );
                                             return;
                                           }
@@ -1030,7 +1175,6 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
         _fullNameError = true;
         _fullNameErrorMsg = 'Full Name Should Contains Minimum 2 Characters';
         _scrollToAndFocus(FullnameFocus, 0);
-
       });
       isFullNameValidate = false;
       return null;
@@ -1044,7 +1188,6 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
         _fullNameError = true;
         _fullNameErrorMsg = 'Full Name Should Only Contain Alphabets';
         _scrollToAndFocus(FullnameFocus, 0);
-
       });
       isFullNameValidate = false;
       return null;
@@ -1062,7 +1205,7 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
       });
       isDobValidate = false;
       return null;
-    } else{
+    } else {
       setState(() {
         _dobError = false;
       });
@@ -1130,7 +1273,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
     if (value.startsWith(RegExp('[1-4]'))) {
       setState(() {
         _altNumberError = true;
-        _altNumberErrorMsg = 'Alternate Mobile Number Should Not Start with 1-4';
+        _altNumberErrorMsg =
+            'Alternate Mobile Number Should Not Start with 1-4';
       });
       isAltMobileNumberValidate = false;
       return null;
@@ -1138,7 +1282,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
     if (value.contains(RegExp(r'[a-zA-Z]'))) {
       setState(() {
         _altNumberError = true;
-        _altNumberErrorMsg = 'Alternate Mobile Number Should Contain Only Digits';
+        _altNumberErrorMsg =
+            'Alternate Mobile Number Should Contain Only Digits';
       });
       isAltMobileNumberValidate = false;
       return null;
@@ -1197,7 +1342,9 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
       });
       isEmailValidate = false;
       return null;
-    } else if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
+    } else if (!RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(value)) {
       setState(() {
         _emailError = true;
         _emailErrorMsg = 'Please Enter Valid Email';
@@ -1262,7 +1409,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
 
     final hasAlphabets = RegExp(r'[a-zA-Z]').hasMatch(value);
     final hasNumbers = RegExp(r'\d').hasMatch(value);
-    final hasSpecialCharacters = RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value);
+    final hasSpecialCharacters =
+        RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value);
     final hasCapitalLetter = RegExp(r'[A-Z]').hasMatch(value);
 
     // if (!hasAlphabets || !hasNumbers || !hasSpecialCharacters || !hasCapitalLetter) {
@@ -1286,10 +1434,13 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
       if (password.isEmpty || password.length < 8) {
         isPasswordValidate = false;
       } else {
-        if (_containsSpecialCharacters(password) && _containsCharacters(password) && _containsNumbers(password)) {
+        if (_containsSpecialCharacters(password) &&
+            _containsCharacters(password) &&
+            _containsNumbers(password)) {
           _passwordStrengthMessage = 'Strong Password';
           _passwordStrengthColor = const Color.fromARGB(255, 2, 131, 68);
-        } else if (_containsNumbers(password) && _containsCharacters(password)) {
+        } else if (_containsNumbers(password) &&
+            _containsCharacters(password)) {
           _passwordStrengthMessage = 'Good password';
           _passwordStrengthColor = const Color.fromARGB(255, 161, 97, 0);
         } else {
@@ -1372,7 +1523,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
         validating();
         print('The Internet Is Connected');
       } else {
-        CommonUtils.showCustomToastMessageLong('Please Check Your Internet Connection', context, 1, 4);
+        CommonUtils.showCustomToastMessageLong(
+            'Please Check Your Internet Connection', context, 1, 4);
         print('The Internet Is not Connected');
       }
     });
@@ -1391,7 +1543,14 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
     validateGender(selectedName);
 
     if (_formKey.currentState!.validate()) {
-      if (isFullNameValidate && isDobValidate && isGenderValidate && isMobileNumberValidate && isEmailValidate && isUserNameValidate && isPswdValidate && isConfirmPswdValidate) {
+      if (isFullNameValidate &&
+          isDobValidate &&
+          isGenderValidate &&
+          isMobileNumberValidate &&
+          isEmailValidate &&
+          isUserNameValidate &&
+          isPswdValidate &&
+          isConfirmPswdValidate) {
         FocusScope.of(context).unfocus();
         print('xxx: api called');
         CommonStyles.startProgress(context);
@@ -1456,7 +1615,8 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
             bool isSuccess = data['isSuccess'];
             if (isSuccess == true) {
               print('Request sent successfully');
-              CommonUtils.showCustomToastMessageLong('Customer Registered Sucessfully', context, 0, 5);
+              CommonUtils.showCustomToastMessageLong(
+                  'Customer Registered Sucessfully', context, 0, 5);
               FocusScope.of(context).unfocus();
 
               /// CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 0, 2);
@@ -1472,17 +1632,18 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                 endUserMessageFromApiforemail(data['statusMessage']);
                 endUserMessageFromApiformobilenum(data['statusMessage']);
               }
-              if(status_message.contains('User')){
+              if (status_message.contains('User')) {
                 endUserMessageFromApi(data['statusMessage']);
               }
 
-
-            //  CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 1, 5);
+              //  CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 1, 5);
             }
           } else {
             FocusScope.of(context).unfocus();
-            CommonUtils.showCustomToastMessageLong('Something went wrong', context, 0, 5);
-            print('Failed to send the request. Status code: ${response.statusCode}');
+            CommonUtils.showCustomToastMessageLong(
+                'Something went wrong', context, 0, 5);
+            print(
+                'Failed to send the request. Status code: ${response.statusCode}');
           }
         } catch (e) {
           print('Error slot: $e');

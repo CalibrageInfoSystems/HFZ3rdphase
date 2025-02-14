@@ -10,6 +10,7 @@ import 'package:hairfixingzone/AddConsulationscreen.dart';
 import 'package:hairfixingzone/AgentBranchModel.dart';
 import 'package:hairfixingzone/BranchModel.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
+import 'package:hairfixingzone/Common/common_widgets.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/CustomCalendarDialog.dart';
 import 'package:hairfixingzone/MyAppointment_Model.dart';
@@ -648,7 +649,8 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  if (consultationslist[index].statusTypeId != 28) ...[
+                  if (consultationslist[index].statusTypeId != 28 &&
+                      consultationslist[index].statusTypeId != 6) ...[
                     (DateTime.now()
                             .isAfter(consultationslist[index].visitingDate!))
                         ? Row(
@@ -742,8 +744,17 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                               const SizedBox(width: 10),
                               GestureDetector(
                                 onTap: () {
-                                  cancelConsultationDialog(
-                                      consultationslist[index]);
+                                  CommonWidgets.customCancelDialog(
+                                    context,
+                                    message:
+                                        'Are You Sure You Want to Cancel this ${consultationslist[index].consultationName} Consultation?',
+                                    onConfirm: () {
+                                      cancelConsultation(
+                                          consultationslist[index]);
+                                    },
+                                  );
+                                  /* cancelConsultationDialog(
+                                      consultationslist[index]); */
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -1035,13 +1046,15 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
         "phoneNumber": consultation.phoneNumber,
         "email": consultation.email,
         "branchId": consultation.branchId,
-        "isActive": false,
+        "isActive": true,
         "remarks": consultation.remarks,
         "createdByUserId": consultation.createdByUser,
-        "createdDate": consultation.createdDate,
+        "createdDate": DateFormat('yyyy-MM-dd')
+            .format(consultation.createdDate ?? DateTime.now()),
         "updatedByUserId": widget.userid,
         "updatedDate": DateFormat('yyyy-MM-dd').format(DateTime.now()),
-        "visitingDate": consultation.visitingDate,
+        "visitingDate": DateFormat('yyyy-MM-dd')
+            .format(consultation.visitingDate ?? DateTime.now()),
         "statusTypeId": 6 // newly added
       });
       print('rescheduleConsultation: $requestBody');
@@ -1069,7 +1082,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
               '${response['statusMessage']}', context, 0, 5);
         }
       } else {
-        throw Exception('Failed to reschedule consultation');
+        throw Exception('Failed to cancel consultation');
       }
     } catch (e) {
       print('Error slot: $e');

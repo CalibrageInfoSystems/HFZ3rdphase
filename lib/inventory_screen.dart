@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
+import 'package:hairfixingzone/Common/common_widgets.dart';
 import 'package:hairfixingzone/Common/custom_button.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/add_inventory.dart';
@@ -19,7 +20,7 @@ class InventoryScreen extends StatefulWidget {
 
   const InventoryScreen({
     super.key,
-    required  this.branchId,
+    required this.branchId,
     required this.userId,
     required this.branchName,
     required this.branchImage,
@@ -234,11 +235,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 if (inventory.isActive!)
                   IconButton(
                     onPressed: () {
-                      deleteInventory(inventory).whenComplete(() {
+                      CommonWidgets.customCancelDialog(
+                        context,
+                        message:
+                            'Are You Sure You Want to Delete this ${inventory.productName} Inventory?',
+                        onConfirm: () {
+                          deleteInventory(inventory).whenComplete(() {
+                            setState(() {
+                              futureinvetories = getInventories();
+                            });
+                          });
+                        },
+                      );
+                      /* deleteInventory(inventory).whenComplete(() {
                         setState(() {
                           futureinvetories = getInventories();
                         });
-                      });
+                      }); */
                     },
                     icon: const Icon(Icons.delete),
                   ),
@@ -294,12 +307,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
         final response = jsonDecode(jsonResponse.body);
         if (response['isSuccess']) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(response['statusMessage']),
+            content: Text('Inventory Deleted Successfully'),
             duration: const Duration(seconds: 2),
           ));
         }
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(response['statusMessage']),
+          content: Text('Unable to Delete Inventory'),
           duration: const Duration(seconds: 2),
         ));
         throw Exception('Failed to delete inventory');

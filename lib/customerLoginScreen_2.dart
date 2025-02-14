@@ -7,7 +7,6 @@ import 'package:hairfixingzone/startingscreen.dart';
 import 'package:loading_progress/loading_progress.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'AddConsulationscreen.dart';
 import 'Common/common_styles.dart';
 import 'Common/custom_button.dart';
 import 'Common/custome_form_field.dart';
@@ -22,7 +21,8 @@ import 'dart:convert';
 
 class CustomerLoginScreen_2 extends StatefulWidget {
   @override
-  State<CustomerLoginScreen_2> createState() => _CustomerLoginScreen_2PageState();
+  State<CustomerLoginScreen_2> createState() =>
+      _CustomerLoginScreen_2PageState();
 }
 
 class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
@@ -47,23 +47,26 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
     FirebaseMessaging.instance.getInitialMessage().then((event) {
       if (event != null) {
         setState(() {
-          notificationMsg = "${event.notification!.title} ${event.notification!.body} I am coming from terminated state";
+          notificationMsg =
+              "${event.notification!.title} ${event.notification!.body} I am coming from terminated state";
         });
       }
     });
 
     // Foregrand State
     FirebaseMessaging.onMessage.listen((event) {
-   //   LocalNotificationService.showNotificationOnForeground(context, event);
+      //   LocalNotificationService.showNotificationOnForeground(context, event);
       setState(() {
-        notificationMsg = "${event.notification!.title} ${event.notification!.body} I am coming from foreground";
+        notificationMsg =
+            "${event.notification!.title} ${event.notification!.body} I am coming from foreground";
       });
     });
 
     // background State
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       setState(() {
-        notificationMsg = "${event.notification!.title} ${event.notification!.body} I am coming from background";
+        notificationMsg =
+            "${event.notification!.title} ${event.notification!.body} I am coming from background";
       });
     });
     // Get Firebase Token
@@ -109,8 +112,10 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
                   const SizedBox(
                     height: 20,
                   ),
-                  const Text('Login Your Account', style: CommonUtils.Sub_header_Styles),
-                  const Text('to Access All the Services', style: CommonUtils.Sub_header_Styles),
+                  const Text('Login Your Account',
+                      style: CommonUtils.Sub_header_Styles),
+                  const Text('to Access All the Services',
+                      style: CommonUtils.Sub_header_Styles),
                 ],
               ),
             ),
@@ -147,9 +152,8 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
                       //   ' *',
                       //   style: CommonStyles.txSty_12b_f5,
                       // ),
-                      Text(
-                          ' *',
-                          style:   TextStyle(
+                      Text(' *',
+                          style: TextStyle(
                             fontSize: 12,
                             fontFamily: "Outfit",
                             fontWeight: FontWeight.w500,
@@ -169,7 +173,8 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
                     maxLength: 60,
                     decoration: InputDecoration(
                       errorMaxLines: 2,
-                      contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                      contentPadding: const EdgeInsets.only(
+                          top: 15, bottom: 10, left: 15, right: 15),
                       focusedBorder: OutlineInputBorder(
                         borderSide: const BorderSide(
                           color: CommonUtils.primaryTextColor,
@@ -279,17 +284,6 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
                   //               builder: (context) =>
                   //               const ForgotPasswordscreen()),
                   //         );
-                  //         // Navigator.push(
-                  //         //   context,
-                  //         //   MaterialPageRoute(builder: (context) => AddConsulationscreen()),
-                  //         // );
-                  //         // Navigator.push(
-                  //         //   context,
-                  //         //   MaterialPageRoute(
-                  //         //       builder: (context) => ForgotChangePassword(
-                  //         //             id: 1,
-                  //         //           )),
-                  //         // );
                   //       },
                   //       child: const Text(
                   //         'Forgot Password?',
@@ -311,7 +305,8 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
                           color: CommonUtils.primaryTextColor,
                           onPressed: () {
                             FocusManager.instance.primaryFocus?.unfocus();
-                            CommonUtils.checkInternetConnectivity().then((isConnected) {
+                            CommonUtils.checkInternetConnectivity()
+                                .then((isConnected) {
                               if (isConnected) {
                                 // Navigator.push(
                                 //   context,
@@ -322,10 +317,14 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
                                 //             password: "",
                                 //           )),
                                 // );
-                                 loginUser();
+                                loginUser();
                                 print('The Internet Is Connected');
                               } else {
-                                CommonUtils.showCustomToastMessageLong('Please Check Your Internet Connection', context, 1, 4);
+                                CommonUtils.showCustomToastMessageLong(
+                                    'Please Check Your Internet Connection',
+                                    context,
+                                    1,
+                                    4);
                                 print('The Internet Is not Connected');
                               }
                             });
@@ -345,26 +344,14 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                 CustomerLoginScreen()),
+                                builder: (context) => CustomerLoginScreen()),
                           );
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => AddConsulationscreen()),
-                          // );
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => ForgotChangePassword(
-                          //             id: 1,
-                          //           )),
-                          // );
                         },
                         child: Text(
                           'Login with Password',
                           style: TextStyle(
                             decoration: TextDecoration.underline,
-                            decorationColor:textColor,
+                            decorationColor: textColor,
                             decorationThickness: 1.5,
                             fontFamily: "Outfit",
                             fontWeight: FontWeight.w500,
@@ -516,22 +503,25 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
             } else {
               // Show toast for invalid user
               FocusScope.of(context).unfocus();
-              CommonUtils.showCustomToastMessageLongbottom('Invalid User', context, 1, 4);
-             // CommonUtils.showCustomToastMessageLong("Invalid User", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
+              CommonUtils.showCustomToastMessageLongbottom(
+                  'Invalid User', context, 1, 4);
+              // CommonUtils.showCustomToastMessageLong("Invalid User", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
               // showToast('Invalid user');
             }
           } else {
             FocusScope.of(context).unfocus();
-            CommonUtils.showCustomToastMessageLongbottom('Invalid User', context, 1, 4);
+            CommonUtils.showCustomToastMessageLongbottom(
+                'Invalid User', context, 1, 4);
             //CommonUtils.showCustomToastMessageLong('Invalid User ', context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
             progressDialog.dismiss();
           }
         } else {
           FocusScope.of(context).unfocus();
           progressDialog.dismiss();
-          CommonUtils.showCustomToastMessageLongbottom('Invalid User Name / Email / Mobile Number', context, 1, 4);
-         // CommonUtils.showCustomToastMessageLong("${data["statusMessage"]}", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
-         // CommonUtils.showCustomToastMessageLong("Invalid User Name / Email or Mobile Number", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
+          CommonUtils.showCustomToastMessageLongbottom(
+              'Invalid User Name / Email / Mobile Number', context, 1, 4);
+          // CommonUtils.showCustomToastMessageLong("${data["statusMessage"]}", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
+          // CommonUtils.showCustomToastMessageLong("Invalid User Name / Email or Mobile Number", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
           // Handle the case where the user is not valid
           List<dynamic> validationErrors = data['validationErrors'];
           if (validationErrors.isNotEmpty) {
@@ -544,12 +534,14 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
           progressDialog.dismiss();
         });
         // Handle any error cases here
-        print('Failed to connect to the API. Status code: ${response.statusCode}');
+        print(
+            'Failed to connect to the API. Status code: ${response.statusCode}');
       }
     }
   }
 
-  Future<void> saveUserDataToSharedPreferences(Map<String, dynamic> userData) async {
+  Future<void> saveUserDataToSharedPreferences(
+      Map<String, dynamic> userData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //
     // prefs.setBool('isLoggedIn', true);
@@ -607,7 +599,12 @@ class _CustomerLoginScreen_2PageState extends State<CustomerLoginScreen_2> {
   Future<void> AddCustomer_Notification(int userId, int roleid) async {
     final url = Uri.parse(baseUrl + AddCustomerNotification);
 
-    final request = {"id": null, "userId": userId, "roleId": roleid, "deviceToken": firebaseToken};
+    final request = {
+      "id": null,
+      "userId": userId,
+      "roleId": roleid,
+      "deviceToken": firebaseToken
+    };
 
     print('Object: ${json.encode(request)}');
     try {

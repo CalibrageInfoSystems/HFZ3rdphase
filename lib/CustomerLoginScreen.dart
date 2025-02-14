@@ -7,7 +7,6 @@ import 'package:hairfixingzone/startingscreen.dart';
 import 'package:loading_progress/loading_progress.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'AddConsulationscreen.dart';
 import 'Common/common_styles.dart';
 import 'Common/custom_button.dart';
 import 'Common/custome_form_field.dart';
@@ -48,23 +47,26 @@ class _LoginPageState extends State<CustomerLoginScreen> {
     FirebaseMessaging.instance.getInitialMessage().then((event) {
       if (event != null) {
         setState(() {
-          notificationMsg = "${event.notification!.title} ${event.notification!.body} I am coming from terminated state";
+          notificationMsg =
+              "${event.notification!.title} ${event.notification!.body} I am coming from terminated state";
         });
       }
     });
 
     // Foregrand State
     FirebaseMessaging.onMessage.listen((event) {
-    //  LocalNotificationService.showNotificationOnForeground(context, event);
+      //  LocalNotificationService.showNotificationOnForeground(context, event);
       setState(() {
-        notificationMsg = "${event.notification!.title} ${event.notification!.body} I am coming from foreground";
+        notificationMsg =
+            "${event.notification!.title} ${event.notification!.body} I am coming from foreground";
       });
     });
 
     // background State
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       setState(() {
-        notificationMsg = "${event.notification!.title} ${event.notification!.body} I am coming from background";
+        notificationMsg =
+            "${event.notification!.title} ${event.notification!.body} I am coming from background";
       });
     });
     // Get Firebase Token
@@ -75,6 +77,7 @@ class _LoginPageState extends State<CustomerLoginScreen> {
       });
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,351 +85,338 @@ class _LoginPageState extends State<CustomerLoginScreen> {
       appBar: _appBar(),
       body: SingleChildScrollView(
           child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height / 3,
-                decoration: const BoxDecoration(),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.height / 5,
-                        child: Image.asset('assets/hfz_logo.png'),
-                      ),
-                      const SizedBox(
-                        height: 5.0,
-                      ),
-                      const Text('Customer Login',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: "Outfit",
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 2,
-                            color: Color(0xFF11528f),
-                          )),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Text('Login Your Account',
-                          style: CommonUtils.Sub_header_Styles),
-                      const Text('to Access All the Services',
-                          style: CommonUtils.Sub_header_Styles),
-                    ],
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height / 3,
+            decoration: const BoxDecoration(),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.height / 5,
+                    child: Image.asset('assets/hfz_logo.png'),
                   ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  const Text('Customer Login',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "Outfit",
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 2,
+                        color: Color(0xFF11528f),
+                      )),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text('Login Your Account',
+                      style: CommonUtils.Sub_header_Styles),
+                  const Text('to Access All the Services',
+                      style: CommonUtils.Sub_header_Styles),
+                ],
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+              // physics: const AlwaysScrollableScrollPhysics(),
+              child: Form(
+            key: _formKey,
+            child: Container(
+              // height: MediaQuery.of(context).size.height,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30.0),
+                  topRight: Radius.circular(30.0),
                 ),
               ),
-              SingleChildScrollView(
-                // physics: const AlwaysScrollableScrollPhysics(),
-                  child: Form(
-                    key: _formKey,
-                    child: Container(
-                      // height: MediaQuery.of(context).size.height,
-                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30.0),
-                          topRight: Radius.circular(30.0),
+              height: MediaQuery.of(context).size.height / 1.7,
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Row(
+                    children: [
+                      Text(
+                        'User Name / Email / Mobile Number',
+                        style: CommonStyles.txSty_12b_f5,
+                      ),
+                      Text(' *',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: "Outfit",
+                            fontWeight: FontWeight.w500,
+                            color: Colors.red,
+                          )),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  TextFormField(
+                    controller: _emailController, // Assigning the controller
+                    keyboardType: TextInputType.visiblePassword,
+                    // obscureText: true,
+
+                    maxLength: 60,
+                    decoration: InputDecoration(
+                      errorMaxLines: 2,
+                      contentPadding: const EdgeInsets.only(
+                          top: 15, bottom: 10, left: 15, right: 15),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: CommonUtils.primaryTextColor,
+                        ),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: CommonUtils.primaryTextColor,
+                        ),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
                         ),
                       ),
-                      height: MediaQuery.of(context).size.height / 1.7,
-                      width: MediaQuery.of(context).size.width,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Row(
-                            children: [
-                              Text(
-                                'User Name / Email / Mobile Number',
-                                style:  CommonStyles.txSty_12b_f5,),
-                              Text(
-                                ' *',
-                                style:  TextStyle(
-                                  fontSize: 12,
-                                  fontFamily: "Outfit",
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.red,
-                                )
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5.0,
-                          ),
-                          TextFormField(
-                            controller: _emailController, // Assigning the controller
-                            keyboardType: TextInputType.visiblePassword,
-                            // obscureText: true,
-
-                            maxLength: 60,
-                            decoration: InputDecoration(
-                              errorMaxLines: 2,
-                              contentPadding: const EdgeInsets.only(
-                                  top: 15, bottom: 10, left: 15, right: 15),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: CommonUtils.primaryTextColor,
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: CommonUtils.primaryTextColor,
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
-                              ),
-                              hintText: 'Enter User Name / Email / Mobile Number',
-                              counterText: "",
-                              hintStyle:  CommonStyles.texthintstyle ,
-                            ),
-                            validator: validateEmail,
-                            style: CommonStyles.txSty_14b_fb,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          // CustomeFormField(
-                          //   label: 'Password',
-                          //   validator: validatePassword,
-                          //   controller: _passwordController, // Pass the password controller
-                          // ),
-                          const Row(
-                            children: [
-                              Text(
-                                'Password',
-                                style:  CommonStyles.txSty_12b_f5,),
-                              Text(
-                                ' *',
-                                style:   TextStyle(
-                                  fontSize: 12,
-                                  fontFamily: "Outfit",
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.red,
-                                )),
-
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 5.0,
-                          ),
-                          TextFormField(
-                            obscureText: _obscureText,
-
-                            controller: _passwordController, // Assigning the controller
-                            keyboardType: TextInputType.visiblePassword,
-                            // obscureText: true,
-                            onTap: () {},
-                            maxLength: 25,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.only(
-                                  top: 15, bottom: 10, left: 15, right: 15),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: CommonUtils.primaryTextColor,
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: CommonUtils.primaryTextColor,
-                                ),
-                                borderRadius: BorderRadius.circular(6.0),
-                              ),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
-                              ),
-                              hintText: 'Enter Password',
-                              counterText: "",
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscureText
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: Colors.black,
-                                ),
-                                onPressed: () {
-                                  // Toggle the password visibility
-                                  setState(() {
-                                    _obscureText = !_obscureText;
-                                  });
-                                },
-                              ),
-                              hintStyle:  CommonStyles.texthintstyle ,
-                            ),
-                            validator: validatePassword,
-                            style: CommonStyles.txSty_14b_fb,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                        const ForgotPasswordscreen()),
-                                  );
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(builder: (context) => AddConsulationscreen()),
-                                  // );
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //       builder: (context) => ForgotChangePassword(
-                                  //             id: 1,
-                                  //           )),
-                                  // );
-                                },
-                                child: const Text(
-                                  'Forgot Password?',
-                                  style: CommonUtils.Mediumtext_o_14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                    onTap: () {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //       builder: (context) => const HomeScreen()),
-                                      // );
-                                    },
-                                    child: CustomButton(
-                                      buttonText: 'Login',
-                                      color: CommonUtils.primaryTextColor,
-                                      onPressed: () {
-                                        FocusManager.instance.primaryFocus?.unfocus();
-                                        CommonUtils.checkInternetConnectivity()
-                                            .then((isConnected) {
-                                          if (isConnected) {
-                                            loginUser();
-                                            print('The Internet Is Connected');
-                                          } else {
-                                            CommonUtils.showCustomToastMessageLong(
-                                                'Please Check Your Internet Connection',
-                                                context,
-                                                1,
-                                                4);
-                                            print('The Internet Is not Connected');
-                                          }
-                                        });
-                                      },
-                                    )),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          // Container(
-                          //   child: GestureDetector(
-                          //     onTap: (){
-                          //       Navigator.push(
-                          //         context,
-                          //         MaterialPageRoute(builder: (context) =>  CustomerLoginScreen_2()),
-                          //       );
-                          //     },
-                          //     child:Text(
-                          //       'Login with OTP',
-                          //       style: TextStyle(
-                          //         decoration: TextDecoration.underline,
-                          //         decorationColor:textColor,
-                          //         decorationThickness: 1.5,
-                          //         fontFamily: "Outfit",
-                          //         fontWeight: FontWeight.w500,
-                          //         color: textColor,
-                          //         fontSize: 16,
-                          //       ),
-                          //     ),
-                          //   )
-                          // ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) =>  CustomerLoginScreen_2()),
-                                        );
-
-                                },
-                                child: Text(
-                                  'Login with OTP',
-                                  style: TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    decorationColor:textColor,
-                                    decorationThickness: 1.5,
-                                    fontFamily: "Outfit",
-                                    fontWeight: FontWeight.w500,
-                                    color: textColor,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('New User?', style: CommonUtils.Mediumtext_14),
-                              const SizedBox(width: 8.0),
-                              GestureDetector(
-                                onTap: () {
-                                  // Handle the click event for the "Click here!" text
-                                  print('Click here! clicked');
-                                  // Add your custom logic or navigation code here
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                      const CustomerRegisterScreen(),
-                                    ),
-                                  );
-                                },
-                                child: const Text('Register Here!',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: "Outfit",
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xFF0f75bc),
-                                    )),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
+                      hintText: 'Enter User Name / Email / Mobile Number',
+                      counterText: "",
+                      hintStyle: CommonStyles.texthintstyle,
                     ),
-                  ))
-            ],
-          )),
+                    validator: validateEmail,
+                    style: CommonStyles.txSty_14b_fb,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  // CustomeFormField(
+                  //   label: 'Password',
+                  //   validator: validatePassword,
+                  //   controller: _passwordController, // Pass the password controller
+                  // ),
+                  const Row(
+                    children: [
+                      Text(
+                        'Password',
+                        style: CommonStyles.txSty_12b_f5,
+                      ),
+                      Text(' *',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: "Outfit",
+                            fontWeight: FontWeight.w500,
+                            color: Colors.red,
+                          )),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  TextFormField(
+                    obscureText: _obscureText,
+
+                    controller: _passwordController, // Assigning the controller
+                    keyboardType: TextInputType.visiblePassword,
+                    // obscureText: true,
+                    onTap: () {},
+                    maxLength: 25,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.only(
+                          top: 15, bottom: 10, left: 15, right: 15),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: CommonUtils.primaryTextColor,
+                        ),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: CommonUtils.primaryTextColor,
+                        ),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      hintText: 'Enter Password',
+                      counterText: "",
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          // Toggle the password visibility
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      ),
+                      hintStyle: CommonStyles.texthintstyle,
+                    ),
+                    validator: validatePassword,
+                    style: CommonStyles.txSty_14b_fb,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ForgotPasswordscreen()),
+                          );
+                        },
+                        child: const Text(
+                          'Forgot Password?',
+                          style: CommonUtils.Mediumtext_o_14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                            onTap: () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) => const HomeScreen()),
+                              // );
+                            },
+                            child: CustomButton(
+                              buttonText: 'Login',
+                              color: CommonUtils.primaryTextColor,
+                              onPressed: () {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                CommonUtils.checkInternetConnectivity()
+                                    .then((isConnected) {
+                                  if (isConnected) {
+                                    loginUser();
+                                    print('The Internet Is Connected');
+                                  } else {
+                                    CommonUtils.showCustomToastMessageLong(
+                                        'Please Check Your Internet Connection',
+                                        context,
+                                        1,
+                                        4);
+                                    print('The Internet Is not Connected');
+                                  }
+                                });
+                              },
+                            )),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  // Container(
+                  //   child: GestureDetector(
+                  //     onTap: (){
+                  //       Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(builder: (context) =>  CustomerLoginScreen_2()),
+                  //       );
+                  //     },
+                  //     child:Text(
+                  //       'Login with OTP',
+                  //       style: TextStyle(
+                  //         decoration: TextDecoration.underline,
+                  //         decorationColor:textColor,
+                  //         decorationThickness: 1.5,
+                  //         fontFamily: "Outfit",
+                  //         fontWeight: FontWeight.w500,
+                  //         color: textColor,
+                  //         fontSize: 16,
+                  //       ),
+                  //     ),
+                  //   )
+                  // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CustomerLoginScreen_2()),
+                          );
+                        },
+                        child: Text(
+                          'Login with OTP',
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            decorationColor: textColor,
+                            decorationThickness: 1.5,
+                            fontFamily: "Outfit",
+                            fontWeight: FontWeight.w500,
+                            color: textColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('New User?', style: CommonUtils.Mediumtext_14),
+                      const SizedBox(width: 8.0),
+                      GestureDetector(
+                        onTap: () {
+                          // Handle the click event for the "Click here!" text
+                          print('Click here! clicked');
+                          // Add your custom logic or navigation code here
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const CustomerRegisterScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text('Register Here!',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: "Outfit",
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF0f75bc),
+                            )),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ))
+        ],
+      )),
     );
   }
 
@@ -470,7 +460,7 @@ class _LoginPageState extends State<CustomerLoginScreen> {
       final String apiUrl = baseUrl + ValidateUser;
       print('apiUrl: $apiUrl');
       // Prepare the request body
-      final  requestBody = {
+      final requestBody = {
         'userName': email,
         'password': password,
         "deviceTokens": firebaseToken
@@ -514,9 +504,8 @@ class _LoginPageState extends State<CustomerLoginScreen> {
             // Extract other user information as needed
 
             if (user['roleID'] == 2) {
-
               await saveUserDataToSharedPreferences(user);
-              AddCustomer_Notification(user['id'],user['roleID']);
+              AddCustomer_Notification(user['id'], user['roleID']);
               SharedPreferences prefs = await SharedPreferences.getInstance();
 
               prefs.setBool('isLoggedIn', true);
@@ -527,10 +516,11 @@ class _LoginPageState extends State<CustomerLoginScreen> {
               progressDialog.dismiss();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>  HomeScreen(boolflagpopup: true,)),
+                MaterialPageRoute(
+                    builder: (context) => HomeScreen(
+                          boolflagpopup: true,
+                        )),
               );
-
-
             } else {
               // Show toast for invalid user
               FocusScope.of(context).unfocus();
@@ -538,7 +528,8 @@ class _LoginPageState extends State<CustomerLoginScreen> {
               //     "Invalid User", context, 1, 3,
               //     toastPosition: MediaQuery.of(context).size.height / 2);
               //CommonUtils.showCustomToastMessageLongbottom(data['statusMessage'], context, 1, 4);
-              CommonUtils.showCustomToastMessageLongbottom("Invalid User", context, 1, 4);
+              CommonUtils.showCustomToastMessageLongbottom(
+                  "Invalid User", context, 1, 4);
               // showToast('Invalid user');
             }
           } else {
@@ -546,14 +537,19 @@ class _LoginPageState extends State<CustomerLoginScreen> {
             // CommonUtils.showCustomToastMessageLong(
             //     'Invalid User ', context, 1, 3,
             //     toastPosition: MediaQuery.of(context).size.height / 2);
-            CommonUtils.showCustomToastMessageLongbottom(data['statusMessage'], context, 1, 4);
+            CommonUtils.showCustomToastMessageLongbottom(
+                data['statusMessage'], context, 1, 4);
             progressDialog.dismiss();
           }
         } else {
           FocusScope.of(context).unfocus();
           progressDialog.dismiss();
-         // CommonUtils.showCustomToastMessageLongbottom(data['statusMessage'], context, 1, 4);
-          CommonUtils.showCustomToastMessageLongbottom('Invalid User Name / Email / Mobile Number or Password', context, 1, 4);
+          // CommonUtils.showCustomToastMessageLongbottom(data['statusMessage'], context, 1, 4);
+          CommonUtils.showCustomToastMessageLongbottom(
+              'Invalid User Name / Email / Mobile Number or Password',
+              context,
+              1,
+              4);
           // CommonUtils.showCustomToastMessageLong(
           //     "${data["statusMessage"]}", context, 1, 3,
           //     toastPosition: MediaQuery.of(context).size.height / 2);
@@ -631,9 +627,7 @@ class _LoginPageState extends State<CustomerLoginScreen> {
     );
   }
 
-
   Future<void> AddCustomer_Notification(int userId, int roleid) async {
-
     final url = Uri.parse(baseUrl + AddCustomerNotification);
 
     final request = {
@@ -641,7 +635,6 @@ class _LoginPageState extends State<CustomerLoginScreen> {
       "userId": userId,
       "roleId": roleid,
       "deviceToken": firebaseToken
-
     };
 
     print('Object: ${json.encode(request)}');
@@ -664,20 +657,10 @@ class _LoginPageState extends State<CustomerLoginScreen> {
         //     MaterialPageRoute(builder: (context) =>  HomeScreen()),
         //   );
         // }
-
-
-      } else {
-
-      }
-
-
+      } else {}
     } catch (e) {
-
       // ProgressManager.stopProgress();
       print('Error slot: $e');
     }
-
-
   }
-
 }

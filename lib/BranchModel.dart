@@ -9,8 +9,8 @@ class BranchModel {
   final String mobileNumber;
   final bool isActive;
   final String? cityName;
-  final dynamic createdBy; // Assuming createdBy can be of any type
-  final dynamic updatedBy; // Assuming updatedBy can be of any type
+  final dynamic createdBy;
+  final dynamic updatedBy;
   final double? latitude;
   final double? longitude;
   final String? locationUrl;

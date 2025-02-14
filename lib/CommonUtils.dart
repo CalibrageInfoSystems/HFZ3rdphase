@@ -1,15 +1,14 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity/connectivity.dart';
-class CommonUtils{
 
- static void showCustomToastMessageLongbottom(
-      String message,
-      BuildContext context,
-      int backgroundColorType,
-      int length,
-      ) {
+class CommonUtils {
+  static void showCustomToastMessageLongbottom(
+    String message,
+    BuildContext context,
+    int backgroundColorType,
+    int length,
+  ) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double textWidth = screenWidth / 1.5; // Adjust multiplier as needed
 
@@ -46,8 +45,8 @@ class CommonUtils{
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Padding(
-              padding:  EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-              child:  Row(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(iconData, color: iconColor), // Icon
@@ -55,7 +54,10 @@ class CommonUtils{
                   Expanded(
                     child: Text(
                       message,
-                      style: TextStyle(fontSize: 16.0, color: Colors.black, fontFamily: 'Outfit'),
+                      style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black,
+                          fontFamily: 'Outfit'),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -80,23 +82,10 @@ class CommonUtils{
     });
   }
 
-
-
-
-
-
-
-
-
-  static void showCustomToastMessageLong(String message,
-      BuildContext context,
-      int backgroundColorType,
-      int length,
+  static void showCustomToastMessageLong(
+      String message, BuildContext context, int backgroundColorType, int length,
       {double toastPosition = 16.0}) {
-    final double screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final double screenWidth = MediaQuery.of(context).size.width;
     final double textWidth = screenWidth / 1.5; // Adjust multiplier as needed
 
     final double toastWidth = textWidth + 32.0; // Adjust padding as needed
@@ -117,45 +106,48 @@ class CommonUtils{
 
     OverlayEntry overlayEntry;
     overlayEntry = OverlayEntry(
-      builder: (BuildContext context) =>
-          Positioned(
-            bottom: toastPosition, // Change to toastPosition
-            left: toastOffset,
-            child: Material(
-              color: Colors.transparent, // Changed to transparent to cover entire screen
-              child: Center(
-                child: Container(
-                  width: toastWidth,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: backgroundColorType == 0 ? Colors.green : Colors.red,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(8.0),
-                      color: Colors.white
-                   // color: backgroundColorType == 0 ? Color(0x6F4CAF50) : Color(0xBBD97E72),
+      builder: (BuildContext context) => Positioned(
+        bottom: toastPosition, // Change to toastPosition
+        left: toastOffset,
+        child: Material(
+          color: Colors
+              .transparent, // Changed to transparent to cover entire screen
+          child: Center(
+            child: Container(
+              width: toastWidth,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: backgroundColorType == 0 ? Colors.green : Colors.red,
+                    width: 2.0,
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(iconData, color: iconColor), // Icon
-                        SizedBox(width: 8.0),
-                        Expanded(
-                          child: Text(
-                            message,
-                            style: TextStyle(fontSize: 16.0, color: Colors.black, fontFamily: 'Outfit'),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ),
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: Colors.white
+                  // color: backgroundColorType == 0 ? Color(0x6F4CAF50) : Color(0xBBD97E72),
                   ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(iconData, color: iconColor), // Icon
+                    SizedBox(width: 8.0),
+                    Expanded(
+                      child: Text(
+                        message,
+                        style: TextStyle(
+                            fontSize: 16.0,
+                            color: Colors.black,
+                            fontFamily: 'Outfit'),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
+        ),
+      ),
     );
 
     Overlay.of(context).insert(overlayEntry);
@@ -164,8 +156,6 @@ class CommonUtils{
     });
   }
 
-
-
   static const blackColor = Colors.black;
   static const blackColorShade = Color(0xFF5f5f5f);
   static const primaryColor = Color(0xFFf7ebff);
@@ -173,6 +163,7 @@ class CommonUtils{
   static const formFieldErrorBorderColor = Color(0xFFff0000);
   static const blueColor = Color(0xFF0f75bc);
   static const primarylightColor = Color(0xffe2f0fd);
+  static final filedDisabledColor = Colors.grey.shade600;
   static const TextStyle header_Styles = TextStyle(
     fontSize: 20,
     fontFamily: "Outfit",
@@ -180,11 +171,10 @@ class CommonUtils{
     color: Color(0xFF11528f),
   );
   static const TextStyle Sub_header_Styles = TextStyle(
-    fontSize: 20,
-    fontFamily: "Outfit",
-    fontWeight: FontWeight.w500,
-    color: blackColor
-  );
+      fontSize: 20,
+      fontFamily: "Outfit",
+      fontWeight: FontWeight.w500,
+      color: blackColor);
   static const TextStyle Mediumtext_o_14 = TextStyle(
     fontSize: 20,
     fontFamily: "Outfit",
@@ -202,9 +192,9 @@ class CommonUtils{
     fontSize: 20,
     fontFamily: "Outfit",
     fontWeight: FontWeight.w500,
-    color:Colors.black,
+    color: Colors.black,
   );
-  static  TextStyle Mediumtext16 = TextStyle(
+  static TextStyle Mediumtext16 = TextStyle(
     fontSize: 16,
     fontFamily: "Outfit",
     fontWeight: FontWeight.w500,
@@ -246,7 +236,7 @@ class CommonUtils{
     fontFamily: 'Outfit',
     fontWeight: FontWeight.w600,
     letterSpacing: 1,
-    color:Color(0xFF11528f),
+    color: Color(0xFF11528f),
   );
   static Future<bool> checkInternetConnectivity() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
@@ -257,9 +247,9 @@ class CommonUtils{
       return false; // Not connected to the internet
     }
   }
-    static void myCommonMethod() {
-      // Your common method logic here
-      print('This is a common method');
-    }
 
+  static void myCommonMethod() {
+    // Your common method logic here
+    print('This is a common method');
+  }
 }
