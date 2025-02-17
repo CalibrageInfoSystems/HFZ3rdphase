@@ -1122,7 +1122,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
         final response = json.decode(jsonResponse.body);
         if (response['isSuccess']) {
           CommonUtils.showCustomToastMessageLong(
-              'Consultation Cancelled Successfully', context, 0, 5);
+              'Consultation Marked as Not Visited', context, 0, 5);
           final formattedDate =
               DateFormat('yyyy-MM-dd').format(selectedDate ?? DateTime.now());
           setState(() {
