@@ -5,20 +5,16 @@ import 'package:hairfixingzone/AgentHome.dart';
 import 'package:hairfixingzone/Consultation.dart';
 import 'package:hairfixingzone/services/notifi_service.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'AgentBranchModel.dart';
-import 'BranchModel.dart';
 import 'Common/common_styles.dart';
 import 'Common/custom_button.dart';
 import 'Common/custome_form_field.dart';
 import 'CommonUtils.dart';
 import 'package:intl/intl.dart';
 
-import 'HomeScreen.dart';
 import 'api_config.dart';
 
 class AddConsulationscreen extends StatefulWidget {
@@ -603,7 +599,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                           readOnly: true,
                           validator: (value) {
                             if (value!.isEmpty || value.isEmpty) {
-                              return 'Choose Date ';
+                              return 'Please choose Date ';
                             }
                             return null;
                           },
@@ -662,17 +658,33 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                               children: [
                                 TextFormField(
                                   controller: _timeController,
+                                  validator: (value) {
+                                    if (value!.isEmpty || value.isEmpty) {
+                                      return 'Please choose time';
+                                    }
+
+                                    TimeOfDay now = TimeOfDay.now();
+                                    TimeOfDay? selectedTime = _selectedTime;
+
+                                    if (selectedTime != null) {
+                                      int nowMinutes =
+                                          now.hour * 60 + now.minute;
+                                      int selectedMinutes =
+                                          selectedTime.hour * 60 +
+                                              selectedTime.minute;
+
+                                      if (selectedMinutes < nowMinutes) {
+                                        return 'Please select a future time';
+                                      }
+                                    }
+
+                                    return null;
+                                  },
                                   keyboardType: TextInputType.visiblePassword,
                                   onTap: () {
                                     _openTimePicker();
                                   },
                                   readOnly: true,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Choose Time';
-                                    }
-                                    return null;
-                                  },
                                   decoration: InputDecoration(
                                     contentPadding: const EdgeInsets.only(
                                         top: 15,
@@ -1091,9 +1103,10 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
     }
   }
 
-  void _openTimePicker() async {
+/*   void _openTimePicker() async {
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
+      
       initialTime: TimeOfDay.now(),
     );
 
@@ -1105,6 +1118,31 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
         _timeController.text = pickedTime.format(context);
         _formKey2.currentState!.validate();
       });
+    }
+  } */
+
+  void _openTimePicker() async {
+    TimeOfDay now = TimeOfDay.now();
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: now,
+    );
+
+    if (pickedTime != null) {
+      // Convert TimeOfDay to minutes for easy comparison
+      setState(() {
+        _selectedTime = pickedTime;
+        slot_time = pickedTime.format(context);
+        print('Selected Time: $slot_time');
+        _timeController.text = pickedTime.format(context);
+        _formKey2.currentState!.validate();
+      });
+      /* else {
+        // Show a message to the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select a future time')),
+        );
+      } */
     }
   }
 
