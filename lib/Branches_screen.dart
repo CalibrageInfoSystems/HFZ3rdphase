@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hairfixingzone/inventory_screen.dart';
+import 'package:hairfixingzone/test_agent_oplist.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -248,7 +249,7 @@ class BranchTemplate extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                     builder: (context) => InventoryScreen(
-                      branchId: branchnames.id!,
+                        branchId: branchnames.id!,
                         userId: userId,
                         branchName: branchnames.name,
                         branchImage: imageUrl,
@@ -258,7 +259,12 @@ class BranchTemplate extends StatelessWidget {
             } else {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => Agentappointmentlist(
+                  builder: (context) => TestAgentOplist(
+                    branchId: branchnames.id!,
+                    userId: userId,
+                    branchAddress: branchnames.address,
+                  ),
+                  /* Agentappointmentlist(
                     userId: userId,
                     branchid: branchnames.id!,
                     branchname: branchnames.name,
@@ -267,7 +273,7 @@ class BranchTemplate extends StatelessWidget {
                         : 'assets/top_image.png',
                     phonenumber: branchnames.mobileNumber,
                     branchaddress: branchnames.address,
-                  ),
+                  ), */
                 ),
               );
             }

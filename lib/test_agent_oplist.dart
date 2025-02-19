@@ -1,335 +1,240 @@
 import 'dart:convert';
-import 'dart:math';
 
-import 'package:calendar_date_picker2/src/models/calendar_date_picker2_config.dart';
-import 'package:custom_date_range_picker/custom_date_range_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
-
-import 'package:hairfixingzone/slotbookingscreen.dart';
-
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hairfixingzone/AgentRescheduleslotscreen.dart';
+import 'package:hairfixingzone/Agentappointmentlist.dart';
+import 'package:hairfixingzone/Appointment.dart';
+import 'package:hairfixingzone/Common/common_styles.dart';
+import 'package:hairfixingzone/Common/custom_button.dart';
+import 'package:hairfixingzone/CommonUtils.dart';
+import 'package:hairfixingzone/api_config.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'AgentAppointmentsProvider.dart';
-import 'AgentHome.dart';
-import 'AgentRescheduleslotscreen.dart';
-import 'Appointment.dart';
-import 'BranchModel.dart';
-import 'Common/common_styles.dart';
-import 'Common/custom_button.dart';
-import 'Commonutils.dart';
-import 'CustomCalendarDialog.dart';
-import 'MyAppointment_Model.dart';
-import 'Rescheduleslotscreen.dart';
-import 'api_config.dart';
 
-class Agentappointmentlist extends StatefulWidget {
+class TestAgentOplist extends StatefulWidget {
   final int userId;
-  final int branchid;
-  final String branchname;
-  final String filepath;
-  final String phonenumber;
-  final String branchaddress;
+  final int branchId;
+  final String branchAddress;
 
-  const Agentappointmentlist(
+  const TestAgentOplist(
       {super.key,
       required this.userId,
-      required this.branchid,
-      required this.branchname,
-      required this.filepath,
-      required this.phonenumber,
-      required this.branchaddress});
+      required this.branchId,
+      required this.branchAddress});
 
   @override
-  MyAppointments_screenState createState() => MyAppointments_screenState();
+  State<TestAgentOplist> createState() => _TestAgentOplistState();
 }
 
-class MyAppointments_screenState extends State<Agentappointmentlist> {
-  Future<List<Appointment>>? apiData;
-  List<Appointment> temp = [];
-  int? agentUserId;
-  int? branchid;
+class _TestAgentOplistState extends State<TestAgentOplist> {
+  late Future<List<Appointment>> futureAppointments;
+  late List<Appointment> filterAppointments;
+  late Future<List<StatusModel>> futureStatus;
+
+  final _filterDateController = TextEditingController();
+  DateTime? selectedFilterDate;
+  int selectedFilterStatus = 0;
+  int? statustypeId;
+  bool isFilterApplied = false;
+  final orangeColor = CommonUtils.primaryTextColor;
 
   @override
   void initState() {
     super.initState();
-
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.portraitUp,
-    ]);
-
-    CommonUtils.checkInternetConnectivity().then((isConnected) {
+    futureAppointments =
+        getAgentAppointments(userId: widget.userId, branchId: widget.branchId);
+    futureStatus = getStatus();
+    /* CommonUtils.checkInternetConnectivity().then((isConnected) {
       if (isConnected) {
-        print('The Internet Is Connected');
-        checkLoginuserdata();
-
-        print('UserID==${widget.userId}');
-      } else {
-        print('The Internet Is not Connected');
+        
       }
-    });
+    }); */
   }
 
-  void checkLoginuserdata() async {
-    myAppointmentsProvider!.clearFilter();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    agentUserId = prefs.getInt('userId')!;
-    print('userId: 1 $agentUserId');
-    print('userId: 2 ${widget.userId}');
-
-    initializeData(agentUserId);
-  }
-
-  void initializeData(int? userId) {
-    setState(() {
-      //   apiData = fetchagentAppointments(userId, widget.branchid);
-      apiData = fetchagentAppointments(userId, widget.branchid);
-      apiData!.then((value) {
-        myAppointmentsProvider!.storeIntoProvider = value;
-        temp.addAll(value);
-      }).catchError((error) {
-        print('catchError: Error occurred.');
-      });
-    });
-  }
-
-  Future<List<Appointment>> fetchagentAppointments(
-      int? userId, int branchid) async {
+  Future<List<Appointment>> getAgentAppointments(
+      {int? userId, int? branchId, String? date, int? statustypeId}) async {
     final url = Uri.parse(baseUrl + GetAppointment);
-    // {"userId":8,"branchId":2,"fromDate":"2024-05-01","toDate":"2024-05-17","statusTypeId":null}
-    print('GetAppointment$url');
     try {
-      /// final request = {"userId": userId, "branchId": branchid, "fromdate": null, "toDate": null, "statustypeId": null};
       final request = {
-        "userId": null,
-        "branchId": branchid,
-        "fromdate": null,
-        "toDate": null,
-        "statustypeId": null
+        "userId": userId,
+        "branchId": branchId,
+        "fromdate": date,
+        "toDate": date,
+        "statustypeId": statustypeId
       };
-      //   final request = {"userId": userId, "branchId": branchid, "fromdate":"2024-05-01", "toDate": "2024-05-17", "statustypeId": null};
 
       final jsonResponse = await http.post(
         url,
-        body: json.encode(request),
+        body: jsonEncode(request),
         headers: {
           'Content-Type': 'application/json',
         },
       );
+      print('GetAppointment: $url');
       print("GetAppointment requestBody: ${jsonEncode(request)}");
       if (jsonResponse.statusCode == 200) {
         final response = json.decode(jsonResponse.body);
 
         if (response['listResult'] != null) {
           List<dynamic> listResult = response['listResult'];
-          List<Appointment> result =
+          filterAppointments =
               listResult.map((item) => Appointment.fromJson(item)).toList();
-          return result;
+          return filterAppointments;
         } else {
-          myAppointmentsProvider!.storeIntoProvider = [];
           throw Exception('No Appointments Available');
         }
       } else {
-        print('Request failed with status: ${jsonResponse.statusCode}');
         throw Exception(
             'Request failed with status: ${jsonResponse.statusCode}');
       }
     } catch (error) {
-      print('catch: $error');
       rethrow;
     }
   }
 
-  void refreshTheScreen() {
-    CommonUtils.checkInternetConnectivity().then(
-      (isConnected) {
-        if (isConnected) {
-          print('The Internet Is Connected');
-
-          try {
-            // reload the data
-            checkLoginuserdata();
-            setState(() {});
-          } catch (error) {
-            print('catch: $error');
-            rethrow;
-          }
-        } else {
-          CommonUtils.showCustomToastMessageLong(
-              'Please check your internet  connection', context, 1, 4);
-          print('The Internet Is not  Connected');
-        }
-      },
-    );
+  Future<List<StatusModel>> getStatus() async {
+    final response = await http.get(Uri.parse(baseUrl + getstatus));
+    if (response.statusCode == 200) {
+      final List<dynamic> responseData =
+          json.decode(response.body)['listResult'];
+      List<StatusModel> result =
+          responseData.map((json) => StatusModel.fromJson(json)).toList();
+      print('fetch branchname: ${result[0].desc}');
+      return result;
+    } else {
+      throw Exception('Failed to load products');
+    }
   }
 
-  // void refreshTheScreen() {
-  //   setState(() {
-  //     apiData = fetchagentAppointments(userId, widget.branchid);
-  //   });
-  // }
+  void serachFilterAppointment(String input) {
+    print('serachFilterAppointment: $input');
+    final result = filterAppointments.where((item) {
+      return item.purposeOfVisit.toLowerCase().contains(input.toLowerCase()) ||
+          item.customerName.toLowerCase().contains(input.toLowerCase()) ||
+          item.name.toLowerCase().contains(input.toLowerCase());
+    }).toList();
 
-  AgentAppointmentsProvider? myAppointmentsProvider;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    myAppointmentsProvider = Provider.of<AgentAppointmentsProvider>(context);
+    setState(() {
+      futureAppointments = Future.value(result);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AgentHome(
-              userId: widget.userId,
+    return Scaffold(
+      appBar: appBar(context),
+      body: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10).copyWith(top: 10),
+              child: _searchBarAndFilter(),
             ),
-          ),
-        );
-        myAppointmentsProvider!.clearFilter();
-        return true;
-      },
-      child: RefreshIndicator(
-        onRefresh: () async {
-          refreshTheScreen();
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: const Color(0xffe2f0fd),
-            title: const Text(
-              'Appointments',
-              style: TextStyle(
-                color: Color(0xFF0f75bc),
-                fontSize: 16.0,
-                fontFamily: "Outfit",
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.start,
-            ),
-            leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: CommonUtils.primaryTextColor,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                myAppointmentsProvider!.clearFilter();
-              },
-            ),
-          ),
-          body: Container(
-            color: Colors.white,
-            child: Consumer<AgentAppointmentsProvider>(
-              builder: (context, provider, _) => WillPopScope(
-                onWillPop: () async {
-                  provider.clearFilter();
-                  return true;
-                },
-                child: Column(
-                  children: [
-                    // search and filter
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10)
-                          .copyWith(top: 10),
-                      child: _searchBarAndFilter(),
-                    ),
+            Expanded(
+              child: FutureBuilder(
+                future: futureAppointments,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return const Center(
+                      child: Text(
+                        'No Appointments Available',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Roboto",
+                        ),
+                      ),
+                    );
+                  } else {
+                    final data = snapshot.data as List<Appointment>;
 
-                    //MARK: Appointment
-                    Expanded(
-                      child: FutureBuilder(
-                        future: apiData,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator.adaptive(),
-                            );
-                          } else if (snapshot.hasError) {
-                            return const Center(
-                              child: Text(
-                                'No Appointments Available',
-                                style: TextStyle(
-                                  fontSize: 12.0,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: "Roboto",
-                                ),
-                              ),
-                            );
-                          } else {
-                            List<Appointment> data = provider.proAppointments;
-                            print('datasize ${data.length}');
-                            print('widget.userId ${widget.userId}');
-
-                            if (data.isNotEmpty) {
-                              return Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: ListView.builder(
-                                  itemCount: data.length,
-                                  itemBuilder: (context, index) {
-                                    return Column(
-                                      children: [
-                                        OpCard(
-                                          data: data[index],
-                                          userId: widget.userId,
-                                          branchid: widget.branchid,
-                                          branchaddress: widget.branchaddress,
-                                          onRefresh: () {
-                                            // Implement the refresh logic here
-                                            setState(() {
-                                              // Refresh logic
-                                              refreshTheScreen();
-                                            });
-                                          },
-                                        ),
-
-                                        // OpCard(data: data[index], userId: widget.userId, branchid: widget.branchid, branchaddress: widget.branchaddress),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                      ],
-                                    );
-                                    // return AppointmentCard(
-                                    //     data: data[index],
-                                    //     day: parseDayFromDate(data[index].date),);
+                    if (data.isNotEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: ListView.builder(
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                OpCard(
+                                  data: data[index],
+                                  userId: widget.userId,
+                                  branchId: widget.branchId,
+                                  branchaddress: widget.branchAddress,
+                                  onRefresh: () {
+                                    /* setState(() {
+                                      refreshTheScreen();
+                                    }); */
                                   },
                                 ),
-                              );
-                            } else {
-                              return const Center(
-                                child: Text(
-                                  'No Appointments Available',
-                                  style: TextStyle(
-                                    fontSize: 12.0,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: "Roboto",
-                                  ),
+
+                                // OpCard(data: data[index], userId: widget.userId, branchid: widget.branchid, branchaddress: widget.branchaddress),
+                                const SizedBox(
+                                  height: 5,
                                 ),
-                              );
-                            }
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                              ],
+                            );
+                            // return AppointmentCard(
+                            //     data: data[index],
+                            //     day: parseDayFromDate(data[index].date),);
+                          },
+                        ),
+                      );
+                    } else {
+                      return const Center(
+                        child: Text(
+                          'No Appointments Available',
+                          style: TextStyle(
+                            fontSize: 12.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Roboto",
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                },
               ),
             ),
-          ),
+          ],
         ),
+      ),
+    );
+  }
+
+  AppBar appBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: const Color(0xffe2f0fd),
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back_ios,
+          color: CommonUtils.primaryTextColor,
+        ),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+      title: const Text(
+        'test Appointments',
+        style: TextStyle(
+          color: Color(0xFF0f75bc),
+          fontSize: 16.0,
+          fontFamily: "Outfit",
+          fontWeight: FontWeight.w600,
+        ),
+        textAlign: TextAlign.start,
       ),
     );
   }
@@ -343,7 +248,7 @@ class MyAppointments_screenState extends State<Agentappointmentlist> {
           child: SizedBox(
             height: 45,
             child: TextField(
-              onChanged: (input) => filterAppointment(input),
+              onChanged: (input) => serachFilterAppointment(input),
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.only(top: 5, left: 12),
                 hintText: 'Search Appointment',
@@ -376,9 +281,7 @@ class MyAppointments_screenState extends State<Agentappointmentlist> {
           height: 45,
           width: 45,
           decoration: BoxDecoration(
-            color: myAppointmentsProvider!.filterStatus
-                ? const Color(0xffe2f0fd)
-                : Colors.white,
+            color: isFilterApplied ? const Color(0xffe2f0fd) : Colors.white,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: CommonUtils.primaryTextColor,
@@ -387,9 +290,8 @@ class MyAppointments_screenState extends State<Agentappointmentlist> {
           child: IconButton(
             icon: SvgPicture.asset(
               'assets/filter.svg',
-              color: myAppointmentsProvider!.filterStatus
-                  ? Colors.black
-                  : CommonUtils.primaryTextColor,
+              color:
+                  isFilterApplied ? Colors.black : CommonUtils.primaryTextColor,
               width: 24,
               height: 24,
             ),
@@ -401,8 +303,26 @@ class MyAppointments_screenState extends State<Agentappointmentlist> {
                   padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).viewInsets.bottom,
                   ),
-                  child: FilterAppointmentBottomSheet(
-                      userId: widget.userId, branchid: widget.branchid),
+                  child: filterTemplate(
+                    onClear: () {
+                      setState(() {
+                        futureAppointments = getAgentAppointments(
+                            userId: widget.userId, branchId: widget.branchId);
+                        clearFilter();
+                      });
+                    },
+                    onFilter: () {
+                      setState(() {
+                        futureAppointments = getAgentAppointments(
+                          userId: null,
+                          branchId: widget.branchId,
+                          date: selectedFilterDate.toString(),
+                          statustypeId: statustypeId,
+                        );
+                        isFilterApplied = true;
+                      });
+                    },
+                  ),
                 ),
               );
             },
@@ -412,414 +332,265 @@ class MyAppointments_screenState extends State<Agentappointmentlist> {
     );
   }
 
-  int parseDayFromDate(String dateString) {
-    DateTime dateTime = DateTime.parse(dateString);
-    print(
-        'dateFormate: ${dateTime.day} - ${DateFormat.MMM().format(dateTime)} - ${dateTime.year}');
-    // int ,       String ,                           int
-    return dateTime
-        .day; //[dateTime.day, DateFormat.MMM().format(dateTime), dateTime.year];
+  void clearFilter() {
+    setState(() {
+      isFilterApplied = false;
+      selectedFilterDate = null;
+      _filterDateController.clear();
+
+      statustypeId = null;
+    });
   }
 
-  void filterAppointment(String input) {
-    myAppointmentsProvider!.filterProviderData(temp.where((item) {
-      return item.purposeOfVisit.toLowerCase().contains(input.toLowerCase()) ||
-          item.customerName.toLowerCase().contains(input.toLowerCase()) ||
-          item.name.toLowerCase().contains(input.toLowerCase());
-      // ||
-      // item.email!.toLowerCase().contains(input.toLowerCase());
-    }).toList());
-  }
-}
-
-class FilterAppointmentBottomSheet extends StatefulWidget {
-  final int? userId;
-  final int? branchid;
-
-  const FilterAppointmentBottomSheet(
-      {Key? key, required this.userId, required this.branchid})
-      : super(key: key);
-
-  @override
-  State<FilterAppointmentBottomSheet> createState() =>
-      _FilterBottomSheetState();
-}
-
-class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
-  List<BranchModel> products = [];
-  late Future<List<BranchModel>> branchname;
-  BranchModel? selectedCategory;
-
-  final orangeColor = CommonUtils.primaryTextColor;
-  late Future<List<BranchModel>> apiData;
-  final TextEditingController _fromToDatesController = TextEditingController();
-  DateTime? startDate;
-  DateTime? endDate;
-  FocusNode DateofBirthdFocus = FocusNode();
-  List<Statusmodel> statusoptions = [];
-  late Future<List<Statusmodel>> prostatus;
-  Statusmodel? selectedstatus;
-  String? apiFromDate;
-  String? apiToDate;
-  DateTime? selectedDate;
-
-  // List<String>? selectedDate;
-  //   DateTime? selectDateFromDatePicker;
-
-  AgentAppointmentsProvider? myAppointmentsProvider;
-
-  static TextStyle anniversaryTextStyle = TextStyle(
-    color: Colors.red[400],
-    fontWeight: FontWeight.w700,
-    decoration: TextDecoration.underline,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-
-    apiData = fetchbranches(widget.userId);
-    prostatus = fetchstatus();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    myAppointmentsProvider = Provider.of<AgentAppointmentsProvider>(context);
-    _fromToDatesController.text = myAppointmentsProvider!.getDisplayDate;
-  }
-
-  String formateDate(String date) {
-    DateTime dateTime = DateFormat('dd-MM-yyyy').parse(date);
-
-    // Format the DateTime to the desired output format
-    String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
-    return formattedDate;
-  }
-
-  Future<void> filterAppointments(Map<String, dynamic> requestBody) async {
-    // final url = Uri.parse('http://182.18.157.215/SaloonApp/API/api/Appointment/GetAppointment');
-    final url = Uri.parse(baseUrl + GetAppointment);
-    print('filterAppointments: $requestBody');
-    try {
-      Map<String, dynamic> request = requestBody;
-
-      final jsonResponse = await http.post(
-        url,
-        body: json.encode(request),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-      print('request object490 ${json.encode(request)}');
-      if (jsonResponse.statusCode == 200) {
-        final response = json.decode(jsonResponse.body);
-
-        if (response['listResult'] != null) {
-          List<dynamic> listResult = response['listResult'];
-          myAppointmentsProvider!.storeIntoProvider =
-              listResult.map((item) => Appointment.fromJson(item)).toList();
-        } else {
-          myAppointmentsProvider!.storeIntoProvider = [];
-          throw Exception('No Appointments Available');
-        }
-      } else {
-        myAppointmentsProvider!.storeIntoProvider = [];
-        print('Request failed with status: ${jsonResponse.statusCode}');
-        throw Exception(
-            'Request failed with status: ${jsonResponse.statusCode}');
-      }
-    } catch (error) {
-      print('catch: $error');
-    }
-    Navigator.of(context).pop();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<AgentAppointmentsProvider>(
-      builder: (context, provider, _) => SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const Text(
-                    'Filter By',
+  Widget filterTemplate({void Function()? onClear, void Function()? onFilter}) {
+    return StatefulBuilder(
+      builder: (context, setState) => Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const Text(
+                  'Filter By',
+                  style: CommonStyles.txSty_16blu_f5,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    onClear?.call();
+                    Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'Clear All Filters',
                     style: CommonStyles.txSty_16blu_f5,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      clearFilterAppointments({
-                        "userid": null,
-                        "branchId": widget.branchid,
-                        "fromdate": null,
-                        "toDate": null,
-                        "statustypeId": null,
-                      });
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Container(
+                width: double.infinity,
+                height: 0.3,
+                color: CommonUtils.primaryTextColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(left: 5, right: 5),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    controller: _filterDateController,
+                    keyboardType: TextInputType.visiblePassword,
+                    onTap: () async {
+                      showFilterDatePicker(context);
                     },
-                    //MARK: Clear all filters
-                    child: const Text(
-                      'Clear All Filters',
-                      style: CommonStyles.txSty_16blu_f5,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.only(
+                          top: 15, bottom: 10, left: 15, right: 15),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color(0xFF0f75bc),
+                        ),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: CommonUtils.primaryTextColor,
+                        ),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      hintText: 'Select Date',
+                      counterText: '',
+                      hintStyle: CommonStyles.texthintstyle,
+                      prefixIcon: const Icon(Icons.calendar_today),
                     ),
                   ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Container(
-                  width: double.infinity,
-                  height: 0.3,
-                  color: CommonUtils.primaryTextColor,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.only(left: 5, right: 5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextFormField(
-                      controller: _fromToDatesController,
-                      keyboardType: TextInputType.visiblePassword,
-                      onTap: () async {
-                        FocusScope.of(context).requestFocus(
-                            FocusNode()); // to prevent the keyboard from appearing
-                        /*  final values = await showCustomCalendarDialog(
-                            context, CommonStyles.config);
-                        if (values != null) {
-                          setState(() {
-                            selectedDate = _getValueText(
-                                CommonStyles.config.calendarType, values);
-                            provider.getDisplayDate =
-                                '${selectedDate![0]}  -  ${selectedDate![1]}';
-                            provider.getApiFromDate = selectedDate![0];
-                            provider.getApiToDate = selectedDate![1];
-                          });
-                        } */
-                        _selectDate(context, provider);
-                      },
-                      focusNode: DateofBirthdFocus,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.only(
-                            top: 15, bottom: 10, left: 15, right: 15),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0xFF0f75bc),
-                          ),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: CommonUtils.primaryTextColor,
-                          ),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        border: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                        ),
-                        hintText: 'xx',
-                        counterText: "",
-                        hintStyle: CommonStyles.texthintstyle,
-                        prefixIcon: const Icon(Icons.calendar_today),
-                      ),
-                      //  validator: validatePassword,
-                    ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: FutureBuilder(
+                        future: futureStatus,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator.adaptive(
+                              backgroundColor: Colors.transparent,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  CommonUtils.primaryTextColor),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const SizedBox();
+                          } else {
+                            List<StatusModel> data = snapshot.data!;
+                            return SizedBox(
+                              height: 38,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemCount: data.length + 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  bool isSelected =
+                                      index == selectedFilterStatus;
+                                  StatusModel status;
 
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    //MARK: Filter Status
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: FutureBuilder(
-                          future: prostatus,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator.adaptive(
-                                backgroundColor: Colors.transparent,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(orangeColor),
-                              );
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              List<Statusmodel> data = snapshot.data!;
-                              return SizedBox(
-                                height: 38,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  itemCount: data.length + 1,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    bool isSelected =
-                                        index == provider.selectedstatus;
-                                    Statusmodel status;
-
-                                    if (index == 0) {
-                                      status = Statusmodel.StatusModel(
-                                        typeCdId: null,
-                                        desc: 'All',
-                                      );
-                                    } else {
-                                      status = data[index - 1];
-                                    }
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          provider.selectedStatus = index;
-
-                                          // provider.getStatus = status.typeCdId;
-                                          provider.getApiStatusTypeId =
-                                              status.typeCdId;
-                                          print(
-                                              'filter: ${provider.getStatus}');
-                                          print(
-                                              'Filter status.typeCdId: ${status.typeCdId}');
-                                        });
-                                      },
-                                      child: Container(
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 4.0),
-                                        decoration: BoxDecoration(
+                                  if (index == 0) {
+                                    status = StatusModel(
+                                      typeCdId: null,
+                                      desc: 'All',
+                                    );
+                                  } else {
+                                    status = data[index - 1];
+                                  }
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedFilterStatus = index;
+                                        statustypeId = selectedFilterStatus == 0
+                                            ? null
+                                            : data[selectedFilterStatus - 1]
+                                                .typeCdId;
+                                      });
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 4.0),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? orangeColor
+                                            : orangeColor.withOpacity(0.1),
+                                        border: Border.all(
                                           color: isSelected
                                               ? orangeColor
-                                              : orangeColor.withOpacity(0.1),
-                                          border: Border.all(
-                                            color: isSelected
-                                                ? orangeColor
-                                                : orangeColor,
-                                            width: 1.0,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
+                                              : orangeColor,
+                                          width: 1.0,
                                         ),
-                                        child: IntrinsicWidth(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 15.0),
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      status.desc.toString(),
-                                                      style: TextStyle(
-                                                        fontSize: 12.0,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontFamily: "Outfit",
-                                                        color: isSelected
-                                                            ? Colors.white
-                                                            : Colors.black,
-                                                      ),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      child: IntrinsicWidth(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15.0),
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    status.desc.toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 12.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily: "Outfit",
+                                                      color: isSelected
+                                                          ? Colors.white
+                                                          : Colors.black,
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
-                              );
-                            }
-                          }),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              textStyle: const TextStyle(
-                                color: CommonUtils.primaryTextColor,
+                                    ),
+                                  );
+                                },
                               ),
-                              side: const BorderSide(
-                                color: CommonUtils.primaryTextColor,
-                              ),
-                              backgroundColor: Colors.white,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(5),
-                                ),
-                              ),
+                            );
+                          }
+                        }),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            textStyle: const TextStyle(
+                              color: CommonUtils.primaryTextColor,
                             ),
-                            child: const Text(
-                              'Close',
-                              style: TextStyle(
-                                fontFamily: 'Outfit',
-                                fontSize: 14,
-                                color: CommonUtils.primaryTextColor,
-                                fontWeight: FontWeight.bold,
+                            side: const BorderSide(
+                              color: CommonUtils.primaryTextColor,
+                            ),
+                            backgroundColor: Colors.white,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5),
                               ),
                             ),
                           ),
+                          child: const Text(
+                            'Close',
+                            style: TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 14,
+                              color: CommonUtils.primaryTextColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: SizedBox(
-                            child: Center(
-                              child: GestureDetector(
-                                onTap: () {
-                                  //MARK: Filter
-                                  filterAppointments({
-                                    "userId": null,
-                                    "branchId": widget.branchid,
-                                    "fromdate":
-                                        myAppointmentsProvider?.getApiFromDate,
-                                    "toDate":
-                                        myAppointmentsProvider?.getApiToDate,
-                                    "statustypeId": myAppointmentsProvider
-                                        ?.getApiStatusTypeId,
-                                  }).whenComplete(
-                                      () => provider.filterStatus = true);
-                                },
-                                child: Container(
-                                  // width: desiredWidth * 0.9,
-                                  height: 40.0,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5.0),
-                                    color: CommonUtils.primaryTextColor,
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      'Apply',
-                                      style: TextStyle(
-                                        fontFamily: 'Outfit',
-                                        fontSize: 14,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: SizedBox(
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: () async {
+                                onFilter?.call();
+                                /* setState(() {
+                                  futureAppointments = getAgentAppointments(
+                                    userId: null,
+                                    branchId: widget.branchId,
+                                    date: selectedFilterDate.toString(),
+                                    statustypeId: statustypeId,
+                                  );
+                                }); */
+
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                height: 40.0,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  color: CommonUtils.primaryTextColor,
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'Apply',
+                                    style: TextStyle(
+                                      fontFamily: 'Outfit',
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
@@ -827,106 +598,21 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Future<List<Statusmodel>> fetchstatus() async {
-    final response = await http.get(Uri.parse(baseUrl + getstatus));
-    if (response.statusCode == 200) {
-      final List<dynamic> responseData =
-          json.decode(response.body)['listResult'];
-      List<Statusmodel> result =
-          responseData.map((json) => Statusmodel.fromJson(json)).toList();
-      print('fetch branchname: ${result[0].desc}');
-      return result;
-    } else {
-      throw Exception('Failed to load products');
-    }
-  }
-
-  Future<List<BranchModel>> fetchbranches(userId) async {
-    final response =
-        await http.get(Uri.parse('$baseUrl$GetBranchByUserId$userId/null'));
-    if (response.statusCode == 200) {
-      final List<dynamic> responseData =
-          json.decode(response.body)['listResult'];
-      List<BranchModel> result =
-          responseData.map((json) => BranchModel.fromJson(json)).toList();
-      print('fetch branchname: ${result[0].name}');
-      return result;
-    } else {
-      throw Exception('Failed to load products');
-    }
-  }
-
-  Future<void> clearFilterAppointments(Map<String, dynamic> requestBody) async {
-    //   final url = Uri.parse('http://182.18.157.215/SaloonApp/API/api/Appointment/GetAppointment');
-    final url = Uri.parse(baseUrl + GetAppointment);
-    try {
-      Map<String, dynamic> request = requestBody;
-
-      final jsonResponse = await http.post(
-        url,
-        body: json.encode(request),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (jsonResponse.statusCode == 200) {
-        final response = json.decode(jsonResponse.body);
-
-        if (response['listResult'] != null) {
-          List<dynamic> listResult = response['listResult'];
-          myAppointmentsProvider!.storeIntoProvider =
-              listResult.map((item) => Appointment.fromJson(item)).toList();
-        } else {
-          myAppointmentsProvider!.storeIntoProvider = [];
-          throw Exception('No Appointments Available');
-        }
-      } else {
-        myAppointmentsProvider!.storeIntoProvider = [];
-        print('Request failed with status: ${jsonResponse.statusCode}');
-        throw Exception(
-            'Request failed with status: ${jsonResponse.statusCode}');
-      }
-    } catch (error) {
-      print('catch: $error');
-    }
-    Navigator.of(context).pop();
-    myAppointmentsProvider!.clearFilter();
-  }
-
-  List<String>? _getValueText(
-      CalendarDatePicker2Type datePickerType, List<DateTime?> values) {
-    values =
-        values.map((e) => e != null ? DateUtils.dateOnly(e) : null).toList();
-
-    DateTime? startDate;
-    DateTime? endDate;
-
-    startDate = values[0];
-    endDate = values.length > 1 ? values[1] : null;
-    String? formattedStartDate = DateFormat('dd/MM/yyyy').format(startDate!);
-    String? formattedEndDate =
-        endDate != null ? DateFormat('dd/MM/yyyy').format(endDate) : 'null';
-
-    return [formattedStartDate, formattedEndDate];
-  }
-
-  Future<void> _selectDate(
-      BuildContext context, AgentAppointmentsProvider provider) async {
+  Future<void> showFilterDatePicker(BuildContext context) async {
     final DateTime currentDate = DateTime.now();
-    final DateTime initialDate = selectedDate ?? currentDate;
+    final DateTime initialDate = selectedFilterDate ?? currentDate;
 
     final DateTime? pickedDay = await showDatePicker(
       context: context,
@@ -939,39 +625,38 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
     );
 
     if (pickedDay != null) {
-      print('pickedDay.toString(): ${pickedDay.toString()}');
       setState(() {
-        selectedDate = pickedDay;
-        provider.getDisplayDate = pickedDay.toString();
-        provider.getApiFromDate = pickedDay.toString();
-        provider.getApiToDate = pickedDay.toString();
+        selectedFilterDate = pickedDay;
+        _filterDateController.text = DateFormat('dd-MM-yyyy').format(pickedDay);
       });
     }
   }
 }
 
-class UserFeedback {
-  double? ratingstar;
-  String comments;
-
-  UserFeedback({required this.ratingstar, required this.comments});
-}
-
 class OpCard extends StatefulWidget {
   final Appointment data;
-  int userId;
-  int? branchid;
-  String? branchaddress;
+  final int userId;
+  final int? branchId;
+  final String? branchaddress;
   final VoidCallback? onRefresh;
 
-  OpCard({
+  const OpCard({
+    super.key,
+    required this.data,
+    required this.userId,
+    this.branchId,
+    this.branchaddress,
+    this.onRefresh,
+  });
+
+  /* OpCard({
     Key? key,
     required this.data,
     required this.userId,
     required int branchid,
     required String branchaddress,
     this.onRefresh,
-  }) : super(key: key);
+  }) : super(key: key); */
 
   @override
   State<OpCard> createState() => _OpCardState();
@@ -990,9 +675,9 @@ class _OpCardState extends State<OpCard> {
   final GlobalKey _toolTipKey = GlobalKey();
   final GlobalKey _fullnameTipKey = GlobalKey();
   final GlobalKey _emailtoolTipKey = GlobalKey();
-  late Future<List<Statusmodel>> apiPaymentOptions;
+  late Future<List<StatusModel>> apiPaymentOptions;
 
-  // late List<Statusmodel> paymentOptions;
+  // late List<StatusModel> paymentOptions;
   List<dynamic> paymentOptions = [];
   int selectedPaymentOption = -1;
   int? apiPaymentMode;
@@ -1824,8 +1509,6 @@ class _OpCardState extends State<OpCard> {
                       2,
                     );
                   } else {
-                    print('====?${widget.userId}');
-                    // Navigate to reschedule screen if time difference is greater than 60 minutes
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -1924,7 +1607,7 @@ class _OpCardState extends State<OpCard> {
             ],
           );
         }
-        return Row(
+      /*  return Row(
           children: [
             GestureDetector(
               onTap: () {
@@ -2038,100 +1721,15 @@ class _OpCardState extends State<OpCard> {
             ),
           ],
         );
-
-      // if (isSlotTimeReached(data.date, data.slotDuration)) {
-      //   return Row(
-      //     children: [
-      //       GestureDetector(
-      //         onTap: () {
-      //           closePopUp(context, data, 17, userId);
-      //         },
-      //         child: Container(
-      //           decoration: BoxDecoration(
-      //             borderRadius: BorderRadius.circular(3),
-      //             border: Border.all(
-      //               color: CommonStyles.statusRedText,
-      //             ),
-      //           ),
-      //           padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-      //           child: Row(
-      //             children: [
-      //               SvgPicture.asset(
-      //                 'assets/calendar-xmark.svg',
-      //                 width: 12,
-      //                 color: CommonStyles.statusRedText,
-      //               ),
-      //               const Text(
-      //                 '  Close',
-      //                 style: TextStyle(
-      //                   fontSize: 16,
-      //                   fontFamily: "Outfit",
-      //                   fontWeight: FontWeight.w500,
-      //                   color: CommonStyles.statusRedText,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       ),
-      //       const SizedBox(width: 8), // Add spacing between buttons
-      //       GestureDetector(
-      //         onTap: () async {
-      //           await postAppointment(data, 28, 0.0, userId);
-      //           // Add appropriate action for "Not visited" if needed
-      //         },
-      //         child: Container(
-      //           decoration: BoxDecoration(
-      //             borderRadius: BorderRadius.circular(3),
-      //             border: Border.all(
-      //               color: CommonStyles.statusRedText, // Use a different color for differentiation
-      //             ),
-      //           ),
-      //           padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-      //           child: Row(
-      //             children: [
-      //               SvgPicture.asset(
-      //                 'assets/not_visted.svg',
-      //                 width: 12,
-      //                 color: CommonStyles.statusorangeText,
-      //               ),
-      //               const SizedBox(width: 2 ),
-      //               const Text(
-      //                 'Not visited',
-      //                 style: TextStyle(
-      //                   fontSize: 16,
-      //                   fontFamily: "Outfit",
-      //                   fontWeight: FontWeight.w500,
-      //                   color: CommonStyles.statusorangeText,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       ),
-      //     ],
-      //   );
-      // } else {
-      //   return const SizedBox.shrink();
-      // }
+ */
 
       case 6: // Declined
         return const SizedBox();
-      // case 11: // FeedBack
-      //   return Flexible(
-      //     child: Text('" ${data.review} "' ?? '',
-      //         overflow: TextOverflow.ellipsis,
-      //         maxLines: 2,
-      //         style: CommonStyles.txSty_16blu_f5),
-      //   );
-
       case 17: // Closed
 
         if (data.review == null) {
-          // If status is Closed, show review or rate button
           return const SizedBox();
         } else {
-          // If status is not Closed, show the review
           return Flexible(
             child: RichText(
               text: TextSpan(
@@ -2619,23 +2217,6 @@ class _OpCardState extends State<OpCard> {
                                           ),
                                         ),
                                       ),
-                                      // Expanded(
-                                      //   flex: 6,
-                                      //   child: Row(
-                                      //     mainAxisAlignment: MainAxisAlignment.start,
-                                      //     children: [
-                                      //       Text(
-                                      //         ': ${data.customerName}',
-                                      //         style: const TextStyle(
-                                      //           color: CommonStyles.primaryTextColor,
-                                      //           fontSize: 14,
-                                      //           fontFamily: "Outfit",
-                                      //           fontWeight: FontWeight.w500,
-                                      //         ),
-                                      //       ),
-                                      //     ],
-                                      //   ),
-                                      // ),
                                       Expanded(
                                         flex: 6,
                                         child: RichText(
@@ -2650,10 +2231,9 @@ class _OpCardState extends State<OpCard> {
                                             children: [
                                               WidgetSpan(
                                                 child: Padding(
-                                                  padding: const EdgeInsets
-                                                      .only(
-                                                      left:
-                                                          0.0), // Adjust this value for more/less spacing
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 0.0),
                                                   child: Text(
                                                     ': ${data.customerName}',
                                                     style: const TextStyle(
@@ -2669,10 +2249,8 @@ class _OpCardState extends State<OpCard> {
                                               ),
                                             ],
                                           ),
-                                          softWrap:
-                                              true, // Allow wrapping to the next line
-                                          overflow: TextOverflow
-                                              .visible, // Ensure text isn't clipped
+                                          softWrap: true,
+                                          overflow: TextOverflow.visible,
                                         ),
                                       ),
                                     ],
@@ -2697,8 +2275,6 @@ class _OpCardState extends State<OpCard> {
                                         child: OverflowBar(
                                           overflowAlignment:
                                               OverflowBarAlignment.start,
-                                          // mainAxisAlignment:
-                                          //     MainAxisAlignment.start,
                                           children: [
                                             Text(
                                               ': ${DateFormat('dd-MM-yyyy').format(DateTime.parse(data.date))}, ${data.slotTime}',
@@ -2713,56 +2289,6 @@ class _OpCardState extends State<OpCard> {
                                           ],
                                         ),
                                       ),
-                                      // Expanded(
-                                      //   flex: 6,
-                                      //   child: RichText(
-                                      //     text: TextSpan(
-                                      //       style: const TextStyle(
-                                      //         color: CommonStyles.primaryTextColor,
-                                      //         fontSize: 14,
-                                      //         fontFamily: "Outfit",
-                                      //         fontWeight: FontWeight.w500,
-                                      //       ),
-                                      //       children: [
-                                      //         TextSpan(
-                                      //           text: ': ${DateFormat('dd-MM-yyyy').format(DateTime.parse(data.date))}, ',
-                                      //         ),
-                                      //         WidgetSpan(
-                                      //           child: Padding(
-                                      //             padding: const EdgeInsets.only(left: 6.0), // Adjust this value for more/less spacing
-                                      //             child: Text(
-                                      //               '${data.slotDuration}',
-                                      //               style: const TextStyle(
-                                      //                 color: CommonStyles.primaryTextColor,
-                                      //                 fontSize: 14,
-                                      //                 fontFamily: "Outfit",
-                                      //                 fontWeight: FontWeight.w500,
-                                      //               ),
-                                      //             ),
-                                      //           ),
-                                      //         ),
-                                      //       ],
-                                      //     ),
-                                      //     softWrap: true, // Allow wrapping to the next line
-                                      //     overflow: TextOverflow.visible, // Ensure text isn't clipped
-                                      //   ),
-                                      // ),
-                                      // Expanded(
-                                      //   flex: 6,
-                                      //   child: FittedBox(  // Use FittedBox to scale the content within the available space
-                                      //     alignment: Alignment.centerLeft,  // Align text to the left within the box
-                                      //    // fit: BoxFit.fitWidth,  // Scales down the content to avoid overflow
-                                      //     child: Text(
-                                      //       ': ${DateFormat('dd-MM-yyyy').format(DateTime.parse(data.date))}, ${data.slotDuration}',
-                                      //       style: const TextStyle(
-                                      //         color: CommonStyles.primaryTextColor,
-                                      //         fontSize: 14,
-                                      //         fontFamily: "Outfit",
-                                      //         fontWeight: FontWeight.w500,
-                                      //       ),
-                                      //     ),
-                                      //   ),
-                                      // ),
                                     ],
                                   ),
                                   const SizedBox(height: 5),
@@ -3003,7 +2529,6 @@ class _OpCardState extends State<OpCard> {
                               ),
                             ),
                           ),
-
                           Row(
                             children: [
                               Expanded(
@@ -3028,50 +2553,6 @@ class _OpCardState extends State<OpCard> {
                               ),
                             ],
                           ),
-
-                          // Row(
-                          //   children: [
-                          //     Expanded(
-                          //       child: SizedBox(
-                          //         child: Center(
-                          //           child: Container(
-                          //             height: 40.0,
-                          //             decoration: BoxDecoration(
-                          //               borderRadius:
-                          //                   BorderRadius.circular(10.0),
-                          //               color: CommonUtils.primaryTextColor,
-                          //             ),
-                          //             child: Center(
-                          //               child: CustomButton(
-                          //                 buttonText: 'Submit',
-                          //                 color: CommonUtils.primaryTextColor,
-                          //                 onPressed: () {
-                          //                   setState(() {
-                          //                     validatePaymentMode();
-                          //                   });
-                          //                   if (_formKey.currentState!
-                          //                       .validate()) {
-                          //                     if (isPaymentValidate) {
-                          //                       double? price = double.tryParse(
-                          //                           _priceController.text);
-                          //                       postCloseAppointment(
-                          //                           data,
-                          //                           17,
-                          //                           price!,
-                          //                           apiPaymentMode,
-                          //                           userId);
-                          //                       Navigator.of(context).pop();
-                          //                     }
-                          //                   }
-                          //                 },
-                          //               ),
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
                         ],
                       ),
                     ),
@@ -3435,41 +2916,16 @@ class _OpCardState extends State<OpCard> {
   }
 }
 
-Future<void> Get_ApprovedDeclinedSlots(Appointment data, int i) async {
-  final url = Uri.parse(baseUrl + GetApprovedDeclinedSlots);
-  print('url==>55555: $url');
+class StatusModel {
+  final int? typeCdId;
+  final String desc;
 
-  final request = {
-    "Id": data.id,
-    "StatusTypeId": 5,
-    "BranchName": data.name,
-    "Date": data.date,
-    "SlotTime": data.slotTime,
-    "CustomerName": data.customerName,
-    "PhoneNumber": data.phoneNumber,
-    "Email": data.email,
-    "Address": data.name,
-    "SlotDuration": data.slotDuration,
-    "branchId": data.branchId,
-  };
-  print('Get_ApprovedSlotsmail: ${json.encode(request)}');
-  try {
-    // Send the POST request
-    final response = await http.post(
-      url,
-      body: json.encode(request),
-      headers: {
-        'Content-Type': 'application/json', // Set the content type header
-      },
+  StatusModel({required this.typeCdId, required this.desc});
+
+  factory StatusModel.fromJson(Map<String, dynamic> json) {
+    return StatusModel(
+      typeCdId: json['typeCdId'],
+      desc: json['desc'],
     );
-
-    // Check the response status code
-    if (response.statusCode == 204) {
-      print('Request sent successfully');
-    } else {
-      print('Failed to send the request. Status code: ${response.statusCode}');
-    }
-  } catch (e) {
-    print('Error: $e');
   }
 }

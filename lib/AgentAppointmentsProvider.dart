@@ -147,10 +147,10 @@ class Statusmodel {
   final int? typeCdId;
   final String desc;
 
-  Statusmodel({required this.typeCdId, required this.desc});
+  Statusmodel.StatusModel({required this.typeCdId, required this.desc});
 
   factory Statusmodel.fromJson(Map<String, dynamic> json) {
-    return Statusmodel(
+    return Statusmodel.StatusModel(
       typeCdId: json['typeCdId'] ?? 0,
       desc: json['desc'] ?? '',
     );
