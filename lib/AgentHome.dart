@@ -216,7 +216,7 @@ class _AgentHomeState extends State<AgentHome> {
                 height: 20,
                 color: CommonUtils.primaryTextColor,
               ),
-              label: 'Inventary',
+              label: 'Inventory',
             ),
           ],
           selectedLabelStyle: CommonStyles.txSty_16b_fb,

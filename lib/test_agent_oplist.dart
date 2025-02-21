@@ -7,6 +7,7 @@ import 'package:hairfixingzone/AgentRescheduleslotscreen.dart';
 import 'package:hairfixingzone/Agentappointmentlist.dart';
 import 'package:hairfixingzone/Appointment.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
+import 'package:hairfixingzone/Common/common_widgets.dart';
 import 'package:hairfixingzone/Common/custom_button.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/api_config.dart';
@@ -1440,41 +1441,14 @@ class _OpCardState extends State<OpCard> {
             children: [
               GestureDetector(
                 onTap: () {
-                  closePopUp(context, data, 17, userId);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(3),
-                    border: Border.all(
-                      color: CommonStyles.statusRedText,
-                    ),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/calendar-xmark.svg',
-                        width: 12,
-                        color: CommonStyles.statusRedText,
-                      ),
-                      const Text(
-                        '  Close',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: "Outfit",
-                          fontWeight: FontWeight.w500,
-                          color: CommonStyles.statusRedText,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8), // Add spacing between buttons
-              GestureDetector(
-                onTap: () {
-                  postAppointment(data, 28, 0.0, userId);
+                  CommonWidgets.customCancelDialog(
+                    context,
+                    message:
+                        'Are You Sure You Want to Mark as Not Visited ${data.name} Consultation?',
+                    onConfirm: () {
+                      postAppointment(data, 28, 0.0, userId);
+                    },
+                  );
                   // Add appropriate action for "Not visited" if needed
                 },
                 child: Container(
@@ -1502,6 +1476,40 @@ class _OpCardState extends State<OpCard> {
                           fontFamily: "Outfit",
                           fontWeight: FontWeight.w500,
                           color: CommonStyles.statusorangeText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () {
+                  closePopUp(context, data, 17, userId);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(3),
+                    border: Border.all(
+                      color: CommonStyles.statusRedText,
+                    ),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/calendar-xmark.svg',
+                        width: 12,
+                        color: CommonStyles.statusRedText,
+                      ),
+                      const Text(
+                        '  Close',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Outfit",
+                          fontWeight: FontWeight.w500,
+                          color: CommonStyles.statusRedText,
                         ),
                       ),
                     ],

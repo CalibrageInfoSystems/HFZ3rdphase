@@ -60,6 +60,7 @@ class _AddInventoryState extends State<AddInventory> {
   void initState() {
     super.initState();
     futureColors = getColors();
+    print('isUpdate: ${widget.isUpdate}');
 
     if (widget.inventory != null) {
       productNameController.text = widget.inventory!.productName ?? '';
@@ -276,9 +277,11 @@ class _AddInventoryState extends State<AddInventory> {
                 const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
-                    setState(() {
-                      isProductActive = !isProductActive;
-                    });
+                    if (widget.isUpdate!) {
+                      setState(() {
+                        isProductActive = !isProductActive;
+                      });
+                    }
                   },
                   child: Row(
                     children: [
@@ -289,11 +292,15 @@ class _AddInventoryState extends State<AddInventory> {
                           value: isProductActive,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5)),
-                          activeColor: CommonUtils.primaryTextColor,
+                          activeColor: widget.isUpdate!
+                              ? CommonUtils.primaryTextColor
+                              : Colors.grey,
                           onChanged: (value) {
-                            setState(() {
-                              isProductActive = value!;
-                            });
+                            if (widget.isUpdate!) {
+                              setState(() {
+                                isProductActive = value!;
+                              });
+                            }
                           },
                         ),
                       ),

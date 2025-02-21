@@ -661,8 +661,15 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  customConsultationCall(
-                                      consultationslist[index], 28);
+                                  CommonWidgets.customCancelDialog(
+                                    context,
+                                    message:
+                                        'Are You Sure You Want to Mark as Not Visited ${consultationslist[index].consultationName} Consultation?',
+                                    onConfirm: () {
+                                      customConsultationCall(
+                                          consultationslist[index], 28);
+                                    },
+                                  );
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -1188,7 +1195,7 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
         if (response['isSuccess']) {
           CommonUtils.showCustomToastMessageLong(
               statusTypeId == 28
-                  ? 'Consultation Marked as Visited'
+                  ? 'Consultation Marked as Not Visited'
                   : 'Consultation Closed Successfully',
               context,
               0,
