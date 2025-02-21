@@ -141,7 +141,7 @@ class ViewConsulatationBranchTemplate extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => viewconsulationlistscreen(
+                  builder: (context) => ViewConsulationlistScreen(
                         branchid: agent.id!,
                         fromdate: '$startDate',
                         todate: '$endDate',

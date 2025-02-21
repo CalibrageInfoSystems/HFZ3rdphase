@@ -1232,18 +1232,18 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
       if (isFullNameValidate && isMobileNumberValidate) {
         if (!isSlotsAvailable) {
           showCustomToastMessageLong(
-              'No Slots Are Available Today', context, 1, 4);
+              'No Slots Are Available Today', context, 1, 2);
           return; // Stop further execution if no slots are available
         }
         if (!slotselection) {
-          showCustomToastMessageLong('Please Select A Slot', context, 1, 4);
+          showCustomToastMessageLong('Please Select A Slot', context, 1, 2);
           return; // Stop execution if no slot has been selected
         }
         if (value == null || value.isEmpty) {
           ispurposeselected = true; // Flag purpose as not selected
           setState(() {}); // Trigger UI update for validation message
           showCustomToastMessageLong(
-              'Please Select A Purpose of Visit', context, 1, 4);
+              'Please Select A Purpose of Visit', context, 1, 2);
           return; // Stop execution if purpose is not selected
         }
 
@@ -1499,7 +1499,6 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
           //     id: notificationId2,
           //   );
           // }
-
           // Your existing code...
           // LoadingProgress.stop(context,rootNavigator);Appointment Added Successfully
           print('Request sent successfully');

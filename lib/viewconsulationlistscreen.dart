@@ -25,14 +25,14 @@ import 'package:url_launcher/url_launcher.dart';
 import 'AgentBranchesModel.dart';
 import 'Consultation.dart';
 
-class viewconsulationlistscreen extends StatefulWidget {
+class ViewConsulationlistScreen extends StatefulWidget {
   final int branchid;
   final String fromdate;
   final String todate;
   final AgentBranchModel agent;
   final int userid;
 
-  const viewconsulationlistscreen(
+  const ViewConsulationlistScreen(
       {super.key,
       required this.branchid,
       required this.fromdate,
@@ -41,10 +41,10 @@ class viewconsulationlistscreen extends StatefulWidget {
       required this.userid});
 
   @override
-  State<viewconsulationlistscreen> createState() => _ViewConsultationState();
+  State<ViewConsulationlistScreen> createState() => _ViewConsultationState();
 }
 
-class _ViewConsultationState extends State<viewconsulationlistscreen> {
+class _ViewConsultationState extends State<ViewConsulationlistScreen> {
   List<Consultation> consultationslist = [];
 
   final TextEditingController _fromToDatesController = TextEditingController();
@@ -60,6 +60,11 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
   @override
   void initState() {
     super.initState();
+    print('viewconsulatation1: ${widget.branchid}');
+    print('viewconsulatation2: ${widget.fromdate}');
+    print('viewconsulatation3: ${widget.todate}');
+    print('viewconsulatation4: ${widget.agent.toString()}');
+    print('viewconsulatation5: ${widget.userid}');
     startDate = DateTime.now().subtract(const Duration(days: 14));
     endDate = DateTime.now();
     _fromToDatesController.text =
@@ -344,7 +349,6 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                             //           _fromToDatesController.text =
                             //               '${startDate != null ? DateFormat("dd/MM/yyyy").format(startDate!) : '-'} / ${endDate != null ? DateFormat("dd/MM/yyyy").format(endDate!) : '-'}';
                             //           ConsultationData =
-                            //               getviewconsulationlist(DateFormat('yyyy-MM-dd').format(startDate!), DateFormat('yyyy-MM-dd').format(endDate!));
 
                             selectedDate =
                                 _getValueText(config.calendarType, values);
@@ -353,7 +357,6 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                             String apiFromDate = formateDate(selectedDate![0]);
                             String apiToDate = formateDate(selectedDate![1]);
                             ConsultationData =
-                                getviewconsulationlist(apiFromDate, apiToDate);
                             // provider.getDisplayDate =
                             //     '${selectedDate![0]}  to  ${selectedDate![1]}';
                             // provider.getApiFromDate = selectedDate![0];
@@ -650,7 +653,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                   ),
                   const SizedBox(height: 10),
                   if (consultationslist[index].statusTypeId != 28 &&
-                      consultationslist[index].statusTypeId != 6) ...[
+                      consultationslist[index].statusTypeId != 17) ...[
                     (DateTime.now()
                             .isAfter(consultationslist[index].visitingDate!))
                         ? Row(
@@ -658,9 +661,8 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  print('clicked-------------');
-                                  notVisitedConsultation(
-                                      consultationslist[index]);
+                                  customConsultationCall(
+                                      consultationslist[index], 28);
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -682,12 +684,64 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                                       const SizedBox(width: 2),
                                       const Text(
                                         'Not visited',
-                                        style: TextStyle(
+                                        /*  style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: "Outfit",
                                           fontWeight: FontWeight.w500,
                                           color: CommonStyles.statusorangeText,
+                                        ), */
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: CommonStyles.statusorangeText,
                                         ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  CommonWidgets.customCancelDialog(
+                                    context,
+                                    message:
+                                        'Are You Sure You Want to Close ${consultationslist[index].consultationName} Consultation?',
+                                    onConfirm: () {
+                                      customConsultationCall(
+                                          consultationslist[index], 17);
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(3),
+                                    border: Border.all(
+                                      color: CommonStyles
+                                          .statusRedText, // Use a different color for differentiation
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2, horizontal: 8),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/close.svg',
+                                        width: 12,
+                                        color: CommonStyles.statusorangeText,
+                                      ),
+                                      const SizedBox(width: 2),
+                                      const Text(
+                                        'Close',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: CommonStyles.statusorangeText,
+                                        ),
+                                        /* style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: "Outfit",
+                                          fontWeight: FontWeight.w500,
+                                          color: CommonStyles.statusorangeText,
+                                        ), */
                                       ),
                                     ],
                                   ),
@@ -699,11 +753,10 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
+                                onTap: () async {
+                                  final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      // AgentBranchModel
                                       builder: (context) =>
                                           AddConsulationscreen(
                                               agentId: widget.userid,
@@ -713,6 +766,17 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
                                                   consultationslist[index]),
                                     ),
                                   );
+
+                                  if (result == true) {
+                                    final formattedDate =
+                                        DateFormat('yyyy-MM-dd').format(
+                                            selectedDate ?? DateTime.now());
+
+                                    setState(() {
+                                      consultationData = getviewconsulationlist(
+                                          formattedDate, formattedDate);
+                                    });
+                                  }
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -1090,7 +1154,8 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
     }
   }
 
-  Future<void> notVisitedConsultation(Consultation consultation) async {
+  Future<void> customConsultationCall(
+      Consultation consultation, int statusTypeId) async {
     try {
       final apiUrl = Uri.parse(baseUrl + addupdateconsulation);
       final requestBody = jsonEncode({
@@ -1109,7 +1174,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
         "updatedDate": DateFormat('yyyy-MM-dd').format(DateTime.now()),
         "visitingDate":
             DateFormat('yyyy-MM-dd').format(consultation.visitingDate!),
-        "statusTypeId": 28
+        "statusTypeId": statusTypeId, // 28
       });
       print('rescheduleConsultation: $requestBody');
       final jsonResponse = await http.post(
@@ -1122,7 +1187,12 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
         final response = json.decode(jsonResponse.body);
         if (response['isSuccess']) {
           CommonUtils.showCustomToastMessageLong(
-              'Consultation Marked as Not Visited', context, 0, 5);
+              statusTypeId == 28
+                  ? 'Consultation Marked as Visited'
+                  : 'Consultation Closed Successfully',
+              context,
+              0,
+              2);
           final formattedDate =
               DateFormat('yyyy-MM-dd').format(selectedDate ?? DateTime.now());
           setState(() {
@@ -1131,7 +1201,7 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
           });
         } else {
           CommonUtils.showCustomToastMessageLong(
-              '${response['statusMessage']}', context, 0, 5);
+              '${response['statusMessage']}', context, 0, 2);
         }
       } else {
         throw Exception('Failed to reschedule consultation');
@@ -1141,12 +1211,4 @@ class _ViewConsultationState extends State<viewconsulationlistscreen> {
       rethrow;
     }
   }
-
-  /*  void cancelConsultation(Consultation consultation) {
-    // cancel consulatation and fetch consultation list
-    // ConsultationData = getviewconsulationlist(
-  /*     DateFormat('yyyy-MM-dd').format(DateTime.now()),
-      DateFormat('yyyy-MM-dd').format(DateTime.now()),
-   */
-  } */
 }

@@ -10,15 +10,14 @@ import 'package:hairfixingzone/api_config.dart';
 import 'package:hairfixingzone/models/inventory_model.dart';
 import 'package:http/http.dart' as http;
 
-class InventoryScreen extends StatefulWidget {
+class TestScreen extends StatefulWidget {
   final int userId;
   final int branchId;
   final String branchName;
   final String branchImage;
   final String branchNumber;
   final String branchAddress;
-  final int? toTheSegment;
-  const InventoryScreen({
+  const TestScreen({
     super.key,
     required this.userId,
     required this.branchId,
@@ -26,34 +25,19 @@ class InventoryScreen extends StatefulWidget {
     required this.branchImage,
     required this.branchNumber,
     required this.branchAddress,
-    this.toTheSegment,
   });
 
   @override
-  State<InventoryScreen> createState() => _InventoryScreenState();
+  State<TestScreen> createState() => _TestScreenState();
 }
 
-class _InventoryScreenState extends State<InventoryScreen> {
-  int? _selectedSegment = 0;
+class _TestScreenState extends State<TestScreen> {
   late Future<List<InventoryModel>> futureinvetories;
 
   @override
   void initState() {
     super.initState();
-    _selectedSegment = widget.toTheSegment ?? 0;
     futureinvetories = getInventories();
-  }
-
-  @override
-  void didUpdateWidget(covariant InventoryScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.toTheSegment != null &&
-        widget.toTheSegment != _selectedSegment) {
-      setState(() {
-        _selectedSegment = widget.toTheSegment;
-      });
-      print('CustomersView (didUpdateWidget): $_selectedSegment');
-    }
   }
 
   FutureBuilder<List<InventoryModel>> inventoryTab() {
@@ -123,31 +107,20 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    (inventory.color != null)
-                        ? Text(
-                            '${inventory.color} - ${inventory.quantity}',
-                            style: CommonStyles.txSty_12b_f5,
-                          )
-                        : Text(
-                            '${inventory.quantity}',
-                            style: CommonStyles.txSty_12b_f5,
-                          ),
-                    if (inventory.desc != null && inventory.desc!.isNotEmpty)
-                      Column(
-                        children: [
-                          const SizedBox(height: 10),
-                          Text(
-                            '${inventory.desc}',
-                            style: CommonStyles.txSty_12b_f5,
-                          ),
-                        ],
-                      ),
+                    Text(
+                      '${inventory.color} - ${inventory.quantity}',
+                      style: CommonStyles.txSty_12b_f5,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '${inventory.desc}',
+                      style: CommonStyles.txSty_12b_f5,
+                    ),
                   ],
                 ),
               ),
             ),
-
-            /*   Column(
+            Column(
               children: [
                 if (inventory.isActive!)
                   IconButton(
@@ -171,6 +144,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
+                        builder: (context) => AddInventory(
                           userId: widget.userId,
                           branchId: widget.branchId,
                           inventory: inventory,
@@ -179,7 +153,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           branchNumber: widget.branchNumber,
                           branchAddress: widget.branchAddress,
                           isUpdate: true,
-                          isActive: inventory.isActive,
                         ),
                       ),
                     );
@@ -188,99 +161,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
               ],
             ),
-           */
-            inventory.isActive!
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: PopupMenuButton<String>(
-                      onSelected: (value) async {
-                        if (value == 'update') {
-                          final updateInventory =
-                              await Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => AddInventory(
-                                userId: widget.userId,
-                                branchId: widget.branchId,
-                                inventory: inventory,
-                                branchName: widget.branchName,
-                                branchImage: widget.branchImage,
-                                branchNumber: widget.branchNumber,
-                                branchAddress: widget.branchAddress,
-                                isUpdate: true,
-                                isActive: inventory.isActive,
-                              ),
-                            ),
-                          );
-                          if (updateInventory) {
-                            setState(() {
-                              futureinvetories = getInventories();
-                            });
-                          }
-                        } else if (value == 'delete') {
-                          CommonWidgets.customCancelDialog(
-                            context,
-                            message:
-                                'Are You Sure You Want to Delete ${inventory.productName}?',
-                            onConfirm: () {
-                              deleteInventory(inventory).whenComplete(() {
-                                setState(() {
-                                  futureinvetories = getInventories();
-                                });
-                              });
-                            },
-                          );
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem(
-                          value: 'update',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit, color: Colors.blue),
-                              SizedBox(width: 8),
-                              Text('Update'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text('Delete'),
-                            ],
-                          ),
-                        ),
-                      ],
-                      child: const Icon(Icons.more_vert),
-                    ),
-                  )
-                : IconButton(
-                    onPressed: () async {
-                      final result = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => AddInventory(
-                            userId: widget.userId,
-                            branchId: widget.branchId,
-                            inventory: inventory,
-                            branchName: widget.branchName,
-                            branchImage: widget.branchImage,
-                            branchNumber: widget.branchNumber,
-                            branchAddress: widget.branchAddress,
-                            isUpdate: true,
-                            isActive: inventory.isActive,
-                          ),
-                        ),
-                      );
-                      if (result) {
-                        setState(() {
-                          futureinvetories = getInventories();
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.edit),
-                  ),
           ],
         ),
       ),
@@ -366,9 +246,23 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      initialIndex: _selectedSegment!,
       child: Scaffold(
-        appBar: appBar(context),
+        appBar: AppBar(
+          title: const Text('Inventory'),
+          /*  bottom: const TabBar(
+            indicatorColor: CommonStyles.primaryTextColor, // Underline color
+            indicatorWeight: 4.0, // Thickness of the underline
+            indicatorSize: TabBarIndicatorSize.tab, // Full-width indicator
+            labelColor:
+                CommonStyles.primaryTextColor, // Selected tab text color
+            unselectedLabelColor:
+                CommonStyles.blackColorShade, // Unselected tab text color
+            tabs: [
+              Tab(text: 'Inventory'),
+              Tab(text: 'Delete Inventory'),
+            ],
+          ), */
+        ),
         body: Column(
           children: [
             Padding(
@@ -378,45 +272,36 @@ class _InventoryScreenState extends State<InventoryScreen> {
             const SizedBox(height: 20),
             tabBar(),
             tabBarView(),
-            addInventoryBtn(context),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: CustomButton(
+                      buttonText: 'Add Inventory',
+                      color: CommonUtils.primaryTextColor,
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => AddInventory(
+                              userId: widget.userId,
+                              branchId: widget.branchId,
+                              branchName: widget.branchName,
+                              branchImage: widget.branchImage,
+                              branchNumber: widget.branchNumber,
+                              branchAddress: widget.branchAddress,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 10),
           ],
         ),
-      ),
-    );
-  }
-
-  Padding addInventoryBtn(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: Row(
-        children: [
-          Expanded(
-            child: CustomButton(
-              buttonText: 'Add Inventory',
-              color: CommonUtils.primaryTextColor,
-              onPressed: () async {
-                final result = await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AddInventory(
-                      userId: widget.userId,
-                      branchId: widget.branchId,
-                      branchName: widget.branchName,
-                      branchImage: widget.branchImage,
-                      branchNumber: widget.branchNumber,
-                      branchAddress: widget.branchAddress,
-                    ),
-                  ),
-                );
-                if (result) {
-                  setState(() {
-                    futureinvetories = getInventories();
-                  });
-                }
-              },
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -430,29 +315,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
         ],
       ),
     );
-  }
-
-  AppBar appBar(BuildContext context) {
-    return AppBar(
-        elevation: 0,
-        backgroundColor: const Color(0xffe2f0fd),
-        title: const Text(
-          'Inventory',
-          style: TextStyle(
-            color: Color(0xFF0f75bc),
-            fontSize: 16.0,
-            fontFamily: "Outfit",
-          ),
-        ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: CommonUtils.primaryTextColor,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ));
   }
 
   TabBar tabBar() {
@@ -586,5 +448,31 @@ class _InventoryScreenState extends State<InventoryScreen> {
         ),
       ),
     );
+  }
+}
+
+class Inventory extends StatelessWidget {
+  final List<InventoryModel> data;
+  const Inventory({super.key, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Center(
+      child: Text('Inventory'),
+    ));
+  }
+}
+
+class DeletedInventory extends StatelessWidget {
+  final List<InventoryModel> data;
+  const DeletedInventory({super.key, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+        body: Center(
+      child: Text('Deleted Inventory'),
+    ));
   }
 }

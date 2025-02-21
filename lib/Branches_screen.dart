@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hairfixingzone/inventory_screen.dart';
 import 'package:hairfixingzone/test_agent_oplist.dart';
+import 'package:hairfixingzone/test_screen.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -262,7 +263,6 @@ class BranchTemplate extends StatelessWidget {
                   builder: (context) => TestAgentOplist(
                     branchId: branchnames.id!,
                     userId: userId,
-                    branchAddress: branchnames.address,
                   ),
                   /* Agentappointmentlist(
                     userId: userId,

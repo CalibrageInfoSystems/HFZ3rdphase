@@ -11,7 +11,7 @@ class InventoryModel {
   final int? id;
   final int? branchId;
   final String? productName;
-  final double? quantity;
+  final int? quantity;
   final int? colorTypeId;
   final String? desc;
   final bool? isActive;
@@ -46,7 +46,8 @@ class InventoryModel {
         id: json["id"],
         branchId: json["branchId"],
         productName: json["productName"],
-        quantity: json["quantity"]?.toDouble(),
+        quantity: (json['quantity'] as num).toInt(),
+        // quantity: json["quantity"]?.toDouble(),
         colorTypeId: json["colorTypeId"],
         desc: json["desc"],
         isActive: json["isActive"],

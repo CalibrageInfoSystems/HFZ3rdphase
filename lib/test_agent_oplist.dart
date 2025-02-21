@@ -18,13 +18,12 @@ import 'package:url_launcher/url_launcher.dart';
 class TestAgentOplist extends StatefulWidget {
   final int userId;
   final int branchId;
-  final String branchAddress;
 
-  const TestAgentOplist(
-      {super.key,
-      required this.userId,
-      required this.branchId,
-      required this.branchAddress});
+  const TestAgentOplist({
+    super.key,
+    required this.userId,
+    required this.branchId,
+  });
 
   @override
   State<TestAgentOplist> createState() => _TestAgentOplistState();
@@ -50,7 +49,6 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
     futureStatus = getStatus();
     /* CommonUtils.checkInternetConnectivity().then((isConnected) {
       if (isConnected) {
-        
       }
     }); */
   }
@@ -123,75 +121,53 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
     });
   }
 
+  void refreshTheScreen() {
+    CommonUtils.checkInternetConnectivity().then(
+      (isConnected) {
+        if (isConnected) {
+          setState(() {
+            futureAppointments = getAgentAppointments(
+              userId: null,
+              branchId: widget.branchId,
+              date: selectedFilterDate.toString(),
+              statustypeId: statustypeId,
+            );
+            isFilterApplied = false;
+          });
+        } else {
+          CommonUtils.showCustomToastMessageLong(
+              'Please check your internet  connection', context, 1, 4);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar(context),
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10).copyWith(top: 10),
-              child: _searchBarAndFilter(),
-            ),
-            Expanded(
-              child: FutureBuilder(
-                future: futureAppointments,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator.adaptive(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return const Center(
-                      child: Text(
-                        'No Appointments Available',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Roboto",
-                        ),
-                      ),
-                    );
-                  } else {
-                    final data = snapshot.data as List<Appointment>;
-
-                    if (data.isNotEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: ListView.builder(
-                          itemCount: data.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                OpCard(
-                                  data: data[index],
-                                  userId: widget.userId,
-                                  branchId: widget.branchId,
-                                  branchaddress: widget.branchAddress,
-                                  onRefresh: () {
-                                    /* setState(() {
-                                      refreshTheScreen();
-                                    }); */
-                                  },
-                                ),
-
-                                // OpCard(data: data[index], userId: widget.userId, branchid: widget.branchid, branchaddress: widget.branchaddress),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                              ],
-                            );
-                            // return AppointmentCard(
-                            //     data: data[index],
-                            //     day: parseDayFromDate(data[index].date),);
-                          },
-                        ),
+    return RefreshIndicator(
+      onRefresh: () async {
+        refreshTheScreen();
+      },
+      child: Scaffold(
+        appBar: appBar(context),
+        body: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10)
+                    .copyWith(top: 10),
+                child: _searchBarAndFilter(),
+              ),
+              Expanded(
+                child: FutureBuilder(
+                  future: futureAppointments,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator.adaptive(),
                       );
-                    } else {
+                    } else if (snapshot.hasError) {
                       return const Center(
                         child: Text(
                           'No Appointments Available',
@@ -203,12 +179,57 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
                           ),
                         ),
                       );
+                    } else {
+                      final data = snapshot.data as List<Appointment>;
+
+                      if (data.isNotEmpty) {
+                        return Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: ListView.builder(
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  OpCard(
+                                    data: data[index],
+                                    userId: widget.userId,
+                                    branchId: widget.branchId,
+                                    onRefresh: () {
+                                      refreshTheScreen();
+                                    },
+                                  ),
+
+                                  // OpCard(data: data[index], userId: widget.userId, branchid: widget.branchid, branchaddress: widget.branchaddress),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                ],
+                              );
+                              // return AppointmentCard(
+                              //     data: data[index],
+                              //     day: parseDayFromDate(data[index].date),);
+                            },
+                          ),
+                        );
+                      } else {
+                        return const Center(
+                          child: Text(
+                            'No Appointments Available',
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Roboto",
+                            ),
+                          ),
+                        );
+                      }
                     }
-                  }
-                },
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -227,7 +248,7 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
         },
       ),
       title: const Text(
-        'test Appointments',
+        'Appointments',
         style: TextStyle(
           color: Color(0xFF0f75bc),
           fontSize: 16.0,
@@ -637,7 +658,6 @@ class OpCard extends StatefulWidget {
   final Appointment data;
   final int userId;
   final int? branchId;
-  final String? branchaddress;
   final VoidCallback? onRefresh;
 
   const OpCard({
@@ -645,7 +665,6 @@ class OpCard extends StatefulWidget {
     required this.data,
     required this.userId,
     this.branchId,
-    this.branchaddress,
     this.onRefresh,
   });
 
@@ -977,7 +996,7 @@ class _OpCardState extends State<OpCard> {
                                 children: [
                                   statusBasedBgById(widget.data.statusTypeId,
                                       widget.data.status),
-                                  const SizedBox(height: 2.0),
+                                  const SizedBox(height: 5.0),
 
                                   Row(
                                     children: [
@@ -1195,7 +1214,6 @@ class _OpCardState extends State<OpCard> {
     //   });
     //
     //   print('Button 1 pressed for ${data.customerName}');
-    //   await postAppointment(data, 5, 0.0, userId);
     //   await Get_ApprovedDeclinedSlots(data, 5);
     //   print('accpteedbuttonisclicked');
     //
@@ -1260,7 +1278,6 @@ class _OpCardState extends State<OpCard> {
         //   if (!isPastDate(data.date, data.slotDuration)) {
         //     print('Button 1 pressed for ${data.customerName}');
         //
-        //     postAppointment(data, 5, 0.0, userId);
         //     Get_ApprovedDeclinedSlots(data, 5);
         //     print('accpteedbuttonisclicked');
         //   }
@@ -1456,8 +1473,8 @@ class _OpCardState extends State<OpCard> {
               ),
               const SizedBox(width: 8), // Add spacing between buttons
               GestureDetector(
-                onTap: () async {
-                  await postAppointment(data, 28, 0.0, userId);
+                onTap: () {
+                  postAppointment(data, 28, 0.0, userId);
                   // Add appropriate action for "Not visited" if needed
                 },
                 child: Container(
@@ -1497,7 +1514,7 @@ class _OpCardState extends State<OpCard> {
           return Row(
             children: [
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   int timeDifference =
                       calculateTimeDifference(data.date, data.slotDuration);
 
@@ -1509,7 +1526,7 @@ class _OpCardState extends State<OpCard> {
                       2,
                     );
                   } else {
-                    Navigator.push(
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => Agentrescheduleslotscreen(
@@ -1518,6 +1535,9 @@ class _OpCardState extends State<OpCard> {
                         ),
                       ),
                     );
+                    if (result) {
+                      widget.onRefresh?.call();
+                    }
                   }
                 },
                 child: IgnorePointer(
@@ -1623,16 +1643,6 @@ class _OpCardState extends State<OpCard> {
                   );
                 } else {
                   print('====?${widget.userId}');
-                  // Navigate to reschedule screen if time difference is greater than 60 minutes
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Agentrescheduleslotscreen(
-                        userId: userId!,
-                        data: data,
-                      ),
-                    ),
-                  );
                 }
               },
               child: IgnorePointer(
@@ -1727,7 +1737,7 @@ class _OpCardState extends State<OpCard> {
         return const SizedBox();
       case 17: // Closed
 
-        if (data.review == null) {
+        if (data.review == null || data.review == '') {
           return const SizedBox();
         } else {
           return Flexible(
@@ -1737,7 +1747,7 @@ class _OpCardState extends State<OpCard> {
                 style: CommonStyles.txSty_16blu_f5,
                 children: <TextSpan>[
                   TextSpan(
-                    text: '${data.review} ' ?? '',
+                    text: '${data.review}',
                     style: const TextStyle(
                       fontWeight: FontWeight.w500,
                       fontFamily: "Outfit",
@@ -2605,11 +2615,6 @@ class _OpCardState extends State<OpCard> {
                   // Refresh the screen
                   widget.onRefresh?.call();
                   Navigator.of(context).pop();
-                  //    Navigator.of(context).push(
-                  //      MaterialPageRoute(
-                  //        builder: (context) =>  Agentappointmentlist(),
-                  //      ),
-                  //    );
                 },
               ),
             ],
@@ -2665,11 +2670,6 @@ class _OpCardState extends State<OpCard> {
                 onPressed: () {
                   widget.onRefresh?.call();
                   Navigator.of(context).pop();
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => const CustomerLoginScreen(),
-                  //   ),
-                  // );
                 },
               ),
             ],
@@ -2717,11 +2717,6 @@ class _OpCardState extends State<OpCard> {
                 onPressed: () {
                   widget.onRefresh?.call();
                   Navigator.of(context).pop();
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => const CustomerLoginScreen(),
-                  //   ),
-                  // );
                 },
               ),
             ],
@@ -2819,8 +2814,6 @@ class _OpCardState extends State<OpCard> {
       // "timeofslot": null,
       // "customerId":  data.c
     };
-    print('postAppointment: : ${json.encode(request)}');
-    print('postAppointment: $url');
     try {
       // Send the POST request
       final response = await http.post(
@@ -2830,7 +2823,6 @@ class _OpCardState extends State<OpCard> {
           'Content-Type': 'application/json', // Set the content type header
         },
       );
-      print('postAppointment: ${response.body}');
       // Check the response status code
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(response.body);

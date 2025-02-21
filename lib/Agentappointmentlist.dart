@@ -1052,7 +1052,6 @@ class _OpCardState extends State<OpCard> {
               borderRadius: BorderRadius.circular(5.0),
               // border: Border.all(
               //   color: Colors.grey,
-              //   //  color: const Color(0xFF8d97e2), // Add your desired border color here
               //   width: 1.0, // Set the border width
               // ),
             ),

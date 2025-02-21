@@ -72,6 +72,7 @@ class CustomeFormField extends StatelessWidget {
         // textfield
         TextFormField(
           controller: controller,
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
             enabled: enabled,
             suffixIcon: suffixIcon,
@@ -110,7 +111,6 @@ class CustomeFormField extends StatelessWidget {
             counterText: "",
           ),
           focusNode: focusNode,
-          inputFormatters: inputFormatters,
           validator: validator,
           onChanged: onChanged,
           keyboardType: keyboardType,

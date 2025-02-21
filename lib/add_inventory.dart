@@ -1,27 +1,43 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hairfixingzone/AgentHome.dart';
-import 'package:hairfixingzone/BranchModel.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
 import 'package:hairfixingzone/Common/custom_button.dart';
 import 'package:hairfixingzone/Common/custome_form_field.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/api_config.dart';
+import 'package:hairfixingzone/inventory_screen.dart';
 import 'package:hairfixingzone/models/colors_model.dart';
 import 'package:hairfixingzone/models/inventory_model.dart';
 import 'package:http/http.dart' as http;
 
 class AddInventory extends StatefulWidget {
   final int userId;
+  final bool? isUpdate;
+  final bool? isActive;
 
   final InventoryModel? inventory;
   final int branchId;
-  const AddInventory(
-      {super.key,
-      required this.userId,
-      this.inventory,
-      required this.branchId});
+
+  final String branchName;
+  final String branchImage;
+  final String branchNumber;
+  final String branchAddress;
+
+  const AddInventory({
+    super.key,
+    required this.userId,
+    this.inventory,
+    required this.branchId,
+    this.isUpdate = false,
+    this.isActive = true,
+    required this.branchName,
+    required this.branchImage,
+    required this.branchNumber,
+    required this.branchAddress,
+  });
 
   @override
   State<AddInventory> createState() => _AddInventoryState();
@@ -109,20 +125,28 @@ class _AddInventoryState extends State<AddInventory> {
       if (jsonResponse.statusCode == 200) {
         final response = jsonDecode(jsonResponse.body);
         if (response['isSuccess']) {
-          Navigator.of(context).pushAndRemoveUntil(
+          /*  Navigator.pushReplacement(
+            context,
             MaterialPageRoute(
-                builder: (context) => AgentHome(userId: widget.userId)),
-            (route) => false,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(response['statusMessage']),
-            duration: const Duration(seconds: 2),
-          ));
+              builder: (context) => InventoryScreen(
+                branchId: widget.branchId,
+                userId: widget.userId,
+                branchName: widget.branchName,
+                branchImage: widget.branchImage,
+                branchNumber: widget.branchNumber,
+                branchAddress: widget.branchAddress,
+                toTheSegment: !widget.isActive! ? 1 : 0,
+              ),
+            ),
+          ); */
+          Navigator.pop(context, true);
+          return CommonUtils.showCustomToastMessageLong(
+              response['statusMessage'], context, 0, 5);
         }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(response['statusMessage']),
-          duration: const Duration(seconds: 2),
-        ));
+
+        CommonUtils.showCustomToastMessageLong(
+            response['statusMessage'], context, 0, 5);
+
         throw Exception('Failed to add inventory');
       }
       throw Exception('Failed to add inventory');
@@ -192,9 +216,9 @@ class _AddInventoryState extends State<AddInventory> {
     return AppBar(
         elevation: 0,
         backgroundColor: const Color(0xffe2f0fd),
-        title: const Text(
-          'Inventory',
-          style: TextStyle(
+        title: Text(
+          widget.isUpdate! ? 'Update Inventory' : 'Add Inventory',
+          style: const TextStyle(
             color: Color(0xFF0f75bc),
             fontSize: 16.0,
             fontFamily: "Outfit",
@@ -225,33 +249,9 @@ class _AddInventoryState extends State<AddInventory> {
                 productfield(),
                 const SizedBox(height: 10),
                 quantityField(),
-                const SizedBox(height: 5),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isProductActive = !isProductActive;
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: isProductActive,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
-                        activeColor: CommonUtils.primaryTextColor,
-                        onChanged: (value) {
-                          setState(() {
-                            isProductActive = value!;
-                          });
-                        },
-                      ),
-                      const Text('is Active'),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 10),
                 productColorName(context),
-                if (isProductColorValidate)
+                /*  if (isProductColorValidate)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -268,17 +268,46 @@ class _AddInventoryState extends State<AddInventory> {
                         ),
                       ),
                     ],
-                  ),
+                  ), */
 
                 // procustColor(context),
                 const SizedBox(height: 10),
                 descriptionfield(),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isProductActive = !isProductActive;
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: Checkbox(
+                          value: isProductActive,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          activeColor: CommonUtils.primaryTextColor,
+                          onChanged: (value) {
+                            setState(() {
+                              isProductActive = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      const Text('Active'),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 20),
                 Row(
                   children: [
                     Expanded(
                       child: CustomButton(
-                        buttonText: 'Add Inventory',
+                        buttonText: 'Submit',
                         color: CommonUtils.primaryTextColor,
                         onPressed: validateForm,
                       ),
@@ -306,10 +335,9 @@ class _AddInventoryState extends State<AddInventory> {
     setState(() {
       isRequestProcessing = true;
     });
-    validateProductColor(selectedTypeCdId?.toString());
-    print(
-        'form_validation: ${formKey.currentState!.validate()} && ${!isProductColorValidate}');
-    if (formKey.currentState!.validate() && !isProductColorValidate) {
+    // validateProductColor(selectedTypeCdId?.toString());
+
+    if (formKey.currentState!.validate()) {
       addInventory();
     }
   }
@@ -422,7 +450,10 @@ class _AddInventoryState extends State<AddInventory> {
         return null;
       },
       maxLength: 10,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+      ],
+      keyboardType: const TextInputType.numberWithOptions(decimal: false),
       // errorText:
       // _fullNameError ? _fullNameErrorMsg : null,
       onChanged: (value) {},
@@ -557,10 +588,6 @@ class _AddInventoryState extends State<AddInventory> {
             Text(
               'Product Color ',
               style: CommonUtils.txSty_12b_fb,
-            ),
-            Text(
-              '*',
-              style: TextStyle(color: Colors.red),
             ),
           ],
         ),

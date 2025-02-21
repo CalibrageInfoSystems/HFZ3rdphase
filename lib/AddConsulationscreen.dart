@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:flutter/widgets.dart';
 
 import 'package:hairfixingzone/AgentHome.dart';
 import 'package:hairfixingzone/Consultation.dart';
 import 'package:hairfixingzone/services/notifi_service.dart';
+import 'package:hairfixingzone/viewconsulationlistscreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,13 +22,18 @@ class AddConsulationscreen extends StatefulWidget {
   final AgentBranchModel branch;
   final Consultation? consultation;
   final bool? screenForReschedule;
+  final String? fromdate;
+  final String? todate;
 
-  const AddConsulationscreen(
-      {super.key,
-      required this.agentId,
-      required this.branch,
-      this.consultation,
-      this.screenForReschedule = false});
+  const AddConsulationscreen({
+    super.key,
+    required this.agentId,
+    required this.branch,
+    this.consultation,
+    this.screenForReschedule = false,
+    this.fromdate,
+    this.todate,
+  });
 
   @override
   AddConsulationscreen_screenState createState() =>
@@ -155,7 +160,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
         fetchRadioButtonOptions();
       } else {
         CommonUtils.showCustomToastMessageLong(
-            'Please Check Your Internet Connection', context, 1, 4);
+            'Please Check Your Internet Connection', context, 1, 3);
         print('The Internet Is not Connected');
       }
     });
@@ -259,520 +264,507 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AgentHome(userId: widget.agentId)),
-          );
-          return false;
-        },
-        child: Scaffold(
-            backgroundColor: CommonStyles.whiteColor,
-            appBar: AppBar(
-                backgroundColor: Color(0xffe2f0fd),
-                automaticallyImplyLeading: false,
-                title: Text(
-                  widget.screenForReschedule!
-                      ? 'Reschedule Consultation'
-                      : 'Add Consultation',
-                  style: CommonStyles.txSty_20b_fb,
+      onWillPop: () async {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => AgentHome(userId: widget.agentId)),
+        );
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: CommonStyles.whiteColor,
+        appBar: AppBar(
+            backgroundColor: Color(0xffe2f0fd),
+            automaticallyImplyLeading: false,
+            title: Text(
+              widget.screenForReschedule!
+                  ? 'Reschedule Consultation'
+                  : 'Add Consultation',
+              style: CommonStyles.txSty_20b_fb,
+            ),
+            titleSpacing: 0.0,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: CommonUtils.primaryTextColor,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )),
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              child: Column(children: [
+                const SizedBox(
+                  height: 5,
                 ),
-                titleSpacing: 0.0,
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_ios,
-                    color: CommonUtils.primaryTextColor,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
+                //MARK: Full Name
+                CustomeFormField(
+                  label: 'Full Name',
+                  validator: validatefullname,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'[a-zA-Z\s]')), // Including '\s' for space
+                  ],
+                  controller: fullNameController,
+                  maxLength: 50,
+                  keyboardType: TextInputType.name,
+                  enabled: !widget.screenForReschedule!,
+                  readOnly: widget.screenForReschedule!,
+                  errorText: _fullNameError ? _fullNameErrorMsg : null,
+                  onChanged: (value) {
+                    //MARK: Space restrict
+                    setState(() {
+                      if (value.startsWith(' ')) {
+                        fullNameController.value = TextEditingValue(
+                          text: value.trimLeft(),
+                          selection: TextSelection.collapsed(
+                              offset: value.trimLeft().length),
+                        );
+                      }
+                      _fullNameError = false;
+                    });
                   },
-                )),
-            body: SingleChildScrollView(
-                child: Form(
-                    key: _formKey,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 15),
-                      child: Column(children: [
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        //MARK: Full Name
-                        CustomeFormField(
-                          label: 'Full Name',
-                          validator: validatefullname,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(
-                                r'[a-zA-Z\s]')), // Including '\s' for space
-                          ],
-                          controller: fullNameController,
-                          maxLength: 50,
-                          keyboardType: TextInputType.name,
-                          enabled: !widget.screenForReschedule!,
-                          readOnly: widget.screenForReschedule!,
-                          errorText: _fullNameError ? _fullNameErrorMsg : null,
-                          onChanged: (value) {
-                            //MARK: Space restrict
-                            setState(() {
-                              if (value.startsWith(' ')) {
-                                fullNameController.value = TextEditingValue(
-                                  text: value.trimLeft(),
-                                  selection: TextSelection.collapsed(
-                                      offset: value.trimLeft().length),
-                                );
-                              }
-                              _fullNameError = false;
-                            });
-                          },
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Row(
-                          children: [
-                            Text(
-                              'Gender ',
-                              style: CommonUtils.txSty_12b_fb,
-                            ),
-                            Text(
-                              '*',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Row(
+                  children: [
+                    Text(
+                      'Gender ',
+                      style: CommonUtils.txSty_12b_fb,
+                    ),
+                    Text(
+                      '*',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
 
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 0, top: 0.0, right: 0),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              border: Border.all(
-                                color: widget.screenForReschedule!
-                                    ? Colors.grey.shade300
-                                    : isGenderSelected
-                                        ? const Color.fromARGB(255, 175, 15, 4)
-                                        : CommonUtils.primaryTextColor,
-                              ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 0, top: 0.0, right: 0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      border: Border.all(
+                        color: widget.screenForReschedule!
+                            ? Colors.grey.shade300
+                            : isGenderSelected
+                                ? const Color.fromARGB(255, 175, 15, 4)
+                                : CommonUtils.primaryTextColor,
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                        child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButton<int>(
+                        value: dropdownItems.isNotEmpty &&
+                                selectedTypeCdId! >= 0 &&
+                                selectedTypeCdId! < dropdownItems.length
+                            ? selectedTypeCdId
+                            : -1, // Default to -1 if selectedTypeCdId is invalid
+                        iconSize: 30,
+                        icon: null,
+                        style: CommonUtils.txSty_12b_fb,
+                        onChanged: (value) {
+                          if (widget.screenForReschedule!) return;
+                          setState(() {
+                            selectedTypeCdId = value!;
+                            print('RRR: $selectedTypeCdId');
+
+                            if (selectedTypeCdId != -1 &&
+                                selectedTypeCdId! < dropdownItems.length) {
+                              selectedValue =
+                                  dropdownItems[selectedTypeCdId!]['typeCdId'];
+                              selectedName =
+                                  dropdownItems[selectedTypeCdId!]['desc'];
+
+                              print("selectedValue: $selectedValue");
+                              print("selectedName: $selectedName");
+                            } else {
+                              selectedValue = null;
+                              selectedName = null;
+                              print("==========");
+                              print(selectedValue);
+                              print(selectedName);
+                            }
+
+                            isGenderSelected = false;
+                          });
+                        },
+                        items: [
+                          DropdownMenuItem<int>(
+                            value: -1,
+                            child: Text(
+                              'Select Gender',
+                              style: CommonStyles.texthintstyle,
                             ),
-                            child: DropdownButtonHideUnderline(
-                                child: ButtonTheme(
-                              alignedDropdown: true,
-                              child: DropdownButton<int>(
-                                value: dropdownItems.isNotEmpty &&
-                                        selectedTypeCdId! >= 0 &&
-                                        selectedTypeCdId! < dropdownItems.length
-                                    ? selectedTypeCdId
-                                    : -1, // Default to -1 if selectedTypeCdId is invalid
-                                iconSize: 30,
-                                icon: null,
+                          ),
+                          ...dropdownItems.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final item = entry.value;
+                            return DropdownMenuItem<int>(
+                              value: index,
+                              child: Text(
+                                item['desc'],
                                 style: CommonUtils.txSty_12b_fb,
-                                onChanged: (value) {
-                                  if (widget.screenForReschedule!) return;
-                                  setState(() {
-                                    selectedTypeCdId = value!;
-                                    print('RRR: $selectedTypeCdId');
-
-                                    if (selectedTypeCdId != -1 &&
-                                        selectedTypeCdId! <
-                                            dropdownItems.length) {
-                                      selectedValue =
-                                          dropdownItems[selectedTypeCdId!]
-                                              ['typeCdId'];
-                                      selectedName =
-                                          dropdownItems[selectedTypeCdId!]
-                                              ['desc'];
-
-                                      print("selectedValue: $selectedValue");
-                                      print("selectedName: $selectedName");
-                                    } else {
-                                      selectedValue = null;
-                                      selectedName = null;
-                                      print("==========");
-                                      print(selectedValue);
-                                      print(selectedName);
-                                    }
-
-                                    isGenderSelected = false;
-                                  });
-                                },
-                                items: [
-                                  DropdownMenuItem<int>(
-                                    value: -1,
-                                    child: Text(
-                                      'Select Gender',
-                                      style: CommonStyles.texthintstyle,
-                                    ),
-                                  ),
-                                  ...dropdownItems.asMap().entries.map((entry) {
-                                    final index = entry.key;
-                                    final item = entry.value;
-                                    return DropdownMenuItem<int>(
-                                      value: index,
-                                      child: Text(
-                                        item['desc'],
-                                        style: CommonUtils.txSty_12b_fb,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ],
                               ),
-                            )),
-                          ),
-                        ),
-                        //MARK: Gender condition
-                        if (isGenderSelected)
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 5),
-                                child: Text('Please Select Gender',
-                                    style: CommonStyles.texterrorstyle),
-                              ),
-                            ],
-                          ),
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    )),
+                  ),
+                ),
+                //MARK: Gender condition
+                if (isGenderSelected)
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                        child: Text('Please Select Gender',
+                            style: CommonStyles.texterrorstyle),
+                      ),
+                    ],
+                  ),
 
-                        const SizedBox(
-                          height: 10,
-                        ),
+                const SizedBox(
+                  height: 10,
+                ),
 
-                        CustomeFormField(
-                          //MARK: Mobile Number
-                          label: 'Mobile Number',
-                          validator: validateMobilenum,
-                          controller: mobileNumberController,
-                          maxLength: 10,
-                          enabled: !widget.screenForReschedule!,
-                          readOnly: widget.screenForReschedule!,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                          ],
-                          keyboardType: TextInputType.phone,
-                          errorText:
-                              _mobileNumberError ? _mobileNumberErrorMsg : null,
-                          onChanged: (value) {
-                            setState(() {
-                              if (value.length == 1 &&
-                                  ['0', '1', '2', '3', '4'].contains(value)) {
-                                mobileNumberController.clear();
-                              }
-                              if (value.startsWith(' ')) {
-                                mobileNumberController.value = TextEditingValue(
-                                  text: value.trimLeft(),
-                                  selection: TextSelection.collapsed(
-                                      offset: value.trimLeft().length),
-                                );
-                              }
-                              _mobileNumberError = false;
-                            });
-                          },
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                CustomeFormField(
+                  //MARK: Mobile Number
+                  label: 'Mobile Number',
+                  validator: validateMobilenum,
+                  controller: mobileNumberController,
+                  maxLength: 10,
+                  enabled: !widget.screenForReschedule!,
+                  readOnly: widget.screenForReschedule!,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ],
+                  keyboardType: TextInputType.phone,
+                  errorText: _mobileNumberError ? _mobileNumberErrorMsg : null,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value.length == 1 &&
+                          ['0', '1', '2', '3', '4'].contains(value)) {
+                        mobileNumberController.clear();
+                      }
+                      if (value.startsWith(' ')) {
+                        mobileNumberController.value = TextEditingValue(
+                          text: value.trimLeft(),
+                          selection: TextSelection.collapsed(
+                              offset: value.trimLeft().length),
+                        );
+                      }
+                      _mobileNumberError = false;
+                    });
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
 
-                        const Row(
-                          children: [
-                            Text('Email', style: CommonUtils.txSty_12b_fb)
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5.0,
-                        ),
-                        TextFormField(
-                          controller: emailController,
-                          maxLength: 60,
-                          enabled: !widget.screenForReschedule!,
-                          readOnly: widget.screenForReschedule!,
-                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                          keyboardType: TextInputType.emailAddress,
-                          onTap: () {},
-                          decoration: InputDecoration(
-                            errorText: _emailError ? _emailErrorMsg : null,
-                            contentPadding: const EdgeInsets.only(
-                                top: 15, bottom: 10, left: 15, right: 15),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color(0xFF0f75bc),
-                              ),
-                              borderRadius: BorderRadius.circular(6.0),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: CommonUtils.primaryTextColor,
-                              ),
-                              borderRadius: BorderRadius.circular(6.0),
-                            ),
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                            ),
-                            hintText: 'Enter Email',
-                            counterText: "",
-                            hintStyle: const TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          //  validator: validateEmail,
-                          onChanged: (value) {
-                            setState(() {
-                              _emailError = false;
-                            });
-                          },
-                          style: CommonStyles.txSty_14b_fb,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                const Row(
+                  children: [Text('Email', style: CommonUtils.txSty_12b_fb)],
+                ),
+                const SizedBox(
+                  height: 5.0,
+                ),
+                TextFormField(
+                  controller: emailController,
+                  maxLength: 60,
+                  enabled: !widget.screenForReschedule!,
+                  readOnly: widget.screenForReschedule!,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  keyboardType: TextInputType.emailAddress,
+                  onTap: () {},
+                  decoration: InputDecoration(
+                    errorText: _emailError ? _emailErrorMsg : null,
+                    contentPadding: const EdgeInsets.only(
+                        top: 15, bottom: 10, left: 15, right: 15),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0xFF0f75bc),
+                      ),
+                      borderRadius: BorderRadius.circular(6.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: CommonUtils.primaryTextColor,
+                      ),
+                      borderRadius: BorderRadius.circular(6.0),
+                    ),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    hintText: 'Enter Email',
+                    counterText: "",
+                    hintStyle: const TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.w400),
+                  ),
+                  //  validator: validateEmail,
+                  onChanged: (value) {
+                    setState(() {
+                      _emailError = false;
+                    });
+                  },
+                  style: CommonStyles.txSty_14b_fb,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
 
-                        CustomeFormField(
-                          label: 'City',
-                          enabled: !widget.screenForReschedule!,
-                          validator: (value) {
-                            // Custom validation logic
-                            if (value == null || value.isEmpty) {
-                              return 'City cannot be empty';
+                CustomeFormField(
+                  label: 'City',
+                  enabled: !widget.screenForReschedule!,
+                  validator: (value) {
+                    // Custom validation logic
+                    if (value == null || value.isEmpty) {
+                      return 'City cannot be empty';
+                    }
+                    return null;
+                  },
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                  ],
+                  controller: cityController,
+                  keyboardType: TextInputType.name,
+                  readOnly: true,
+                ),
+                const SizedBox(height: 10),
+                CustomeFormField(
+                  label: 'Branch',
+                  enabled: !widget.screenForReschedule!,
+                  validator: (value) {
+                    // Custom validation logic
+                    if (value == null || value.isEmpty) {
+                      return 'Branch cannot be empty';
+                    }
+                    return null;
+                  },
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                  ],
+                  controller: branchController,
+                  keyboardType: TextInputType.name,
+                  readOnly: true,
+                ),
+
+                const SizedBox(
+                  height: 10,
+                ),
+                const Row(
+                  children: [
+                    Text(
+                      'Visiting Date ',
+                      style: CommonUtils.txSty_12b_fb,
+                    ),
+                    Text(
+                      '*',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 5.0,
+                ),
+                TextFormField(
+                  controller: _dateController,
+                  keyboardType: TextInputType.visiblePassword,
+                  onTap: () {
+                    _openDatePicker();
+                  },
+                  // focusNode: DateofBirthdFocus,
+                  readOnly: true,
+                  validator: (value) {
+                    if (value!.isEmpty || value.isEmpty) {
+                      return 'Please choose Date ';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(
+                        top: 15, bottom: 10, left: 15, right: 15),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: Color(0xFF11528f),
+                      ),
+                      borderRadius: BorderRadius.circular(6.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        color: CommonUtils.primaryTextColor,
+                      ),
+                      borderRadius: BorderRadius.circular(6.0),
+                    ),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    hintText: 'Date',
+                    counterText: "",
+                    hintStyle: CommonStyles.texthintstyle,
+                    suffixIcon: const Icon(
+                      Icons.calendar_today,
+                      color: Color(0xFF11528f),
+                    ),
+                  ),
+                  style: CommonStyles.txSty_14b_fb,
+                  //          validator: validateDate,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Row(
+                  children: [
+                    Text(
+                      'Visiting Time ',
+                      style: CommonUtils.txSty_12b_fb,
+                    ),
+                    Text(
+                      '*',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 5.0,
+                ),
+                Form(
+                  key: _formKey2,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _timeController,
+                        validator: (value) {
+                          if (value!.isEmpty || value.isEmpty) {
+                            return 'Please choose time';
+                          }
+
+                          TimeOfDay now = TimeOfDay.now();
+                          TimeOfDay? selectedTime = _selectedTime;
+
+                          if (selectedTime != null) {
+                            int nowMinutes = now.hour * 60 + now.minute;
+                            int selectedMinutes =
+                                selectedTime.hour * 60 + selectedTime.minute;
+
+                            if (selectedMinutes < nowMinutes) {
+                              return 'Please select a future time';
                             }
-                            return null;
-                          },
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[a-zA-Z\s]')),
-                          ],
-                          controller: cityController,
-                          keyboardType: TextInputType.name,
-                          readOnly: true,
-                        ),
-                        const SizedBox(height: 10),
-                        CustomeFormField(
-                          label: 'Branch',
-                          enabled: !widget.screenForReschedule!,
-                          validator: (value) {
-                            // Custom validation logic
-                            if (value == null || value.isEmpty) {
-                              return 'Branch cannot be empty';
-                            }
-                            return null;
-                          },
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[a-zA-Z\s]')),
-                          ],
-                          controller: branchController,
-                          keyboardType: TextInputType.name,
-                          readOnly: true,
-                        ),
+                          }
 
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Row(
-                          children: [
-                            Text(
-                              'Visiting Date ',
-                              style: CommonUtils.txSty_12b_fb,
-                            ),
-                            Text(
-                              '*',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5.0,
-                        ),
-                        TextFormField(
-                          controller: _dateController,
-                          keyboardType: TextInputType.visiblePassword,
-                          onTap: () {
-                            _openDatePicker();
-                          },
-                          // focusNode: DateofBirthdFocus,
-                          readOnly: true,
-                          validator: (value) {
-                            if (value!.isEmpty || value.isEmpty) {
-                              return 'Please choose Date ';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.only(
-                                top: 15, bottom: 10, left: 15, right: 15),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Color(0xFF11528f),
-                              ),
-                              borderRadius: BorderRadius.circular(6.0),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: CommonUtils.primaryTextColor,
-                              ),
-                              borderRadius: BorderRadius.circular(6.0),
-                            ),
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
-                              ),
-                            ),
-                            hintText: 'Date',
-                            counterText: "",
-                            hintStyle: CommonStyles.texthintstyle,
-                            suffixIcon: const Icon(
-                              Icons.calendar_today,
+                          return null;
+                        },
+                        keyboardType: TextInputType.visiblePassword,
+                        onTap: () {
+                          _openTimePicker();
+                        },
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.only(
+                              top: 15, bottom: 10, left: 15, right: 15),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
                               color: Color(0xFF11528f),
                             ),
+                            borderRadius: BorderRadius.circular(6.0),
                           ),
-                          style: CommonStyles.txSty_14b_fb,
-                          //          validator: validateDate,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        const Row(
-                          children: [
-                            Text(
-                              'Visiting Time ',
-                              style: CommonUtils.txSty_12b_fb,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: CommonUtils.primaryTextColor,
                             ),
-                            Text(
-                              '*',
-                              style: TextStyle(color: Colors.red),
+                            borderRadius: BorderRadius.circular(6.0),
+                          ),
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
                             ),
-                          ],
+                          ),
+                          hintText: 'Time',
+                          counterText: "",
+                          hintStyle: CommonStyles.texthintstyle,
+                          errorStyle: CommonStyles.texterrorstyle,
+                          suffixIcon: const Icon(
+                            Icons.access_time,
+                            color: Color(0xFF11528f),
+                          ),
                         ),
-                        const SizedBox(
-                          height: 5.0,
-                        ),
-                        Form(
-                            key: _formKey2,
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  controller: _timeController,
-                                  validator: (value) {
-                                    if (value!.isEmpty || value.isEmpty) {
-                                      return 'Please choose time';
-                                    }
-
-                                    TimeOfDay now = TimeOfDay.now();
-                                    TimeOfDay? selectedTime = _selectedTime;
-
-                                    if (selectedTime != null) {
-                                      int nowMinutes =
-                                          now.hour * 60 + now.minute;
-                                      int selectedMinutes =
-                                          selectedTime.hour * 60 +
-                                              selectedTime.minute;
-
-                                      if (selectedMinutes < nowMinutes) {
-                                        return 'Please select a future time';
-                                      }
-                                    }
-
-                                    return null;
-                                  },
-                                  keyboardType: TextInputType.visiblePassword,
-                                  onTap: () {
-                                    _openTimePicker();
-                                  },
-                                  readOnly: true,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.only(
-                                        top: 15,
-                                        bottom: 10,
-                                        left: 15,
-                                        right: 15),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: Color(0xFF11528f),
-                                      ),
-                                      borderRadius: BorderRadius.circular(6.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: CommonUtils.primaryTextColor,
-                                      ),
-                                      borderRadius: BorderRadius.circular(6.0),
-                                    ),
-                                    border: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                    ),
-                                    hintText: 'Time',
-                                    counterText: "",
-                                    hintStyle: CommonStyles.texthintstyle,
-                                    errorStyle: CommonStyles.texterrorstyle,
-                                    suffixIcon: const Icon(
-                                      Icons.access_time,
-                                      color: Color(0xFF11528f),
-                                    ),
-                                  ),
-                                  style: CommonStyles.txSty_14b_fb,
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                CustomeFormField(
-                                  label: 'Remark',
-                                  isMandatory: false,
-                                  controller: remarksController,
-                                  maxLengthEnforcement:
-                                      MaxLengthEnforcement.enforced,
-                                  maxLength: 250,
-                                  maxLines: 6,
-                                  enabled: !widget.screenForReschedule!,
-                                  readOnly: widget.screenForReschedule!,
-                                  onTap: () {
-                                    setState(() {
-                                      remarksFocus.addListener(() {
-                                        if (remarksFocus.hasFocus) {
-                                          Future.delayed(
-                                              const Duration(milliseconds: 300),
-                                              () {
-                                            // Scrollable.ensureVisible(
-                                            //   EmailFocus.context!,
-                                            //   duration: const Duration(
-                                            //       milliseconds: 300),
-                                            //   curve: Curves.easeInOut,
-                                            // );
-                                          });
-                                        }
-                                      });
-                                    });
-                                  },
-                                  errorText:
-                                      _remarksError ? _remarksErrorMsg : null,
-                                ),
-                                const SizedBox(
-                                  height: 12.0,
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: CustomButton(
-                                        buttonText: widget.screenForReschedule!
-                                            ? 'Reschedule Consultation'
-                                            : 'Add Consultation',
-                                        color: CommonUtils.primaryTextColor,
-                                        onPressed: validating,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ))
-                      ]),
-                    )))));
+                        style: CommonStyles.txSty_14b_fb,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      CustomeFormField(
+                        label: 'Remark',
+                        isMandatory: false,
+                        controller: remarksController,
+                        maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                        maxLength: 250,
+                        maxLines: 6,
+                        enabled: !widget.screenForReschedule!,
+                        readOnly: widget.screenForReschedule!,
+                        onTap: () {
+                          setState(() {
+                            remarksFocus.addListener(() {
+                              if (remarksFocus.hasFocus) {
+                                Future.delayed(
+                                    const Duration(milliseconds: 300), () {
+                                  // Scrollable.ensureVisible(
+                                  //   EmailFocus.context!,
+                                  //   duration: const Duration(
+                                  //       milliseconds: 300),
+                                  //   curve: Curves.easeInOut,
+                                  // );
+                                });
+                              }
+                            });
+                          });
+                        },
+                        errorText: _remarksError ? _remarksErrorMsg : null,
+                      ),
+                      const SizedBox(
+                        height: 12.0,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomButton(
+                              buttonText: 'Submit',
+                              /* widget.screenForReschedule!
+                                  ? 'Reschedule Consultation'
+                                  : 'Add Consultation', */
+                              color: CommonUtils.primaryTextColor,
+                              onPressed: validating,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ]),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> validating() async {
@@ -973,15 +965,37 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
           final response = json.decode(jsonResponse.body);
           if (response['isSuccess']) {
             CommonUtils.showCustomToastMessageLong(
-                '${response['statusMessage']}', context, 0, 5);
-            Navigator.push(
+                'Consultation Rescheduled Successfully', context, 0, 3);
+            /* Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                  builder: (context) => AgentHome(userId: widget.agentId)),
-            );
+                builder: (context) => ViewConsulationlistScreen(
+                  branchid: widget.branch.id!,
+                  fromdate: widget.fromdate ?? DateTime.now().toString(),
+                  todate: widget.todate ?? DateTime.now().toString(),
+                  userid: widget.agentId,
+                  agent: widget.branch,
+                ),
+              ),
+              (route) => false,
+            ); */
+            Navigator.pop(context, true);
+
+            /* Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ViewConsulationlistScreen(
+                  branchid: widget.branch.id!,
+                  fromdate: widget.fromdate ?? DateTime.now().toString(),
+                  todate: widget.todate ?? DateTime.now().toString(),
+                  userid: widget.agentId,
+                  agent: widget.branch,
+                ),
+              ),
+            ); */
           } else {
             CommonUtils.showCustomToastMessageLong(
-                '${response['statusMessage']}', context, 0, 5);
+                '${response['statusMessage']}', context, 0, 3);
           }
         } else {
           throw Exception('Failed to reschedule consultation');
@@ -1049,7 +1063,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
             print('Request sent successfully');
             progressDialog.dismiss();
             CommonUtils.showCustomToastMessageLong(
-                '$statusMessage', context, 0, 5);
+                '$statusMessage', context, 0, 3);
             print(response.body);
             final int notificationId1 = UniqueKey().hashCode;
             // debugPrint('Notification Scheduled for $testdate with ID: $notificationId1');
@@ -1075,7 +1089,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
         } else {
           progressDialog.dismiss();
           CommonUtils.showCustomToastMessageLong(
-              '$statusMessage', context, 1, 5);
+              '$statusMessage', context, 1, 3);
           print(
               'Failed to send the request. Status code: ${response.statusCode}');
         }
