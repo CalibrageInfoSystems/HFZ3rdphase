@@ -74,6 +74,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
         final data = snapshot.data as List<InventoryModel>;
         final activeData =
             data.where((inventory) => inventory.isActive == true).toList();
+        if (activeData.isEmpty) {
+          return const Center(
+            child: Text(
+              textAlign: TextAlign.center,
+              'No Inventory Found',
+            ),
+          );
+        }
         return Padding(
           padding: const EdgeInsets.all(14),
           child: ListView.separated(
@@ -95,12 +103,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.only(bottom: 8),
         decoration: BoxDecoration(
-          color:
-              inventory.isActive! ? const Color(0xFFFFFFFF) : Colors.grey[300],
+          color: const Color(0xFFFFFFFF),
+          // inventory.isActive! ? const Color(0xFFFFFFFF) : Colors.grey[300],
           border: Border.all(
-            color: inventory.isActive!
-                ? Colors.grey
-                : Colors.grey.shade200, // Colors.grey,
+            color: Colors.grey.shade200,
           ),
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -116,8 +122,10 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   children: [
                     Text(
                       '${inventory.productName}',
-                      style: const TextStyle(
-                        color: Color(0xFF0f75bc),
+                      style: TextStyle(
+                        color: inventory.isActive!
+                            ? const Color(0xFF0f75bc)
+                            : Colors.grey.shade400,
                         fontSize: 16.0,
                         fontWeight: FontWeight.w600,
                       ),
@@ -126,11 +134,19 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     (inventory.color != null)
                         ? Text(
                             '${inventory.color} - ${inventory.quantity}',
-                            style: CommonStyles.txSty_12b_f5,
+                            style: CommonStyles.txSty_12b_f5.copyWith(
+                              color: inventory.isActive!
+                                  ? CommonStyles.blackColor
+                                  : Colors.grey.shade400,
+                            ),
                           )
                         : Text(
                             '${inventory.quantity}',
-                            style: CommonStyles.txSty_12b_f5,
+                            style: CommonStyles.txSty_12b_f5.copyWith(
+                              color: inventory.isActive!
+                                  ? CommonStyles.blackColor
+                                  : Colors.grey.shade400,
+                            ),
                           ),
                     if (inventory.desc != null && inventory.desc!.isNotEmpty)
                       Column(
@@ -138,7 +154,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           const SizedBox(height: 10),
                           Text(
                             '${inventory.desc}',
-                            style: CommonStyles.txSty_12b_f5,
+                            style: CommonStyles.txSty_12b_f5.copyWith(
+                              color: inventory.isActive!
+                                  ? CommonStyles.blackColor
+                                  : Colors.grey.shade400,
+                            ),
                           ),
                         ],
                       ),
@@ -194,7 +214,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: PopupMenuButton<String>(
                       onSelected: (value) async {
-                        if (value == 'update') {
+                        if (value == 'edit') {
                           final updateInventory =
                               await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -233,12 +253,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
                       },
                       itemBuilder: (BuildContext context) => [
                         const PopupMenuItem(
-                          value: 'update',
+                          value: 'edit',
                           child: Row(
                             children: [
-                              Icon(Icons.edit, color: Colors.blue),
+                              Icon(Icons.edit, color: Colors.blue, size: 20),
                               SizedBox(width: 8),
-                              Text('Update'),
+                              Text('Edit'),
                             ],
                           ),
                         ),
@@ -246,7 +266,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, color: Colors.red),
+                              Icon(Icons.delete, color: Colors.red, size: 20),
                               SizedBox(width: 8),
                               Text('Delete'),
                             ],
@@ -465,7 +485,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           CommonStyles.blackColorShade, // Unselected tab text color
       tabs: [
         Tab(text: 'Inventory'),
-        Tab(text: 'Delete Inventory'),
+        Tab(text: 'Deleted Inventory'),
       ],
     );
   }

@@ -695,6 +695,11 @@ class _OpCardState extends State<OpCard> {
   final GlobalKey _toolTipKey = GlobalKey();
   final GlobalKey _fullnameTipKey = GlobalKey();
   final GlobalKey _emailtoolTipKey = GlobalKey();
+
+  bool _billingAmountError = false;
+  String? _billingAmountErrorMsg;
+  bool isBillingAmountValidate = false;
+
   late Future<List<StatusModel>> apiPaymentOptions;
 
   // late List<StatusModel> paymentOptions;
@@ -2477,8 +2482,6 @@ class _OpCardState extends State<OpCard> {
                                   const SizedBox(height: 5.0),
                                   TextFormField(
                                     controller: _priceController,
-                                    // keyboardType: TextInputType.number,
-                                    // readOnly: isFreeService,
                                     enabled: isFreeService,
                                     keyboardType:
                                         const TextInputType.numberWithOptions(
@@ -2487,21 +2490,11 @@ class _OpCardState extends State<OpCard> {
                                       FilteringTextInputFormatter.allow(
                                           RegExp(r'^\d*\.?\d*')),
                                     ],
-                                    onChanged: (value) {
-                                      setState(() {
-                                        if (value.startsWith(' ')) {
-                                          _priceController.value =
-                                              TextEditingValue(
-                                            text: value.trimLeft(),
-                                            selection: TextSelection.collapsed(
-                                                offset:
-                                                    value.trimLeft().length),
-                                          );
-                                        }
-                                      });
-                                    },
                                     maxLength: 10,
                                     decoration: InputDecoration(
+                                      errorText: _billingAmountError
+                                          ? _billingAmountErrorMsg
+                                          : null,
                                       contentPadding: const EdgeInsets.only(
                                           top: 15,
                                           bottom: 10,
@@ -2541,6 +2534,20 @@ class _OpCardState extends State<OpCard> {
                                           fontWeight: FontWeight.w400),
                                     ),
                                     validator: validateAmount,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        if (value.startsWith(' ')) {
+                                          _priceController.value =
+                                              TextEditingValue(
+                                            text: value.trimLeft(),
+                                            selection: TextSelection.collapsed(
+                                                offset:
+                                                    value.trimLeft().length),
+                                          );
+                                        }
+                                        _billingAmountError = false;
+                                      });
+                                    },
                                   ),
                                   const SizedBox(height: 20),
                                 ],
@@ -2557,14 +2564,16 @@ class _OpCardState extends State<OpCard> {
                                     setState(() {
                                       validatePaymentMode();
                                     });
-                                    if (_formKey.currentState!.validate()) {
-                                      if (isPaymentValidate) {
-                                        double? price = double.tryParse(
-                                            _priceController.text);
-                                        postCloseAppointment(data, 17, price!,
-                                            apiPaymentMode, userId);
-                                        Navigator.of(context).pop();
-                                      }
+                                    print(
+                                        'formValidation: ${_formKey.currentState!.validate()}  | $isPaymentValidate | $isBillingAmountValidate');
+                                    if (_formKey.currentState!.validate() &&
+                                        isPaymentValidate &&
+                                        isBillingAmountValidate) {
+                                      double? price = double.tryParse(
+                                          _priceController.text);
+                                      postCloseAppointment(data, 17, price!,
+                                          apiPaymentMode, userId);
+                                      Navigator.of(context).pop();
                                     }
                                   },
                                 ),
@@ -2632,11 +2641,25 @@ class _OpCardState extends State<OpCard> {
     );
   }
 
-  String? validateAmount(String? value) {
+  /*  String? validateAmount(String? value) {
     print('validate 3333');
     if (value == null || value.isEmpty) {
       return 'Please Enter Billing Amount (Rs)';
     }
+    return null;
+  } */
+
+  String? validateAmount(String? value) {
+    print('validatefullname: $value');
+    if (value!.isEmpty) {
+      setState(() {
+        _billingAmountError = true;
+        _billingAmountErrorMsg = 'Please Enter Billing Amount (Rs)';
+      });
+      isBillingAmountValidate = false;
+      return null;
+    }
+    isBillingAmountValidate = true;
     return null;
   }
 

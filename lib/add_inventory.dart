@@ -2,13 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hairfixingzone/AgentHome.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
 import 'package:hairfixingzone/Common/custom_button.dart';
 import 'package:hairfixingzone/Common/custome_form_field.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/api_config.dart';
-import 'package:hairfixingzone/inventory_screen.dart';
 import 'package:hairfixingzone/models/colors_model.dart';
 import 'package:hairfixingzone/models/inventory_model.dart';
 import 'package:http/http.dart' as http;
@@ -51,6 +49,14 @@ class _AddInventoryState extends State<AddInventory> {
   int? selectedTypeCdId;
   bool isProductActive = true;
   bool isRequestProcessing = false;
+
+  bool _productNameError = false;
+  String? _productNameErrorMsg;
+  bool isProductNameValidate = false;
+
+  bool _productQuantityError = false;
+  String? _productQuantityErrorMsg;
+  bool isProductQuantityValidate = false;
 
   bool isProductColorValidate = false;
 
@@ -294,7 +300,7 @@ class _AddInventoryState extends State<AddInventory> {
                               borderRadius: BorderRadius.circular(5)),
                           activeColor: widget.isUpdate!
                               ? CommonUtils.primaryTextColor
-                              : Colors.grey,
+                              : Colors.grey.shade400,
                           onChanged: (value) {
                             if (widget.isUpdate!) {
                               setState(() {
@@ -305,7 +311,14 @@ class _AddInventoryState extends State<AddInventory> {
                         ),
                       ),
                       const SizedBox(width: 5),
-                      const Text('Active'),
+                      Text(
+                        'Active',
+                        style: TextStyle(
+                          color: widget.isUpdate!
+                              ? Colors.black
+                              : Colors.grey.shade400,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -343,8 +356,12 @@ class _AddInventoryState extends State<AddInventory> {
       isRequestProcessing = true;
     });
     // validateProductColor(selectedTypeCdId?.toString());
-
-    if (formKey.currentState!.validate()) {
+// formKey.currentState!.validate() &&
+    print(
+        'formValidation: ${formKey.currentState!.validate()}  | $isProductNameValidate | $isProductQuantityValidate');
+    if (formKey.currentState!.validate() &&
+        isProductNameValidate &&
+        isProductQuantityValidate) {
       addInventory();
     }
   }
@@ -424,47 +441,88 @@ class _AddInventoryState extends State<AddInventory> {
   }
  */
 
+  //MARK: Product Name
   CustomeFormField productfield() {
-    //MARK: Product Name
     return CustomeFormField(
       label: 'Product Name',
       controller: productNameController,
-      validator: (value) {
-        if (value!.isEmpty) {
-          return 'Please Enter Product Name';
-        }
-        return null;
+      errorText: _productNameError ? _productNameErrorMsg : null,
+      validator: validateProductName,
+      onChanged: (value) {
+        setState(() {
+          if (value.startsWith(' ')) {
+            productNameController.value = TextEditingValue(
+              text: value.trimLeft(),
+              selection:
+                  TextSelection.collapsed(offset: value.trimLeft().length),
+            );
+          }
+          _productNameError = false;
+        });
       },
       maxLength: 25,
       keyboardType: TextInputType.name,
-      // errorText:
-      // _fullNameError ? _fullNameErrorMsg : null,
-      onChanged: (value) {
-        setState(() {});
-      },
     );
   }
 
+  String? validateProductName(String? value) {
+    print('validatefullname: $value');
+    if (value!.isEmpty) {
+      setState(() {
+        _productNameError = true;
+        _productNameErrorMsg = 'Please Enter Product Name';
+      });
+      isProductNameValidate = false;
+      return null;
+    }
+    isProductNameValidate = true;
+    return null;
+  }
+
+  //MARK: Quantity
   CustomeFormField quantityField() {
-    //MARK: Quantity
     return CustomeFormField(
       label: 'Product Quantity',
       controller: quantityController,
-      validator: (value) {
+      /* validator: (value) {
         if (value!.isEmpty) {
           return 'Please Enter Product Quantity';
         }
         return null;
-      },
+      }, */
       maxLength: 10,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
       ],
       keyboardType: const TextInputType.numberWithOptions(decimal: false),
-      // errorText:
-      // _fullNameError ? _fullNameErrorMsg : null,
-      onChanged: (value) {},
+      validator: validateProductQuantity,
+      errorText: _productQuantityError ? _productQuantityErrorMsg : null,
+      onChanged: (value) {
+        setState(() {
+          if (value.startsWith(' ')) {
+            quantityController.value = TextEditingValue(
+              text: value.trimLeft(),
+              selection:
+                  TextSelection.collapsed(offset: value.trimLeft().length),
+            );
+          }
+          _productQuantityError = false;
+        });
+      },
     );
+  }
+
+  String? validateProductQuantity(String? value) {
+    if (value!.isEmpty) {
+      setState(() {
+        _productQuantityError = true;
+        _productQuantityErrorMsg = 'Please Enter Product Quantity';
+      });
+      isProductQuantityValidate = false;
+      return null;
+    }
+    isProductQuantityValidate = true;
+    return null;
   }
 
   CustomeFormField descriptionfield() {

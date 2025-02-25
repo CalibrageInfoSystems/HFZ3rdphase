@@ -375,32 +375,36 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         iconSize: 30,
                         icon: null,
                         style: CommonUtils.txSty_12b_fb,
-                        onChanged: (value) {
-                          if (widget.screenForReschedule!) return;
-                          setState(() {
-                            selectedTypeCdId = value!;
-                            print('RRR: $selectedTypeCdId');
+                        onChanged: widget.screenForReschedule!
+                            ? null
+                            : (value) {
+                                if (widget.screenForReschedule!) return;
+                                print("onChanged: $value");
+                                setState(() {
+                                  selectedTypeCdId = value!;
 
-                            if (selectedTypeCdId != -1 &&
-                                selectedTypeCdId! < dropdownItems.length) {
-                              selectedValue =
-                                  dropdownItems[selectedTypeCdId!]['typeCdId'];
-                              selectedName =
-                                  dropdownItems[selectedTypeCdId!]['desc'];
+                                  if (selectedTypeCdId != -1 &&
+                                      selectedTypeCdId! <
+                                          dropdownItems.length) {
+                                    selectedValue =
+                                        dropdownItems[selectedTypeCdId!]
+                                            ['typeCdId'];
+                                    selectedName =
+                                        dropdownItems[selectedTypeCdId!]
+                                            ['desc'];
 
-                              print("selectedValue: $selectedValue");
-                              print("selectedName: $selectedName");
-                            } else {
-                              selectedValue = null;
-                              selectedName = null;
-                              print("==========");
-                              print(selectedValue);
-                              print(selectedName);
-                            }
+                                    print("selectedName: $selectedName");
+                                  } else {
+                                    selectedValue = null;
+                                    selectedName = null;
+                                    print("==========");
+                                    print(selectedValue);
+                                    print(selectedName);
+                                  }
 
-                            isGenderSelected = false;
-                          });
-                        },
+                                  isGenderSelected = false;
+                                });
+                              },
                         items: [
                           DropdownMenuItem<int>(
                             value: -1,
@@ -413,6 +417,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                             final index = entry.key;
                             final item = entry.value;
                             return DropdownMenuItem<int>(
+                              // enabled: widget.screenForReschedule!,
                               value: index,
                               child: Text(
                                 item['desc'],
