@@ -307,14 +307,14 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                   label: 'Full Name',
                   validator: validatefullname,
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'[a-zA-Z\s]')), // Including '\s' for space
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
                   ],
                   controller: fullNameController,
                   maxLength: 50,
                   keyboardType: TextInputType.name,
                   enabled: !widget.screenForReschedule!,
                   readOnly: widget.screenForReschedule!,
+                  screenForReschedule: widget.screenForReschedule!,
                   errorText: _fullNameError ? _fullNameErrorMsg : null,
                   onChanged: (value) {
                     //MARK: Space restrict
@@ -333,15 +333,23 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                const Row(
+                Row(
                   children: [
                     Text(
                       'Gender ',
-                      style: CommonUtils.txSty_12b_fb,
+                      style: CommonUtils.txSty_12b_fb.copyWith(
+                        color: widget.screenForReschedule!
+                            ? Colors.grey
+                            : Colors.black,
+                      ),
                     ),
                     Text(
                       '*',
-                      style: TextStyle(color: Colors.red),
+                      style: TextStyle(color: Colors.red).copyWith(
+                        color: widget.screenForReschedule!
+                            ? Colors.grey
+                            : Colors.black,
+                      ),
                     ),
                   ],
                 ),
@@ -421,7 +429,11 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                               value: index,
                               child: Text(
                                 item['desc'],
-                                style: CommonUtils.txSty_12b_fb,
+                                style: CommonUtils.txSty_12b_fb.copyWith(
+                                  color: widget.screenForReschedule!
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
                               ),
                             );
                           }).toList(),
@@ -453,6 +465,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                   label: 'Mobile Number',
                   validator: validateMobilenum,
                   controller: mobileNumberController,
+                  screenForReschedule: widget.screenForReschedule!,
                   maxLength: 10,
                   enabled: !widget.screenForReschedule!,
                   readOnly: widget.screenForReschedule!,
@@ -482,8 +495,17 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                   height: 10,
                 ),
 
-                const Row(
-                  children: [Text('Email', style: CommonUtils.txSty_12b_fb)],
+                Row(
+                  children: [
+                    Text(
+                      'Email',
+                      style: CommonUtils.txSty_12b_fb.copyWith(
+                        color: widget.screenForReschedule!
+                            ? Colors.grey
+                            : Colors.black,
+                      ),
+                    )
+                  ],
                 ),
                 const SizedBox(
                   height: 5.0,
@@ -528,7 +550,11 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                       _emailError = false;
                     });
                   },
-                  style: CommonStyles.txSty_14b_fb,
+                  style: CommonStyles.txSty_14b_fb.copyWith(
+                    color: widget.screenForReschedule!
+                        ? Colors.grey
+                        : Colors.black,
+                  ),
                 ),
                 const SizedBox(
                   height: 10,
@@ -550,6 +576,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                   controller: cityController,
                   keyboardType: TextInputType.name,
                   readOnly: true,
+                  screenForReschedule: widget.screenForReschedule!,
                 ),
                 const SizedBox(height: 10),
                 CustomeFormField(
@@ -568,6 +595,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                   controller: branchController,
                   keyboardType: TextInputType.name,
                   readOnly: true,
+                  screenForReschedule: widget.screenForReschedule!,
                 ),
 
                 const SizedBox(
@@ -725,6 +753,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         maxLines: 6,
                         enabled: !widget.screenForReschedule!,
                         readOnly: widget.screenForReschedule!,
+                        screenForReschedule: widget.screenForReschedule!,
                         onTap: () {
                           setState(() {
                             remarksFocus.addListener(() {
@@ -1106,7 +1135,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
   }
 
   Future<void> _openDatePicker() async {
-    selectedDate = await showDatePicker(
+    final pickedDate = await showDatePicker(
       context: context,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       initialDate: DateTime.now(),
@@ -1114,10 +1143,10 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
       lastDate: DateTime(2101),
     );
 
-    if (selectedDate != null) {
+    if (pickedDate != null) {
       setState(() {
-        _dateController.text = DateFormat('dd-MM-yyyy').format(selectedDate!);
-        visiteddate = DateFormat('yyyy-MM-dd').format(selectedDate!);
+        _dateController.text = DateFormat('dd-MM-yyyy').format(pickedDate);
+        visiteddate = DateFormat('yyyy-MM-dd').format(pickedDate);
       });
     }
   }

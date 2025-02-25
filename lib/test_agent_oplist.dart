@@ -103,6 +103,7 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
       List<StatusModel> result =
           responseData.map((json) => StatusModel.fromJson(json)).toList();
       print('fetch branchname: ${result[0].desc}');
+      print('fetch branchname: ${response.body}');
       return result;
     } else {
       throw Exception('Failed to load products');
@@ -463,7 +464,11 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
                           } else if (snapshot.hasError) {
                             return const SizedBox();
                           } else {
-                            List<StatusModel> data = snapshot.data!;
+                            List<StatusModel> result = snapshot.data!;
+                            List<StatusModel> data = result
+                                .where((item) =>
+                                    item.typeCdId != 17 && item.typeCdId != 18)
+                                .toList();
                             return SizedBox(
                               height: 38,
                               child: ListView.builder(

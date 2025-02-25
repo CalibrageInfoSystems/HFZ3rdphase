@@ -16,7 +16,8 @@ class CustomeFormField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
-  final bool readOnly; // Add the readOnly parameter
+  final bool readOnly;
+  final bool screenForReschedule;
   final TextStyle? errorStyle;
   final TextStyle? textStyle;
   final FocusNode? focusNode;
@@ -42,8 +43,9 @@ class CustomeFormField extends StatelessWidget {
     this.validator,
     this.controller,
     this.readOnly = false,
+    this.screenForReschedule = false,
     this.errorStyle,
-    this.textStyle, // Initialize the readOnly parameter with a default value
+    this.textStyle,
     this.focusNode,
   }) : super(key: key);
 
@@ -57,12 +59,16 @@ class CustomeFormField extends StatelessWidget {
           children: [
             Text(
               '$label ',
-              style: CommonUtils.txSty_12b_fb,
+              style: CommonUtils.txSty_12b_fb.copyWith(
+                color: screenForReschedule ? Colors.grey : Colors.black,
+              ),
             ),
             if (isMandatory)
-              const Text(
+              Text(
                 '*',
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red).copyWith(
+                  color: screenForReschedule ? Colors.grey : Colors.black,
+                ),
               ),
           ],
         ),
@@ -121,7 +127,9 @@ class CustomeFormField extends StatelessWidget {
           readOnly:
               readOnly, // Pass the readOnly parameter to the TextFormField
           onTap: onTap,
-          style: CommonStyles.txSty_14b_fb,
+          style: CommonStyles.txSty_14b_fb.copyWith(
+            color: screenForReschedule ? Colors.grey : Colors.black,
+          ),
           //  textStyle :CommonStyles.txSty_14b_fb
           // Add onTap to handle any additional logic if needed
         ),
