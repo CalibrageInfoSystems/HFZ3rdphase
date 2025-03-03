@@ -122,7 +122,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
                       const Text('Please Enter 6 Digits OTP sent',
                           style: CommonUtils
                               .Sub_header_Styles), //Please enter 6 digits OTP sent to your email to continue
-                      const Text('to Your Email to Continue ',
+                      const Text('to Your Email/ Mobile Number to Continue ',
                           style: CommonUtils.Sub_header_Styles),
                     ],
                   ),
@@ -517,7 +517,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
           // CommonUtils.showCustomToastMessageLong(
           //     'OTP Has Sent To Your Email', context, 0, 3,
           //     toastPosition: MediaQuery.of(context).size.height / 2);
-          CommonUtils.showCustomToastMessageLongbottom('OTP Has Sent To Your Email/Mobile Number', context, 0, 4);
+          CommonUtils.showCustomToastMessageLongbottom('OTP Has Sent To Your Email/ Mobile Number', context, 0, 4);
           restartTimer();
         } else {
           FocusScope.of(context).unfocus();

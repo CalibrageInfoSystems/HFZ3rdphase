@@ -89,7 +89,9 @@ class _ForgotPasswordscreen extends State<ForgotPasswordscreen> {
                           style: CommonUtils.Sub_header_Styles),
                       const Text(' / Mobile Number',
                           style: CommonUtils.Sub_header_Styles),
-                      const Text('to Get an OTP on Your Email',
+                      const Text('to Get an OTP on Your Email ',
+                          style: CommonUtils.Sub_header_Styles),
+                      const Text(' / Mobile Number',
                           style: CommonUtils.Sub_header_Styles),
                     ],
                   )),
@@ -337,7 +339,7 @@ class _ForgotPasswordscreen extends State<ForgotPasswordscreen> {
                     builder: (context) => ForgotPasswordOtpScreen(
                         id: user['id'], userName: user['userName'])),
               );
-              CommonUtils.showCustomToastMessageLongbottom('OTP Has Sent To Your Email', context, 0, 4);
+              CommonUtils.showCustomToastMessageLongbottom('OTP Has Sent To Your Email/ Mobile Number', context, 0, 4);
               // CommonUtils.showCustomToastMessageLong(
               //     'OTP Has Sent To Your Email', context, 0, 3,
               //     toastPosition: MediaQuery.of(context).size.height / 2);
