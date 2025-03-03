@@ -513,7 +513,7 @@ class _AddInventoryState extends State<AddInventory> {
   }
 
   String? validateProductQuantity(String? value) {
-    if (value!.isEmpty) {
+    if (value == null || value.isEmpty) {
       setState(() {
         _productQuantityError = true;
         _productQuantityErrorMsg = 'Please Enter Product Quantity';
@@ -521,9 +521,24 @@ class _AddInventoryState extends State<AddInventory> {
       isProductQuantityValidate = false;
       return null;
     }
+
+    if (!widget.isUpdate! && int.tryParse(value) == 0) {
+      // Apply "cannot be 0" validation only when isUpdate is false (adding new data)
+      setState(() {
+        _productQuantityError = true;
+        _productQuantityErrorMsg = 'Product Quantity cannot be 0';
+      });
+      isProductQuantityValidate = false;
+      return null;
+    }
+
+    setState(() {
+      _productQuantityError = false;
+    });
     isProductQuantityValidate = true;
     return null;
   }
+
 
   CustomeFormField descriptionfield() {
     return CustomeFormField(
@@ -708,13 +723,13 @@ class _AddInventoryState extends State<AddInventory> {
                           }
                         },
                         items: [
-                          /* const DropdownMenuItem<int>(
+                         const DropdownMenuItem<int>(
                             value: -1,
                             child: Text(
                               'Select Product Color',
                               style: CommonStyles.texthintstyle,
                             ),
-                          ), */
+                          ),
                           ...branchList.map((branch) {
                             return DropdownMenuItem<int>(
                               value: branch.typeCdId,

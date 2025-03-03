@@ -517,7 +517,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
           // CommonUtils.showCustomToastMessageLong(
           //     'OTP Has Sent To Your Email', context, 0, 3,
           //     toastPosition: MediaQuery.of(context).size.height / 2);
-          CommonUtils.showCustomToastMessageLongbottom('OTP Has Sent To Your Email', context, 0, 4);
+          CommonUtils.showCustomToastMessageLongbottom('OTP Has Sent To Your Email/Mobile Number', context, 0, 4);
           restartTimer();
         } else {
           FocusScope.of(context).unfocus();

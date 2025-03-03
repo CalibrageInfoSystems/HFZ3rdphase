@@ -481,7 +481,9 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                         controller:
                             _fullnameController1, // Assigning the controller
                         keyboardType: TextInputType.name,
-                        // obscureText: true,
+                        readOnly: true,
+                          enabled:false,
+                          // obscureText: true,
                         onChanged: (value) {
                           //MARK: Space restrict
                           setState(() {
@@ -523,7 +525,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                           hintStyle: CommonStyles.texthintstyle,
                         ),
                         validator: validatefullname,
-                        style: CommonStyles.txSty_14b_fb,
+                        style: CommonStyles.texthintstyle,
                       ),
                       const SizedBox(
                         height: 10.0,
@@ -555,6 +557,8 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                         controller:
                             _phonenumberController2, // Assigning the controller
                         keyboardType: TextInputType.phone,
+                        readOnly: true,
+                        enabled:false,
                         // obscureText: true,
                         validator: validateMobilenum,
                         inputFormatters: [
@@ -605,7 +609,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                           hintStyle: CommonStyles.texthintstyle,
                         ),
                         // validator: validatefullname,
-                        style: CommonStyles.txSty_14b_fb,
+                        style: CommonStyles.texthintstyle,
                       ),
 
                       const SizedBox(

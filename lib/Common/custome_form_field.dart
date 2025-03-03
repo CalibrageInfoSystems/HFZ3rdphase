@@ -67,7 +67,7 @@ class CustomeFormField extends StatelessWidget {
               Text(
                 '*',
                 style: const TextStyle(color: Colors.red).copyWith(
-                  color: screenForReschedule ? Colors.grey : Colors.black,
+                  color: screenForReschedule ? Colors.grey : Colors.red,
                 ),
               ),
           ],

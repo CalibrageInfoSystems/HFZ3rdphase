@@ -378,6 +378,7 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                                                       "selectedValue:$selectedValue");
                                                   print(
                                                       "selectedName:$selectedName");
+                                                  isGenderSelected = false;
                                                 } else {
                                                   print("==========");
                                                   print(selectedValue);

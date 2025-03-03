@@ -530,6 +530,7 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                         controller:
                             _fullnameController1, // Assigning the controller
                         keyboardType: TextInputType.name,
+
                         // obscureText: true,
                         onChanged: (value) {
                           //MARK: Space restrict

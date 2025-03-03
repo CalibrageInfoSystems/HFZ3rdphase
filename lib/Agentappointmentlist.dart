@@ -1582,6 +1582,71 @@ class _OpCardState extends State<OpCard> {
         return Row(
           children: [
             GestureDetector(
+              onTap: () {
+                int timeDifference =
+                calculateTimeDifference(data.date, data.slotDuration);
+
+                if (timeDifference <= 60) {
+                  CommonUtils.showCustomToastMessageLong(
+                    'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
+                    context,
+                    0,
+                    2,
+                  );
+                } else {
+                  print('====?${widget.userId}');
+                  // Navigate to reschedule screen if time difference is greater than 60 minutes
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Agentrescheduleslotscreen(
+                        userId: userId!,
+                        data: data,
+                      ),
+                    ),
+                  );
+                }
+              },
+              child: IgnorePointer(
+                ignoring: isPastDate(data.date, data.slotDuration),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(3),
+                    border: Border.all(
+                      color: isPastDate(data.date, data.slotDuration)
+                          ? Colors.grey
+                          : CommonStyles.primaryTextColor,
+                    ),
+                  ),
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/calendar-_3_.svg',
+                        width: 13,
+                        color: isPastDate(data.date, data.slotDuration)
+                            ? Colors.grey
+                            : CommonUtils.primaryTextColor,
+                      ),
+                      Text(
+                        '  Reschedule',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: isPastDate(data.date, data.slotDuration)
+                              ? Colors.grey
+                              : CommonUtils.primaryTextColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            GestureDetector(
               onTap: () => _handleButtonPress(data, userId),
               child: IgnorePointer(
                 ignoring: _isAcceptClicked ||
@@ -1807,7 +1872,8 @@ class _OpCardState extends State<OpCard> {
               ),
             ],
           );
-        } else {
+        }
+        else {
           return Row(
             children: [
               GestureDetector(

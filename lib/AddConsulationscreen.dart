@@ -116,6 +116,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
   late String slot_time;
   String? visitingDateTime;
   DateTime? VisitslotDateTime;
+
   @override
   void initState() {
     super.initState();
@@ -348,7 +349,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                       style: TextStyle(color: Colors.red).copyWith(
                         color: widget.screenForReschedule!
                             ? Colors.grey
-                            : Colors.black,
+                            : Colors.red,
                       ),
                     ),
                   ],
@@ -356,6 +357,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                 const SizedBox(
                   height: 5,
                 ),
+
 
                 Padding(
                   padding: const EdgeInsets.only(left: 0, top: 0.0, right: 0),
@@ -367,15 +369,15 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         color: widget.screenForReschedule!
                             ? Colors.grey.shade300
                             : isGenderSelected
-                                ? const Color.fromARGB(255, 175, 15, 4)
-                                : CommonUtils.primaryTextColor,
+                            ? const Color.fromARGB(255, 175, 15, 4)
+                            : CommonUtils.primaryTextColor,
                       ),
                     ),
                     child: DropdownButtonHideUnderline(
                         child: ButtonTheme(
-                      alignedDropdown: true,
-                      child: DropdownButton<int>(
-                        value: dropdownItems.isNotEmpty &&
+                          alignedDropdown: true,
+                          child: DropdownButton<int>(
+                            value: dropdownItems.isNotEmpty &&
                                 selectedTypeCdId! >= 0 &&
                                 selectedTypeCdId! < dropdownItems.length
                             ? selectedTypeCdId
@@ -391,24 +393,23 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                                 setState(() {
                                   selectedTypeCdId = value!;
 
-                                  if (selectedTypeCdId != -1 &&
-                                      selectedTypeCdId! <
-                                          dropdownItems.length) {
-                                    selectedValue =
-                                        dropdownItems[selectedTypeCdId!]
-                                            ['typeCdId'];
-                                    selectedName =
-                                        dropdownItems[selectedTypeCdId!]
-                                            ['desc'];
+                                if (selectedTypeCdId != -1 &&
+                                    selectedTypeCdId! < dropdownItems.length) {
+                                  selectedValue =
+                                  dropdownItems[selectedTypeCdId!]['typeCdId'];
+                                  selectedName =
+                                  dropdownItems[selectedTypeCdId!]['desc'];
 
-                                    print("selectedName: $selectedName");
-                                  } else {
-                                    selectedValue = null;
-                                    selectedName = null;
-                                    print("==========");
-                                    print(selectedValue);
-                                    print(selectedName);
-                                  }
+                                  print("selectedValue: $selectedValue");
+                                  print("selectedName: $selectedName");
+                                  isGenderValidate = false;
+                                } else {
+                                  selectedValue = null;
+                                  selectedName = null;
+                                  print("==========");
+                                  print(selectedValue);
+                                  print(selectedName);
+                                }
 
                                   isGenderSelected = false;
                                 });
@@ -442,16 +443,90 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                     )),
                   ),
                 ),
+                // Padding(
+                //   padding: const EdgeInsets.only(
+                //       left: 0, top: 5.0, right: 0),
+                //   child: Container(
+                //     width: MediaQuery.of(context).size.width,
+                //     decoration: BoxDecoration(
+                //       border: Border.all(
+                //         color: isGenderSelected
+                //             ? const Color.fromARGB(
+                //             255, 175, 15, 4)
+                //             : CommonUtils.primaryTextColor,
+                //       ),
+                //       borderRadius: BorderRadius.circular(5.0),
+                //       color: Colors.white,
+                //     ),
+                //     child: DropdownButtonHideUnderline(
+                //       child: ButtonTheme(
+                //         alignedDropdown: true,
+                //         child: DropdownButton<int>(
+                //             value: selectedTypeCdId,
+                //             iconSize: 30,
+                //             icon: null,
+                //             style: CommonUtils.txSty_12b_fb,
+                //             onChanged: (value) {
+                //               setState(() {
+                //                 selectedTypeCdId = value!;
+                //                 if (selectedTypeCdId != -1) {
+                //                   selectedValue = dropdownItems[
+                //                   selectedTypeCdId!]
+                //                   ['typeCdId'];
+                //                   selectedName = dropdownItems[
+                //                   selectedTypeCdId!]['desc'];
+                //
+                //                   print(
+                //                       "selectedValue:$selectedValue");
+                //                   print(
+                //                       "selectedName:$selectedName");
+                //                   isGenderValidate = false;
+                //                 } else {
+                //                   print("==========");
+                //                   print(selectedValue);
+                //                   print(selectedName);
+                //                 }
+                //                 // isDropdownValid = selectedTypeCdId != -1;
+                //                 isGenderSelected = false;
+                //               });
+                //             },
+                //             items: [
+                //               const DropdownMenuItem<int>(
+                //                   value: -1,
+                //                   child: Text(
+                //                     'Select Gender',
+                //                     style: CommonStyles
+                //                         .texthintstyle,
+                //                   )),
+                //               ...dropdownItems
+                //                   .asMap()
+                //                   .entries
+                //                   .map((entry) {
+                //                 final index = entry.key;
+                //                 final item = entry.value;
+                //                 return DropdownMenuItem<int>(
+                //                   value: index,
+                //                   child: Text(item['desc']),
+                //                 );
+                //               }).toList(),
+                //             ]),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 //MARK: Gender condition
-                if (isGenderSelected)
+                if (isGenderValidate)
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                        child: Text('Please Select Gender',
-                            style: CommonStyles.texterrorstyle),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 5),
+                        child: Text(
+                          'Please Select Gender',
+                          // style: CommonStyles.texthintstyle,
+                          style: CommonStyles.texterrorstyle,
+                        ),
                       ),
                     ],
                   ),
@@ -459,6 +534,23 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                 const SizedBox(
                   height: 10,
                 ),
+                // //MARK: Gender condition
+                // if (isGenderSelected)
+                //   const Row(
+                //     mainAxisAlignment: MainAxisAlignment.start,
+                //     children: [
+                //       Padding(
+                //         padding:
+                //             EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                //         child: Text('Please Select Gender',
+                //             style: CommonStyles.texterrorstyle),
+                //       ),
+                //     ],
+                //   ),
+                //
+                // const SizedBox(
+                //   height: 10,
+                // ),
 
                 CustomeFormField(
                   //MARK: Mobile Number
