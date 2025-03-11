@@ -358,7 +358,6 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                   height: 5,
                 ),
 
-
                 Padding(
                   padding: const EdgeInsets.only(left: 0, top: 0.0, right: 0),
                   child: Container(
@@ -369,15 +368,15 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         color: widget.screenForReschedule!
                             ? Colors.grey.shade300
                             : isGenderSelected
-                            ? const Color.fromARGB(255, 175, 15, 4)
-                            : CommonUtils.primaryTextColor,
+                                ? const Color.fromARGB(255, 175, 15, 4)
+                                : CommonUtils.primaryTextColor,
                       ),
                     ),
                     child: DropdownButtonHideUnderline(
                         child: ButtonTheme(
-                          alignedDropdown: true,
-                          child: DropdownButton<int>(
-                            value: dropdownItems.isNotEmpty &&
+                      alignedDropdown: true,
+                      child: DropdownButton<int>(
+                        value: dropdownItems.isNotEmpty &&
                                 selectedTypeCdId! >= 0 &&
                                 selectedTypeCdId! < dropdownItems.length
                             ? selectedTypeCdId
@@ -393,23 +392,26 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                                 setState(() {
                                   selectedTypeCdId = value!;
 
-                                if (selectedTypeCdId != -1 &&
-                                    selectedTypeCdId! < dropdownItems.length) {
-                                  selectedValue =
-                                  dropdownItems[selectedTypeCdId!]['typeCdId'];
-                                  selectedName =
-                                  dropdownItems[selectedTypeCdId!]['desc'];
+                                  if (selectedTypeCdId != -1 &&
+                                      selectedTypeCdId! <
+                                          dropdownItems.length) {
+                                    selectedValue =
+                                        dropdownItems[selectedTypeCdId!]
+                                            ['typeCdId'];
+                                    selectedName =
+                                        dropdownItems[selectedTypeCdId!]
+                                            ['desc'];
 
-                                  print("selectedValue: $selectedValue");
-                                  print("selectedName: $selectedName");
-                                  isGenderValidate = false;
-                                } else {
-                                  selectedValue = null;
-                                  selectedName = null;
-                                  print("==========");
-                                  print(selectedValue);
-                                  print(selectedName);
-                                }
+                                    print("selectedValue: $selectedValue");
+                                    print("selectedName: $selectedName");
+                                    isGenderValidate = false;
+                                  } else {
+                                    selectedValue = null;
+                                    selectedName = null;
+                                    print("==========");
+                                    print(selectedValue);
+                                    print(selectedName);
+                                  }
 
                                   isGenderSelected = false;
                                 });
@@ -520,8 +522,8 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 5),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                         child: Text(
                           'Please Select Gender',
                           // style: CommonStyles.texthintstyle,
@@ -777,7 +779,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                     children: [
                       TextFormField(
                         controller: _timeController,
-                        validator: (value) {
+                        /*  validator: (value) {
                           if (value!.isEmpty || value.isEmpty) {
                             return 'Please choose time';
                           }
@@ -792,11 +794,82 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
 
                             if (selectedMinutes < nowMinutes) {
                               return 'Please select a future time';
+                            }sfdsdfdsf
+                          }
+
+                          return null;
+                        }, */
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please choose time';
+                          }
+
+                          // Get the current date and time
+                          DateTime now = DateTime.now();
+                          TimeOfDay currentTime = TimeOfDay.now();
+
+                          // Get the visiting date from the widget, defaulting to today if null
+                          DateTime visitingDate =
+                              widget.consultation?.visitingDate ?? now;
+                          DateTime selectedDate =
+                              DateTime.parse(visiteddate); // User-selected date
+                          TimeOfDay? selectedTime = _selectedTime;
+
+                          if (selectedTime != null) {
+                            int currentMinutes =
+                                currentTime.hour * 60 + currentTime.minute;
+                            int selectedMinutes =
+                                selectedTime.hour * 60 + selectedTime.minute;
+
+                            // Allow any time if the selected date is after today
+                            if (selectedDate.isAfter(now)) {
+                              return null;
+                            }
+
+                            // If the selected date is today, ensure the time is in the future
+                            if (selectedDate.year == now.year &&
+                                selectedDate.month == now.month &&
+                                selectedDate.day == now.day) {
+                              if (selectedMinutes <= currentMinutes) {
+                                return 'Please select a future time.';
+                              }
                             }
                           }
 
                           return null;
                         },
+
+                        /*  validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please choose time';
+                          }
+                          print('yyy: ${widget.consultation?.visitingDate}');
+                          DateTime visitingDate = widget.consultation != null
+                              ? widget.consultation!.visitingDate!
+                              : DateTime.now();
+                          DateTime selectedDate = DateTime.parse(visiteddate);
+                          TimeOfDay now = TimeOfDay.now();
+                          TimeOfDay? selectedTime = _selectedTime;
+
+                          if (selectedTime != null) {
+                            int nowMinutes = now.hour * 60 + now.minute;
+                            int selectedMinutes =
+                                selectedTime.hour * 60 + selectedTime.minute;
+
+                            // Ensure selected date is in the future or today
+                            if (selectedDate.isBefore(visitingDate)) {
+                              return 'Please select a date after ${DateFormat('yyyy-MM-dd').format(visitingDate)}';
+                            }
+
+                            // If selected date is today, ensure time is in the future
+                            if (selectedDate.isAtSameMomentAs(visitingDate) &&
+                                selectedMinutes < nowMinutes) {
+                              return 'Please select a future time';
+                            }
+                          }
+
+                          return null;
+                        }, */
                         keyboardType: TextInputType.visiblePassword,
                         onTap: () {
                           _openTimePicker();

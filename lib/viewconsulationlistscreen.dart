@@ -653,6 +653,7 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                   ),
                   const SizedBox(height: 10),
                   if (consultationslist[index].statusTypeId != 28 &&
+                      consultationslist[index].statusTypeId != 18 &&
                       consultationslist[index].statusTypeId != 17) ...[
                     (DateTime.now()
                             .isAfter(consultationslist[index].visitingDate!))
@@ -869,6 +870,7 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
   Widget statusBasedBgById(int? statusTypeId, String? status) {
     final Color statusColor;
     final Color statusBgColor;
+    print('statusBasedBgById: $statusTypeId | $status');
     if (statusTypeId == 11) {
       status = "Closed";
     }
