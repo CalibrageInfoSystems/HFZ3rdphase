@@ -482,8 +482,8 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                             _fullnameController1, // Assigning the controller
                         keyboardType: TextInputType.name,
                         readOnly: true,
-                          enabled:false,
-                          // obscureText: true,
+                        enabled: false,
+                        // obscureText: true,
                         onChanged: (value) {
                           //MARK: Space restrict
                           setState(() {
@@ -558,7 +558,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                             _phonenumberController2, // Assigning the controller
                         keyboardType: TextInputType.phone,
                         readOnly: true,
-                        enabled:false,
+                        enabled: false,
                         // obscureText: true,
                         validator: validateMobilenum,
                         inputFormatters: [
@@ -1190,7 +1190,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
         "reviewSubmittedDate": null,
         // "timeofslot": widget.data.timeofSlot,
         "timeofslot": '$_selectedTimeSlot24',
-        "customerId": null,
+        "customerId": widget.data.customerId,
         "paymentTypeId": null
       };
 

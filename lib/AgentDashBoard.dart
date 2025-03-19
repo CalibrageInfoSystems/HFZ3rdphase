@@ -252,7 +252,8 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
           return const Center(child: CircularProgressIndicator.adaptive());
         } else if (snapshot.hasError) {
           return Center(
-            child: Text(snapshot.error.toString()),
+            child:
+                Text(snapshot.error.toString().replaceAll('Exception: ', '')),
           );
         } else {
           List<AgentBranchModel>? data = snapshot.data!;
@@ -841,8 +842,10 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator.adaptive());
           } else if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
+            return Expanded(
+              child: Center(
+                  child: Text(
+                      snapshot.error.toString().replaceAll('Exception: ', ''))),
             );
           } else {
             List<AgentBranchModel>? data = snapshot.data!;
@@ -915,8 +918,8 @@ class _AgentDashBoardState extends State<AgentDashBoard> {
               listResult.map((e) => AgentBranchModel.fromJson(e)).toList();
           return result;
         } else {
-          print('listResult is null');
-          throw Exception('listResult is null');
+          print('No Branches found!');
+          throw Exception('No Branches found!');
         }
       } else {
         print('Request failed with status: ${response.statusCode}');
