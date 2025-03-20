@@ -24,12 +24,12 @@ import 'MyAppointment_Model.dart';
 import 'MyAppointmentsProvider.dart';
 import 'ProfileMy.dart';
 import 'notifications_screen.dart';
+
 @pragma('vm:entry-point')
 Future<void> backgroundHandler(RemoteMessage message) async {
-
   print("This is a message from the background");
   print(message.notification!.title);
-  String ? messagetitle = message.notification!.title;
+  String? messagetitle = message.notification!.title;
   print(message.notification!.body);
   // if (message.notification != null) {
   //   print("Message from background: ${message.notification!.title}");
@@ -43,6 +43,7 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   //   }
   // }
 }
+
 // Future<bool> checkIfAppIsInForeground() async {
 //   // This is a platform-specific implementation.
 //   // You can use a plugin like `flutter_foreground_task` to check if the app is in the foreground.
@@ -63,7 +64,7 @@ void main() async {
   tz.initializeTimeZones();
   // Retrieve all scheduled notifications
   List<PendingNotificationRequest> notifications =
-  await notificationService.getScheduledNotifications();
+      await notificationService.getScheduledNotifications();
 
   // Log the details of all scheduled notifications
   for (var notification in notifications) {
@@ -73,7 +74,8 @@ void main() async {
     // print("Scheduled Time: ${notification.scheduledDate}");
   }
 // Check if the app was opened from a notification
-  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  RemoteMessage? initialMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
 
   Widget homeWidget = SplashScreen(); // Default to Splash Screen
 // Default to Splash Screen
@@ -85,7 +87,7 @@ void main() async {
     String formattedDate = '';
     print("web notification1== $messagetitle");
 
-    if (messageBody != null && messagetitle!.contains("New Appointment") ) {
+    if (messageBody != null && messagetitle!.contains("New Appointment")) {
       print("web notification2== $messagetitle");
       RegExp datePattern = RegExp(r'\b(\d{1,2})(st|nd|rd|th)? (\w+)\b');
       Match? match = datePattern.firstMatch(messageBody);
@@ -111,7 +113,9 @@ void main() async {
       if (isLoggedIn) {
         int? userId = prefs.getInt('userId');
         if (userId != null) {
-          homeWidget = notifications_screen(userId: userId, formattedDate: formattedDate); // Your notification screen widget
+          homeWidget = notifications_screen(
+              userId: userId,
+              formattedDate: formattedDate); // Your notification screen widget
         }
       }
     }
@@ -127,6 +131,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => AgentAppointmentsProvider()),
   ], child: MyApp(homeWidget: homeWidget)));
 }
+
 // class NotificationHandler {
 //   static String? _lastMessageId;
 //
@@ -168,14 +173,14 @@ class MyApp extends StatelessWidget {
       // Handle the notification when the app is in the foreground
       print("onMessage: $message");
       String? messageBody = message.notification!.body;
-      String ? messagetitle = message.notification!.title;
+      String? messagetitle = message.notification!.title;
       String? messagelog = message.data["message"];
       print("onMessageBody: $messageBody");
       print("onMessageOmessagetitle: $messagetitle");
       print("onMessagelog: $messagelog");
-     // NotificationHandler.handleNotification(message, context);
-
-       LocalNotificationService.showNotificationOnForeground(context, message);
+      // NotificationHandler.handleNotification(message, context);
+// HERE
+      //  LocalNotificationService.showNotificationOnForeground(context, message);
       // LocalNotificationService.display(message);
 
       if (messageBody != null) {
@@ -183,8 +188,7 @@ class MyApp extends StatelessWidget {
           print("Appointment already approved. Just opening the app.");
           // No further action needed, just return.
           return;
-        }
-        else if (messagetitle!.contains("Notification")) {
+        } else if (messagetitle!.contains("Notification")) {
           print("web notification");
           // No further action needed, just return.
           return;
@@ -198,8 +202,7 @@ class MyApp extends StatelessWidget {
           print("Appointment cancelled from agent. Just opening the app");
           // No further action needed, just return.
           return;
-        }
-        else {
+        } else {
           RegExp datePattern = RegExp(r'\b(\d{1,2})(st|nd|rd|th)? (\w+)\b');
           Match? match = datePattern.firstMatch(messageBody);
 
@@ -213,17 +216,14 @@ class MyApp extends StatelessWidget {
               DateTime date = DateFormat("d MMMM").parse(dateString);
 
               // Adjust the year to the current year
-              date = DateTime(DateTime
-                  .now()
-                  .year, date.month, date.day);
+              date = DateTime(DateTime.now().year, date.month, date.day);
 
               formattedDate = DateFormat("yyyy-MM-dd").format(date);
               print("Formatted Date: $formattedDate");
             } catch (e) {
               print("Error parsing date: $e");
             }
-          }
-          else {
+          } else {
             print("Date not found in the message.");
           }
         }
@@ -236,7 +236,8 @@ class MyApp extends StatelessWidget {
         userId = prefs.getInt('userId')!;
 
         print('User ID: $userId');
-        LocalNotificationService.initialize(context, navigatorKey, userId!, formattedDate);
+        LocalNotificationService.initialize(
+            context, navigatorKey, userId!, formattedDate);
       }
     });
 
@@ -254,18 +255,15 @@ class MyApp extends StatelessWidget {
           print("Appointment already approved. Just opening the app.");
           // No further action needed, just return.
           return;
-        }
-        else if (messagetitle!.contains("Notification")) {
+        } else if (messagetitle!.contains("Notification")) {
           print("web notification");
           // No further action needed, just return.
           return;
-        }
-        else if (messagetitle!.contains("Appointment Cancelled")) {
+        } else if (messagetitle!.contains("Appointment Cancelled")) {
           print("Appointment Cancelled Just opening the app");
           // No further action needed, just return.
           return;
-        }
-        else{
+        } else {
           RegExp datePattern = RegExp(r'\b(\d{1,2})(st|nd|rd|th)? (\w+)\b');
           Match? match = datePattern.firstMatch(messageBody);
 
@@ -285,8 +283,7 @@ class MyApp extends StatelessWidget {
             } catch (e) {
               print("Error parsing date: $e");
             }
-          }
-          else {
+          } else {
             print("Date not found in the message.");
           }
         }
@@ -301,15 +298,16 @@ class MyApp extends StatelessWidget {
         if (userId != null) {
           print('User ID: $userId');
           navigatorKey.currentState?.push(MaterialPageRoute(
-            builder: (context) => notifications_screen(userId: userId, formattedDate: formattedDate), // Replace with your screen widget
+            builder: (context) => notifications_screen(
+                userId: userId,
+                formattedDate:
+                    formattedDate), // Replace with your screen widget
           ));
         } else {
           print('User ID not found in SharedPreferences');
         }
       }
     });
-
-
 
     return MaterialApp(
       builder: (context, child) {
@@ -334,7 +332,9 @@ class MyApp extends StatelessWidget {
         '/about': (context) => AboutUsScreen(),
         '/ReSchedulescreen': (context) {
           MyAppointment_Model? data = null;
-          return data != null ? Rescheduleslotscreen(data: data) : Rescheduleslotscreen(data: data!);
+          return data != null
+              ? Rescheduleslotscreen(data: data)
+              : Rescheduleslotscreen(data: data!);
         },
         '/Mybookings': (context) => MyAppointments(),
         '/Products': (context) => ProductsMy(),
