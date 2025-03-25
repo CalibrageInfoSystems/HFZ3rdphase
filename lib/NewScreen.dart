@@ -29,11 +29,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 class NewScreen extends StatefulWidget {
   final String userName;
 
-
   const NewScreen({
     Key? key,
     required this.userName,
-
   }) : super(key: key);
 
   @override
@@ -65,7 +63,7 @@ class _NewScreenState extends State<NewScreen> {
         setState(() {
           Id = prefs.getInt('userId') ?? 0;
           fetchdetailsofcustomer(Id);
-         // _fetchUserDataFuture = fetchLoginUserData();
+          // _fetchUserDataFuture = fetchLoginUserData();
         });
 
         // fetchMyAppointments(userId);
@@ -74,9 +72,10 @@ class _NewScreenState extends State<NewScreen> {
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
-  //  _fetchUserDataFuture = fetchLoginUserData();
+    //  _fetchUserDataFuture = fetchLoginUserData();
     return WillPopScope(
       onWillPop: () => onBackPressed(context),
       child: Scaffold(
@@ -95,7 +94,6 @@ class _NewScreenState extends State<NewScreen> {
         //   ),
         // ),
         body: SingleChildScrollView(
-
           child: Column(
             children: [
               // Row(
@@ -124,7 +122,7 @@ class _NewScreenState extends State<NewScreen> {
                   height: 90,
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
                     // color: Colors.grey,
                     borderRadius: BorderRadius.circular(10),
@@ -167,7 +165,6 @@ class _NewScreenState extends State<NewScreen> {
                             loginUserFullName ?? '',
                             style: CommonStyles.txSty_20black_fb,
                           ),
-
                           const Text('Edit Profile',
                               style: CommonStyles.txSty_16black_f5),
                         ],
@@ -177,10 +174,14 @@ class _NewScreenState extends State<NewScreen> {
                 ),
               ),
 
-              const SizedBox(height: 10,width: 10,),
+              const SizedBox(
+                height: 10,
+                width: 10,
+              ),
 
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
               ),
               ListTile(
@@ -191,8 +192,7 @@ class _NewScreenState extends State<NewScreen> {
                   height: 25,
                   color: const Color(0xFF11528f), // Adjust color as needed
                 ),
-                title: const Text('About Us',
-                    style: CommonStyles.txSty_18b_fb),
+                title: const Text('About Us', style: CommonStyles.txSty_18b_fb),
                 trailing: const Icon(Icons.arrow_forward_ios,
                     color: Colors.grey, size: 16), // Add trailing icon here
                 onTap: () {
@@ -200,7 +200,8 @@ class _NewScreenState extends State<NewScreen> {
                 },
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
               ),
               ListTile(
@@ -211,17 +212,17 @@ class _NewScreenState extends State<NewScreen> {
                   height: 25,
                   color: const Color(0xFF11528f), // Adjust color as needed
                 ),
-                title: const Text('Products',
-                    style: CommonStyles.txSty_18b_fb),
+                title: const Text('Products', style: CommonStyles.txSty_18b_fb),
                 trailing: const Icon(Icons.arrow_forward_ios,
                     color: Colors.grey, size: 16), // Add trailing icon here
                 onTap: () {
                   products(context);
-                 // MyProducts();
+                  // MyProducts();
                 },
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
               ),
               ListTile(
@@ -240,7 +241,8 @@ class _NewScreenState extends State<NewScreen> {
                     Favourite(context);
                   }),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
               ),
               ListTile(
@@ -251,8 +253,8 @@ class _NewScreenState extends State<NewScreen> {
                   height: 25,
                   color: const Color(0xFF11528f), // Adjust color as needed
                 ),
-                title: const Text('Contact Us',
-                    style: CommonStyles.txSty_18b_fb),
+                title:
+                    const Text('Contact Us', style: CommonStyles.txSty_18b_fb),
                 trailing: const Icon(Icons.arrow_forward_ios,
                     color: Colors.grey, size: 16), // Add trailing icon here
                 onTap: () {
@@ -261,7 +263,8 @@ class _NewScreenState extends State<NewScreen> {
               ),
 
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
               ),
               ListTile(
@@ -272,24 +275,24 @@ class _NewScreenState extends State<NewScreen> {
                   height: 25,
                   color: const Color(0xFF11528f), // Adjust color as needed
                 ),
-                title:
-                    const Text('Change Password', style: CommonStyles.txSty_18b_fb),
+                title: const Text('Change Password',
+                    style: CommonStyles.txSty_18b_fb),
                 trailing: const Icon(Icons.arrow_forward_ios,
                     color: Colors.grey, size: 16), // Add trailing icon here
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ChangePasswordScreen(
-                            id: Id!,
-                            password: password!,
-                          ),
+                      builder: (context) => ChangePasswordScreen(
+                        id: Id!,
+                        password: password!,
+                      ),
                     ),
                   ); // Execute your action here
                 },
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
               ),
               ListTile(
@@ -307,17 +310,15 @@ class _NewScreenState extends State<NewScreen> {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) =>
-                          Privacypolicyscreen(
-
-                          ),
+                      builder: (context) => Privacypolicyscreen(),
                     ),
                   );
                   // _launchURL('https://www.hairfixingzone.com/privacy-policy/');// Execute your action here
                 },
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
               ),
               ListTile(
@@ -328,8 +329,7 @@ class _NewScreenState extends State<NewScreen> {
                   height: 25,
                   color: const Color(0xFF11528f), // Adjust color as needed
                 ),
-                title:
-                const Text('Logout', style: CommonStyles.txSty_18b_fb),
+                title: const Text('Logout', style: CommonStyles.txSty_18b_fb),
                 trailing: const Icon(Icons.arrow_forward_ios,
                     color: Colors.grey, size: 16), // Add trailing icon here
                 onTap: () {
@@ -337,17 +337,24 @@ class _NewScreenState extends State<NewScreen> {
                 },
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
               ),
-              const SizedBox(height: 30),
               referBox(),
+              const SizedBox(height: 50),
+              Text(
+                'Version 1.0.0',
+                style: CommonStyles.txSty_16black_f5,
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
       ),
     );
   }
+
   void _launchURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -355,6 +362,7 @@ class _NewScreenState extends State<NewScreen> {
       throw 'Could not launch $url';
     }
   }
+
   Widget referBox() {
     return Container(
       height: 150,
@@ -373,47 +381,28 @@ class _NewScreenState extends State<NewScreen> {
             flex: 3,
             child: Container(
                 padding: const EdgeInsets.all(12),
-                child: Column(
+                child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Refer & earn',
-                        style: CommonStyles.txSty_20black_fb),
-                    const Text(
+                    Text('Refer & earn', style: CommonStyles.txSty_20black_fb),
+                    Text(
                         'Invite a Friend to Hair Fixing Zone and you will get Complimentary Service',
                         style: CommonStyles.txSty_16black_f5),
-                    const SizedBox(height: 5),
-                    // ElevatedButton(
-                    //   style: ElevatedButton.styleFrom(
-                    //     backgroundColor: CommonStyles.primaryTextColor,
-                    //     padding: const EdgeInsets.all(10),
-                    //     shape: RoundedRectangleBorder(
-                    //       borderRadius: BorderRadius.circular(10.0),
-                    //     ),
-                    //     // shape: const StadiumBorder(),
-                    //   ),
-                    //   onPressed: () {},
-                    //   child: const Text(
-                    //     'Refer now',
-                    //     style: TextStyle(color: Colors.white),
-                    //   ),
-                    // )
+                    SizedBox(height: 5),
                   ],
                 )),
           ),
           Expanded(
             flex: 1,
-            child: Container(
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/giftbox.svg',
-                  width: 60,
-                  height: 60,
-                ),
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/giftbox.svg',
+                width: 60,
+                height: 60,
               ),
             ),
           ),
-
         ],
       ),
     );
@@ -424,8 +413,12 @@ class _NewScreenState extends State<NewScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Logout',style: CommonStyles.txSty_18b_fb,),
-          content: const Text('Are You Sure You Want to Logout?',style: CommonStyles.txSty_16b_fb),
+          title: const Text(
+            'Logout',
+            style: CommonStyles.txSty_18b_fb,
+          ),
+          content: const Text('Are You Sure You Want to Logout?',
+              style: CommonStyles.txSty_16b_fb),
           actions: [
             Container(
               child: ElevatedButton(
@@ -500,7 +493,7 @@ class _NewScreenState extends State<NewScreen> {
     prefs.remove('userRoleId'); // Remove roleId from SharedPreferences
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) =>  startingscreen()),
+      MaterialPageRoute(builder: (context) => startingscreen()),
       (route) => false,
     );
   }
@@ -517,7 +510,7 @@ class _NewScreenState extends State<NewScreen> {
     print('Navigating to Contact Us screen');
     // Example navigation
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => contactus()),
+      MaterialPageRoute(builder: (context) => const contactus()),
     );
   }
 
@@ -538,7 +531,7 @@ class _NewScreenState extends State<NewScreen> {
 
   void Favourite(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) =>  FavouritesScreen()),
+      MaterialPageRoute(builder: (context) => FavouritesScreen()),
     );
   }
 
@@ -546,7 +539,7 @@ class _NewScreenState extends State<NewScreen> {
     // String apiUrl = 'http://182.18.157.215/SaloonApp/API/GetCustomerData?id=$id';
     String apiUrl = '$baseUrl$getCustomerDatabyid$id';
     setState(() {
-   //   isloading = true;
+      //   isloading = true;
     });
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -562,15 +555,14 @@ class _NewScreenState extends State<NewScreen> {
         Map<String, dynamic> customerData = listResult[0];
 
         setState(() {
-;
+          ;
           password = customerData['password'] ?? '';
-         loginUserFullName = customerData['firstname'] ?? '';
-
+          loginUserFullName = customerData['firstname'] ?? '';
 
           print('Role Name: $password');
         });
 
-       // await saveUserDataToSharedPreferences(customerData);
+        // await saveUserDataToSharedPreferences(customerData);
         // Now you can access individual fields like 'firstname', 'lastname', etc.
       } else {
         // Handle error cases
@@ -578,9 +570,7 @@ class _NewScreenState extends State<NewScreen> {
         print('Request failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      setState(() {
-
-      });
+      setState(() {});
       // Handle exceptions
       print('Exception occurred: $e');
     }
@@ -628,5 +618,4 @@ class _NewScreenState extends State<NewScreen> {
       rethrow;
     }
   }
-
 }

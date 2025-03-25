@@ -222,12 +222,12 @@ class _BookingScreenState extends State<Bookingscreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     Id = prefs.getInt('userId') ?? 0;
+    print('getUserDataFromSharedPreferences | Id:$Id');
     userFullName = prefs.getString('userFullName') ?? '';
     genderttypeid = prefs.getInt('genderTypeId');
     phonenumber = prefs.getString('contactNumber') ?? '';
     email = prefs.getString('email') ?? '';
     contactNumber = prefs.getString('contactNumber') ?? '';
-    // genderbyid = prefs.getString('gender');
   }
 
   Future<Holiday> fetchHolidayListByBranchId() async {
@@ -1628,29 +1628,17 @@ class _BookingScreenState extends State<Bookingscreen> {
   //    }
   //  }
   Future<void> bookappointment() async {
-    // validatislot();
-
     if (_formKey.currentState!.validate()) {
       final url = Uri.parse(baseUrl + postApiAppointment);
       print('url==>890: $url');
 
       DateTime now = DateTime.now();
-      // CommonStyles.startProgress(context);
       ProgressDialog progressDialog = ProgressDialog(context);
 
-      // Show the progress dialog
       progressDialog.show();
 
       String dateTimeString = now.toString();
-      print('DateTime as String: $dateTimeString');
-      print('DateTime as String: $selecteddate');
-      print('_selectedTimeSlot892 $_selectedTimeSlot');
       String slotdate = DateFormat('dd MMM yyyy').format(_selectedDate);
-      print('slotdate $slotdate');
-      print('date _selectedDate ====$_selectedDate');
-      print('slotSelectedDateTime:897 $slotSelectedDateTime');
-      // print('appointmentId1214: ${widget.appointmentId}');
-      // CommonStyles.progressBar(context);
       final request = {
         "id": null,
         "branchId": widget.branchId,
@@ -1685,20 +1673,9 @@ class _BookingScreenState extends State<Bookingscreen> {
             'Content-Type': 'application/json',
           },
         );
-        // Check the response status code
-        // if (response.statusCode == 200) {
-        //   print('Request sent successfully');
-        //   showCustomToastMessageLong('Slot booked successfully', context, 0, 2);
-        //   Navigator.pop(context);
-        // } else {
-        //   showCustomToastMessageLong('Failed to send the request', context, 1, 2);
-        //   print('Failed to send the request. Status code: ${response.statusCode}');
-        // }
 
         if (response.statusCode == 200) {
           Map<String, dynamic> data = json.decode(response.body);
-          // LoadingProgress.stop(context);
-          // Extract the necessary information
           bool isSuccess = data['isSuccess'];
           progressDialog.dismiss();
           DateTime testdate = DateTime.now();
@@ -1707,19 +1684,15 @@ class _BookingScreenState extends State<Bookingscreen> {
             print(' AppoitmentID ====${data['response']['id']}');
             int appointmentId = data['response']['id'];
             final int notificationId1 = UniqueKey().hashCode;
-            // debugPrint('Notification Scheduled for $testdate with ID: $notificationId1');
             debugPrint(
                 'Notification Scheduled for $slotSelectedDateTime with ID: $notificationId1');
-            // Hey Sai, Today your Appointment is Scheduled for 10.45 AM at the JNTU Branch, Located at Jntu Stop.
             await NotificationService().scheduleNotification(
               title: 'Reminder Notification',
               body:
                   'Hey $userFullName, Today Your Appointment is Scheduled for  $_selectedTimeSlot at the ${widget.branchname} Branch, Located at ${widget.branchaddress}.',
-              //   scheduledNotificationDateTime: testdate!,
               scheduledNotificationDateTime: slotSelectedDateTime!,
               id: appointmentId,
             );
-            //  Hey  Sai, It has Been 20 Days Since Your Tape with Glue Service was Done. Please Revisit the service at Hair Fixing Zone at the JNTU Branch
             if (selectedValue == 8 ||
                 selectedValue == 9 ||
                 selectedValue == 10 ||

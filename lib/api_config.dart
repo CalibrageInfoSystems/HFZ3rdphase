@@ -2,14 +2,14 @@ library APIConstants;
 
 const String SUCCESS_MESSAGE = " You will be contacted by us very soon.";
 
-var baseUrl = "http://182.18.157.215/SaloonApp/API/"; // Test
-// var baseUrl = "http://182.18.157.215/Saloon_UAT/API/"; // UAT
+// var baseUrl = "http://182.18.157.215/SaloonApp/API/"; // Test
+var baseUrl = "http://182.18.157.215/Saloon_UAT/API/"; // UAT
 // var baseUrl ="http://137.59.201.212/HairFixingZone/API/";// Live
 
 //var imagesflierepo ="http://137.59.201.212/HairFixingZone/FileRepository/";// HairFixingZone Live
 
-var imagesflierepo = 'http://182.18.157.215/SaloonApp/Saloon_Repo/'; // Test
-// var imagesflierepo = 'http://182.18.157.215/Saloon_UAT/Saloon_Repo/'; // UAT
+// var imagesflierepo = 'http://182.18.157.215/SaloonApp/Saloon_Repo/'; // Test
+var imagesflierepo = 'http://182.18.157.215/Saloon_UAT/Saloon_Repo/'; // UAT
 // var imagesflierepo= 'http://182.18.157.215/SaloonApp_Live/Saloon_Repo/'; // Live
 
 var getBanners = "GetBanner?Id=null";
