@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 import 'dart:math';
 
@@ -55,7 +53,6 @@ class MyProducts_screenState extends State<ProductsMy> {
   int? Id;
   final orangeColor = const Color(0xFFe78337);
 
-
   @override
   void initState() {
     super.initState();
@@ -91,13 +88,9 @@ class MyProducts_screenState extends State<ProductsMy> {
 
       apiData = fetchproducts(Id);
     });
-
   }
 
-  Future<void> getUserDataFromSharedPreferences() async {
-
-
-  }
+  Future<void> getUserDataFromSharedPreferences() async {}
 
   late MyProductProvider myProductProvider;
 
@@ -116,10 +109,13 @@ class MyProducts_screenState extends State<ProductsMy> {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final dynamic responseData = jsonDecode(response.body);
-        if (responseData != null && responseData['listResult'] is List<dynamic>) {
+        if (responseData != null &&
+            responseData['listResult'] is List<dynamic>) {
           final List<dynamic> optionsData = responseData['listResult'];
           setState(() {
-            options = optionsData.map((data) => RadioButtonOption.fromJson(data)).toList();
+            options = optionsData
+                .map((data) => RadioButtonOption.fromJson(data))
+                .toList();
           });
         } else {
           throw Exception('Invalid response format');
@@ -135,8 +131,10 @@ class MyProducts_screenState extends State<ProductsMy> {
   Future<List<ProductCategory>> fetchProductsCategory() async {
     final response = await http.get(Uri.parse('$baseUrl$getproductsbyid/6'));
     if (response.statusCode == 200) {
-      final List<dynamic> responseData = json.decode(response.body)['listResult'];
-      List<ProductCategory> result = responseData.map((json) => ProductCategory.fromJson(json)).toList();
+      final List<dynamic> responseData =
+          json.decode(response.body)['listResult'];
+      List<ProductCategory> result =
+          responseData.map((json) => ProductCategory.fromJson(json)).toList();
       print('fetchProductsCategory: ${result[0].desc}');
       return result;
     } else {
@@ -151,107 +149,163 @@ class MyProducts_screenState extends State<ProductsMy> {
     return Future.value(false);
   }
 
-  @override
+  /*  @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () => onBackPressed(context),
+      onWillPop: () => onBackPressed(context),
+      child: DefaultTabController(
+        length: 2,
         child: Consumer<MyProductProvider>(
           builder: (context, provider, _) => Scaffold(
             appBar: AppBar(
-                elevation: 0,
-                backgroundColor: const Color(0xffe2f0fd),
-                title: const Text(
-                  'My Products',
-                  style: TextStyle(color: Color(0xFF0f75bc), fontSize: 16.0, fontWeight: FontWeight.w600),
-                ),
-                titleSpacing: 0.0,
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_ios,
-                    color: CommonUtils.primaryTextColor,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    provider.clearFilter();
-                  },
-                )),
-            body: Container(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  children: [
-                    // search and filter
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0).copyWith(top: 10),
-                      child: _searchBarAndFilter(),
-                    ),
-
-                    // products
-                    Expanded(
-                      child: Consumer<MyProductProvider>(
-                        builder: (context, provider, _) => FutureBuilder(
-                          future: apiData,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator.adaptive(),
-                              );
-                            } else if (snapshot.hasError) {
-                              return Center(
-                                child: Text(
-                                  'Error: ${snapshot.error.toString()}',
-                                  style: const TextStyle(
-                                    fontSize: 12.0,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: "Outfit",
-                                  ),
-                                ),
-                              );
-                            } else {
-                              List<ProductList>? data = provider.getProProducts;
-                              if (provider.getProProducts.isNotEmpty) {
-                                return ListView.builder(
-                                  itemCount: data.length,
-                                  itemBuilder: (context, index) {
-                                    return ProductCard(
-                                      product: data[index],
-                                      customerid: Id!,
-                                    );
-                                  },
-                                );
-                              } else {
-                                return const Center(
-                                  child: Text(
-                                    'No Products Available',
-                                    style: TextStyle(
-                                      fontSize: 12.0,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: "Outfit",
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                    )
-                  ],
+              elevation: 0,
+              backgroundColor: const Color(0xffe2f0fd),
+              title: const Text(
+                'My Products',
+                style: TextStyle(
+                  color: Color(0xFF0f75bc),
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
+              titleSpacing: 0.0,
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: CommonUtils.primaryTextColor,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  provider.clearFilter();
+                },
+              ),
+              bottom: TabBar(
+                indicatorColor: CommonStyles.primaryTextColor,
+                indicatorWeight: 4.0,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelColor: CommonStyles.primaryTextColor,
+                unselectedLabelColor: CommonStyles.blackColorShade,
+                tabs: const [
+                  Tab(text: 'Male'),
+                  Tab(text: 'Female'),
+                ],
+              ),
+            ),
+            body: Column(
+              children: [
+                // Search and Filter
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10)
+                      .copyWith(top: 10),
+                  child: _searchBarAndFilter(),
+                ),
+                // TabBarView
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      productsTemplate(), // Tab 1 content
+                      Center(
+                        child: const Text(
+                          'Female Products will be displayed here.',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Outfit",
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
+  }
+ */
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () => onBackPressed(context),
+      child: DefaultTabController(
+        length: 2,
+        child: Consumer<MyProductProvider>(
+          builder: (context, provider, _) => Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: const Color(0xffe2f0fd),
+              title: const Text(
+                'My Products',
+                style: TextStyle(
+                  color: Color(0xFF0f75bc),
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              titleSpacing: 0.0,
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: CommonUtils.primaryTextColor,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  provider.clearFilter();
+                },
+              ),
+            ),
+            body: Column(
+              children: [
+                // Search and Filter
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10)
+                      .copyWith(top: 10),
+                  child: _searchBarAndFilter(),
+                ),
+                // TabBarView
+                const TabBar(
+                  indicatorColor: CommonStyles.primaryTextColor,
+                  indicatorWeight: 4.0,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: CommonStyles.primaryTextColor,
+                  unselectedLabelColor: CommonStyles.blackColorShade,
+                  tabs: [
+                    Tab(text: 'Male'),
+                    Tab(text: 'Female'),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      productsTemplate('Male'),
+                      productsTemplate('Female'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
-  Future<List<ProductList>> fetchproducts(int? customerid, {int? id, int? categoryTypeId, int? genderTypeId}) async {
+  Future<List<ProductList>> fetchproducts(int? customerid,
+      {int? id, int? categoryTypeId, int? genderTypeId}) async {
     final apiurl = baseUrl + getproductsbyid;
     print('API URL: $apiurl');
     try {
-      final request = {"id": id, "categoryTypeId": categoryTypeId, "genderTypeId": genderTypeId, "isActive": true, "customerId": customerid};
+      final request = {
+        "id": id,
+        "categoryTypeId": categoryTypeId,
+        "genderTypeId": genderTypeId,
+        "isActive": true,
+        "customerId": customerid
+      };
       final response = await http.post(
         Uri.parse(apiurl),
         body: json.encode(request),
@@ -267,7 +321,8 @@ class MyProducts_screenState extends State<ProductsMy> {
 
         if (data['listResult'] != null) {
           List<dynamic> list = data['listResult'];
-          List<ProductList> result = list.map((item) => ProductList.fromJson(item)).toList();
+          List<ProductList> result =
+              list.map((item) => ProductList.fromJson(item)).toList();
           return result;
         } else {
           print('listResult is null');
@@ -361,15 +416,13 @@ class MyProducts_screenState extends State<ProductsMy> {
                 onChanged: (input) => filterProducts(input),
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.all(10),
-
                   hintText: 'Search Products',
                   hintStyle: CommonStyles.texthintstyle,
-                  // suffixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: CommonUtils.primaryTextColor),
+                    borderSide:
+                        const BorderSide(color: CommonUtils.primaryTextColor),
                   ),
-
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
                       color: Color(0xFF0f75bc),
@@ -388,46 +441,11 @@ class MyProducts_screenState extends State<ProductsMy> {
           const SizedBox(
             width: 10,
           ),
-          // Container(
-          //   height: 45,
-          //   width: 45,
-          //   decoration: BoxDecoration(
-          //     color: myProductProvider.filterStatus ? const Color.fromARGB(255, 171, 111, 211) : Colors.white,
-          //     borderRadius: BorderRadius.circular(10),
-          //     border: Border.all(
-          //       color: CommonUtils.primaryTextColor,
-          //     ),
-          //   ),
-          //   child: IconButton(
-          //     icon: SvgPicture.asset(
-          //       'assets/filter.svg', // Path to your SVG asset
-          //       // color: myProductProvider.filterStatus ? Colors.black : const Color(0xFF662e91),
-          //       color:  myProductProvider.filterStatus
-          //           ? Colors.black
-          //           : CommonUtils.primaryTextColor,
-          //       width: 24, // Adjust width as needed
-          //       height: 24, // Adjust height as needed
-          //     ),
-          //     onPressed: () {
-          //       showModalBottomSheet(
-          //         isScrollControlled: true,
-          //         context: context,
-          //         builder: (context) => Padding(
-          //           padding: EdgeInsets.only(
-          //             bottom: MediaQuery.of(context).viewInsets.bottom,
-          //           ),
-          //           child: const FilterBottomSheet(),
-          //         ),
-          //       );
-          //       // Add logout functionality here
-          //     },
-          //   ),
-          // ),
           Container(
             height: 45,
             width: 45,
             decoration: BoxDecoration(
-              color:  myProductProvider.filterStatus
+              color: myProductProvider.filterStatus
                   ? const Color(0xffe2f0fd)
                   : Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -438,7 +456,7 @@ class MyProducts_screenState extends State<ProductsMy> {
             child: IconButton(
               icon: SvgPicture.asset(
                 'assets/filter.svg',
-                color:  myProductProvider.filterStatus
+                color: myProductProvider.filterStatus
                     ? Colors.black
                     : CommonUtils.primaryTextColor,
                 width: 24,
@@ -452,8 +470,8 @@ class MyProducts_screenState extends State<ProductsMy> {
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).viewInsets.bottom,
                     ),
-                    child: FilterBottomSheet(customerid: Id!,
-
+                    child: FilterBottomSheet(
+                      customerid: Id!,
                     ),
                   ),
                 );
@@ -468,15 +486,98 @@ class MyProducts_screenState extends State<ProductsMy> {
   void filterProducts(String input) {
     apiData.then((data) {
       setState(() {
-        myProductProvider.storeIntoProvider(data.where((item) => item.name.toLowerCase().contains(input.toLowerCase())).toList());
+        myProductProvider.storeIntoProvider(data
+            .where(
+                (item) => item.name.toLowerCase().contains(input.toLowerCase()))
+            .toList());
       });
     });
+  }
+
+  TabBar tabBar() {
+    return const TabBar(
+      indicatorColor: CommonStyles.primaryTextColor, // Underline color
+      indicatorWeight: 4.0, // Thickness of the underline
+      indicatorSize: TabBarIndicatorSize.tab, // Full-width indicator
+      labelColor: CommonStyles.primaryTextColor, // Selected tab text color
+      unselectedLabelColor:
+          CommonStyles.blackColorShade, // Unselected tab text color
+      tabs: [
+        Tab(text: 'Inventory'),
+        Tab(text: 'Deleted Inventory'),
+      ],
+    );
+  }
+
+  List<ProductList> filterProductsByGender(
+      List<ProductList>? products, String gender) {
+    if (products == null) return [];
+    return products
+        .where(
+            (product) => product.gender?.toLowerCase() == gender.toLowerCase())
+        .toList();
+  }
+
+  Widget productsTemplate(String gender) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Consumer<MyProductProvider>(
+        builder: (context, provider, _) => FutureBuilder(
+          future: apiData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator.adaptive(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'Error: ${snapshot.error.toString()}',
+                  style: const TextStyle(
+                    fontSize: 12.0,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Outfit",
+                  ),
+                ),
+              );
+            } else {
+              List<ProductList>? data = provider.getProProducts;
+              final filteredData = filterProductsByGender(data, gender);
+              if (filteredData.isNotEmpty) {
+                return ListView.builder(
+                  itemCount: filteredData.length,
+                  itemBuilder: (context, index) {
+                    return ProductCard(
+                      product: filteredData[index],
+                      customerid: Id!,
+                    );
+                  },
+                );
+              } else {
+                return const Center(
+                  child: Text(
+                    'No Products Available',
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Outfit",
+                    ),
+                  ),
+                );
+              }
+            }
+          },
+        ),
+      ),
+    );
   }
 }
 
 class FilterBottomSheet extends StatefulWidget {
- final int customerid;
- FilterBottomSheet({required this.customerid});
+  final int customerid;
+  FilterBottomSheet({required this.customerid});
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
@@ -502,7 +603,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   }
 
   Future<void> filterProducts() async {
-    apiData = fetchproducts(genderTypeId: myProductProvider.getGender, categoryTypeId: myProductProvider.getCategory);
+    apiData = fetchproducts(
+        genderTypeId: myProductProvider.getGender,
+        categoryTypeId: myProductProvider.getCategory);
     apiData.then((data) {
       myProductProvider.getProProducts = data;
       // Navigator.of(context).pop();
@@ -531,11 +634,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     myProductProvider = Provider.of<MyProductProvider>(context);
   }
 
-  Future<List<ProductList>> fetchproducts({int? id, int? categoryTypeId, int? genderTypeId}) async {
+  Future<List<ProductList>> fetchproducts(
+      {int? id, int? categoryTypeId, int? genderTypeId}) async {
     final apiurl = baseUrl + getproductsbyid;
 
     try {
-      final request = {"id": id, "categoryTypeId": categoryTypeId, "genderTypeId": genderTypeId, "isActive": true,"customerId": widget.customerid};
+      final request = {
+        "id": id,
+        "categoryTypeId": categoryTypeId,
+        "genderTypeId": genderTypeId,
+        "isActive": true,
+        "customerId": widget.customerid
+      };
       final response = await http.post(
         Uri.parse(apiurl),
         body: json.encode(request),
@@ -549,7 +659,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         final data = json.decode(response.body);
         if (data['listResult'] != null) {
           List<dynamic> list = data['listResult'];
-          List<ProductList> result = list.map((item) => ProductList.fromJson(item)).toList();
+          List<ProductList> result =
+              list.map((item) => ProductList.fromJson(item)).toList();
           return result;
         } else {
           print('listResult is null');
@@ -611,14 +722,15 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // radio buttons
-                    Padding(
+                    /*  Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: Row(
                         children: options.map((option) {
                           return Row(
                             children: [
                               CustomRadioButton(
-                                selected: provider.selectedGender == option.typeCdId,
+                                selected:
+                                    provider.selectedGender == option.typeCdId,
                                 onTap: () {
                                   setState(() {
                                     provider.getGender = option.typeCdId;
@@ -649,7 +761,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
                     const SizedBox(
                       height: 10,
-                    ),
+                    ), */
 
                     // category
                     Padding(
@@ -657,10 +769,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       child: FutureBuilder(
                           future: proCatogary,
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return CircularProgressIndicator.adaptive(
                                 backgroundColor: Colors.transparent,
-                                valueColor: AlwaysStoppedAnimation<Color>(orangeColor),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(orangeColor),
                               );
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
@@ -672,8 +786,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                   scrollDirection: Axis.horizontal,
                                   shrinkWrap: true,
                                   itemCount: data.length + 1,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    bool isSelected = index == provider.selectedCategory;
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    bool isSelected =
+                                        index == provider.selectedCategory;
                                     ProductCategory productCategory;
 
                                     if (index == 0) {
@@ -689,35 +805,50 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                         setState(() {
                                           provider.selectedCategory = index;
 
-                                          provider.getCategory = productCategory.typecdid;
-                                          print('filter: ${provider.getCategory}');
+                                          provider.getCategory =
+                                              productCategory.typecdid;
+                                          print(
+                                              'filter: ${provider.getCategory}');
                                         });
                                       },
                                       child: Container(
-                                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
                                         decoration: BoxDecoration(
-                                          color: isSelected ? orangeColor : orangeColor.withOpacity(0.1),
+                                          color: isSelected
+                                              ? orangeColor
+                                              : orangeColor.withOpacity(0.1),
                                           border: Border.all(
-                                            color: isSelected ? orangeColor : orangeColor,
+                                            color: isSelected
+                                                ? orangeColor
+                                                : orangeColor,
                                             width: 1.0,
                                           ),
-                                          borderRadius: BorderRadius.circular(8.0),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
                                         ),
                                         child: IntrinsicWidth(
                                           child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: [
                                               Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 15.0),
                                                 child: Row(
                                                   children: [
                                                     Text(
-                                                      productCategory.desc.toString(),
+                                                      productCategory.desc
+                                                          .toString(),
                                                       style: TextStyle(
                                                         fontSize: 12.0,
-                                                        fontWeight: FontWeight.bold,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         fontFamily: "Outfit",
-                                                        color: isSelected ? Colors.white : Colors.black,
+                                                        color: isSelected
+                                                            ? Colors.white
+                                                            : Colors.black,
                                                       ),
                                                     ),
                                                   ],
@@ -827,10 +958,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final dynamic responseData = jsonDecode(response.body);
-        if (responseData != null && responseData['listResult'] is List<dynamic>) {
+        if (responseData != null &&
+            responseData['listResult'] is List<dynamic>) {
           final List<dynamic> optionsData = responseData['listResult'];
           setState(() {
-            options = optionsData.map((data) => RadioButtonOption.fromJson(data)).toList();
+            options = optionsData
+                .map((data) => RadioButtonOption.fromJson(data))
+                .toList();
           });
         } else {
           throw Exception('Invalid response format');
@@ -846,8 +980,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   Future<List<ProductCategory>> fetchProductsCategory() async {
     final response = await http.get(Uri.parse('$baseUrl$getproducts/6'));
     if (response.statusCode == 200) {
-      final List<dynamic> responseData = json.decode(response.body)['listResult'];
-      List<ProductCategory> result = responseData.map((json) => ProductCategory.fromJson(json)).toList();
+      final List<dynamic> responseData =
+          json.decode(response.body)['listResult'];
+      List<ProductCategory> result =
+          responseData.map((json) => ProductCategory.fromJson(json)).toList();
       print('fetchProductsCategory: ${result[0].desc}');
       return result;
     } else {
@@ -873,9 +1009,7 @@ class _MyProducts_screenState extends State<ProductCard> {
   late ScrollController _scrollController;
   double _scrollPosition = 0;
 
-
   // Save the current scroll position
-
 
   @override
   void initState() {
@@ -898,14 +1032,6 @@ class _MyProducts_screenState extends State<ProductCard> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10.0),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: const Color(0xFF960efd).withOpacity(0.2), // Shadow color
-            //     spreadRadius: 2, // Spread radius
-            //     blurRadius: 4, // Blur radius
-            //     offset: const Offset(0, 2), // Shadow position
-            //   ),
-            // ],
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -918,11 +1044,12 @@ class _MyProducts_screenState extends State<ProductCard> {
                     height: MediaQuery.of(context).size.height / 10,
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Color(0xffe2f0fd),
+                      color: const Color(0xffe2f0fd),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: GestureDetector(
-                      onTap: () => showZoomedAttachments(widget.product.imageName, context),
+                      onTap: () => showZoomedAttachments(
+                          widget.product.imageName, context),
                       child: Image.network(widget.product.imageName),
                     ),
                   ),
@@ -944,7 +1071,8 @@ class _MyProducts_screenState extends State<ProductCard> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width / 1.9,
+                    width: MediaQuery.of(context).size.width / 1.92,
+                    // width: MediaQuery.of(context).size.width / 1.9,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -962,7 +1090,8 @@ class _MyProducts_screenState extends State<ProductCard> {
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               _scrollController.jumpTo(_scrollPosition);
                             });
-                            addfavoriteproduct(widget.product.id, widget.customerid);
+                            addfavoriteproduct(
+                                widget.product.id, widget.customerid);
                           },
                           child: Stack(
                             alignment: Alignment.center,
@@ -983,32 +1112,38 @@ class _MyProducts_screenState extends State<ProductCard> {
                               //   ),
                               // ),
                               Card(
-                                shape: CircleBorder(), // Make the card circular
+                                shape:
+                                    const CircleBorder(), // Make the card circular
                                 child: CircleAvatar(
                                   radius: 14, // Adjust the size of the circle
-                                  backgroundColor: Colors.white, // Set background color for the circle
+                                  backgroundColor: Colors
+                                      .white, // Set background color for the circle
                                   child: widget.product.farvoirte == 1
                                       ? SvgPicture.asset(
-                                    'assets/favoritesvgrepo.svg',
-                                    width: 18,
-                                    height: 18,
-                                  )
-                                      : DecoratedIcon(
-                                    icon: Icon(
-                                      Icons.favorite,
-                                      color: Colors.white, // Change color based on favorited status
-                                      size: 18,
-                                    ),
-                                    decoration: IconDecoration(
-                                      border: IconBorder(color: Colors.black54, width: 1.5),
-                                    ),
-                                  ),
+                                          'assets/favoritesvgrepo.svg',
+                                          width: 18,
+                                          height: 18,
+                                        )
+                                      : const DecoratedIcon(
+                                          icon: Icon(
+                                            Icons.favorite,
+                                            color: Colors
+                                                .white, // Change color based on favorited status
+                                            size: 18,
+                                          ),
+                                          decoration: IconDecoration(
+                                            border: IconBorder(
+                                                color: Colors.black54,
+                                                width: 1.5),
+                                          ),
+                                        ),
                                 ),
                               ),
 
                               if (_isLoading)
-                                Positioned(
-                                  child: CircularProgressIndicator.adaptive(), // Show loading indicator
+                                const Positioned(
+                                  child: CircularProgressIndicator
+                                      .adaptive(), // Show loading indicator
                                 ),
                             ],
                           ),
@@ -1040,7 +1175,7 @@ class _MyProducts_screenState extends State<ProductCard> {
                             color: Colors.black,
                           ),
                         ),
-                        Text(
+                        const Text(
                           ' On wards',
                           style: CommonStyles.texthintstyle,
                         ),
@@ -1067,7 +1202,8 @@ class _MyProducts_screenState extends State<ProductCard> {
         return Dialog(
           child: Container(
             padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10), color: Colors.white),
             width: double.infinity,
             height: 500,
             child: Stack(
@@ -1097,7 +1233,9 @@ class _MyProducts_screenState extends State<ProductCard> {
                     onTap: () => Navigator.of(context).pop(),
                     child: Container(
                       padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(color: Colors.red.withOpacity(0.2), borderRadius: BorderRadius.circular(20)),
+                      decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20)),
                       child: const Icon(
                         Icons.close,
                         color: Colors.red,
@@ -1140,14 +1278,15 @@ class _MyProducts_screenState extends State<ProductCard> {
         //showCustomToastMessageLong('Successfully Added to Favorites', context, 0, 4);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ProductsMy()),
+          MaterialPageRoute(builder: (context) => const ProductsMy()),
         );
         print('data$data');
       } else {
         setState(() {
           _isLoading = false;
         });
-        print('Failed to send the request. Status code: ${response.statusCode}');
+        print(
+            'Failed to send the request. Status code: ${response.statusCode}');
       }
     } catch (e) {
       setState(() {
@@ -1159,11 +1298,11 @@ class _MyProducts_screenState extends State<ProductCard> {
   }
 
   void showCustomToastMessageLong(
-      String message,
-      BuildContext context,
-      int backgroundColorType,
-      int length,
-      ) {
+    String message,
+    BuildContext context,
+    int backgroundColorType,
+    int length,
+  ) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double textWidth = screenWidth / 1.5; // Adjust multiplier as needed
 
@@ -1188,7 +1327,8 @@ class _MyProducts_screenState extends State<ProductCard> {
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Padding(
-              padding:  EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
               child: Center(
                 child: Text(
                   message,

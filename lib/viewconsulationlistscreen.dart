@@ -757,33 +757,45 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                               ),
                             ],
                           )
+                        //MARK: Reschedule
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               GestureDetector(
                                 onTap: () async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AddConsulationscreen(
-                                              agentId: widget.userid,
-                                              branch: widget.agent,
-                                              screenForReschedule: true,
-                                              consultation:
-                                                  consultationslist[index]),
-                                    ),
-                                  );
+                                  if (canRescheduleAppointment(
+                                      consultationslist[index].visitingDate)) {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AddConsulationscreen(
+                                                agentId: widget.userid,
+                                                branch: widget.agent,
+                                                screenForReschedule: true,
+                                                consultation:
+                                                    consultationslist[index]),
+                                      ),
+                                    );
 
-                                  if (result == true) {
-                                    final formattedDate =
-                                        DateFormat('yyyy-MM-dd').format(
-                                            selectedDate ?? DateTime.now());
+                                    if (result == true) {
+                                      final formattedDate =
+                                          DateFormat('yyyy-MM-dd').format(
+                                              selectedDate ?? DateTime.now());
 
-                                    setState(() {
-                                      consultationData = getviewconsulationlist(
-                                          formattedDate, formattedDate);
-                                    });
+                                      setState(() {
+                                        consultationData =
+                                            getviewconsulationlist(
+                                                formattedDate, formattedDate);
+                                      });
+                                    }
+                                  } else {
+                                    CommonUtils.showCustomToastMessageLong(
+                                      'The Request Should Not be Rescheduled Within 15 minutes Before the Slot',
+                                      context,
+                                      0,
+                                      2,
+                                    );
                                   }
                                 },
                                 child: Container(
@@ -816,15 +828,26 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                               const SizedBox(width: 10),
                               GestureDetector(
                                 onTap: () {
-                                  CommonWidgets.customCancelDialog(
-                                    context,
-                                    message:
-                                        'Are You Sure You Want to Cancel this ${consultationslist[index].consultationName} Consultation?',
-                                    onConfirm: () {
-                                      cancelConsultation(
-                                          consultationslist[index]);
-                                    },
-                                  );
+                                  if (canRescheduleAppointment(
+                                      consultationslist[index].visitingDate)) {
+                                    CommonWidgets.customCancelDialog(
+                                      context,
+                                      message:
+                                          'Are You Sure You Want to Cancel this ${consultationslist[index].consultationName} Consultation?',
+                                      onConfirm: () {
+                                        cancelConsultation(
+                                            consultationslist[index]);
+                                      },
+                                    );
+                                  } else {
+                                    CommonUtils.showCustomToastMessageLong(
+                                      'The Request Should Not be Cancelled Within 15 minutes Before the Slot',
+                                      context,
+                                      0,
+                                      2,
+                                    );
+                                  }
+
                                   /* cancelConsultationDialog(
                                       consultationslist[index]); */
                                 },
@@ -865,6 +888,21 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
         )),
       ),
     );
+  }
+
+  bool canRescheduleAppointment(DateTime? visitingDate) {
+    if (visitingDate == null) return false;
+
+    final now = DateTime.now();
+
+    bool isSameDay = now.year == visitingDate.year &&
+        now.month == visitingDate.month &&
+        now.day == visitingDate.day;
+    if (isSameDay) {
+      final difference = visitingDate.difference(now).inMinutes;
+      return difference > 15;
+    }
+    return true;
   }
 
   Widget statusBasedBgById(int? statusTypeId, String? status) {

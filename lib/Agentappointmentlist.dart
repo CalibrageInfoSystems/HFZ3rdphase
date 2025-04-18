@@ -1584,11 +1584,11 @@ class _OpCardState extends State<OpCard> {
             GestureDetector(
               onTap: () {
                 int timeDifference =
-                calculateTimeDifference(data.date, data.slotDuration);
+                    calculateTimeDifference(data.date, data.slotDuration);
 
-                if (timeDifference <= 60) {
+                if (timeDifference <= 15) {
                   CommonUtils.showCustomToastMessageLong(
-                    'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
+                    'The Request Should Not be Rescheduled Within 15 minutes Before the Slot',
                     context,
                     0,
                     2,
@@ -1619,7 +1619,7 @@ class _OpCardState extends State<OpCard> {
                     ),
                   ),
                   padding:
-                  const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                   child: Row(
                     children: [
                       SvgPicture.asset(
@@ -1872,8 +1872,7 @@ class _OpCardState extends State<OpCard> {
               ),
             ],
           );
-        }
-        else {
+        } else {
           return Row(
             children: [
               GestureDetector(
@@ -1881,9 +1880,9 @@ class _OpCardState extends State<OpCard> {
                   int timeDifference =
                       calculateTimeDifference(data.date, data.slotDuration);
 
-                  if (timeDifference <= 60) {
+                  if (timeDifference <= 15) {
                     CommonUtils.showCustomToastMessageLong(
-                      'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
+                      'The Request Should Not be Rescheduled Within 15 minutes Before the Slot',
                       context,
                       0,
                       2,
@@ -1989,16 +1988,16 @@ class _OpCardState extends State<OpCard> {
             ],
           );
         }
-        return Row(
+      /* return Row(
           children: [
             GestureDetector(
               onTap: () {
                 int timeDifference =
                     calculateTimeDifference(data.date, data.slotDuration);
 
-                if (timeDifference <= 60) {
+                if (timeDifference <= 15) {
                   CommonUtils.showCustomToastMessageLong(
-                    'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
+                    'The Request Should Not be Rescheduled Within 15 minutes Before the Slot',
                     context,
                     0,
                     2,
@@ -2103,7 +2102,7 @@ class _OpCardState extends State<OpCard> {
             ),
           ],
         );
-
+ */
       // if (isSlotTimeReached(data.date, data.slotDuration)) {
       //   return Row(
       //     children: [

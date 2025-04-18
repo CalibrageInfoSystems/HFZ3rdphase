@@ -467,7 +467,7 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
                             List<StatusModel> result = snapshot.data!;
                             List<StatusModel> data = result
                                 .where((item) =>
-                                    item.typeCdId != 6  && item.typeCdId != 18)
+                                    item.typeCdId != 6 && item.typeCdId != 18)
                                 .toList();
                             return SizedBox(
                               height: 38,
@@ -1300,7 +1300,7 @@ class _OpCardState extends State<OpCard> {
             //     int timeDifference =
             //     calculateTimeDifference(data.date, data.slotDuration);
             //
-            //     if (timeDifference <= 60) {
+            //     if (timeDifference <= 15) {
             //       CommonUtils.showCustomToastMessageLong(
             //         'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
             //         context,
@@ -1545,7 +1545,7 @@ class _OpCardState extends State<OpCard> {
                       ),
                       const SizedBox(width: 2),
                       const Text(
-                        'Not visited',
+                        ' Not visited',
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: "Outfit",
@@ -1558,6 +1558,7 @@ class _OpCardState extends State<OpCard> {
                 ),
               ),
               const SizedBox(width: 8),
+              //MARK: Here
               GestureDetector(
                 onTap: () {
                   closePopUp(context, data, 17, userId);
@@ -1579,7 +1580,7 @@ class _OpCardState extends State<OpCard> {
                         color: CommonStyles.statusRedText,
                       ),
                       const Text(
-                        '  Close',
+                        ' Close',
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: "Outfit",
@@ -1601,9 +1602,9 @@ class _OpCardState extends State<OpCard> {
                   int timeDifference =
                       calculateTimeDifference(data.date, data.slotDuration);
 
-                  if (timeDifference <= 60) {
+                  if (timeDifference <= 15) {
                     CommonUtils.showCustomToastMessageLong(
-                      'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
+                      'The Request Should Not be Rescheduled Within 15 minutes Before the Slot',
                       context,
                       0,
                       2,
@@ -1664,9 +1665,20 @@ class _OpCardState extends State<OpCard> {
               ),
               GestureDetector(
                 onTap: () {
-                  if (!isPastDate(data.date, data.slotDuration)) {
-                    conformation(context, data);
-                    // Add your logic here for when the 'Cancel' container is tapped
+                  int timeDifference =
+                      calculateTimeDifference(data.date, data.slotDuration);
+
+                  if (timeDifference <= 15) {
+                    CommonUtils.showCustomToastMessageLong(
+                      'The Request Should Not be Cancelled Within 15 minutes Before the Slot',
+                      context,
+                      0,
+                      2,
+                    );
+                  } else {
+                    if (!isPastDate(data.date, data.slotDuration)) {
+                      conformation(context, data);
+                    }
                   }
                 },
                 child: IgnorePointer(
@@ -1717,9 +1729,9 @@ class _OpCardState extends State<OpCard> {
                 int timeDifference =
                     calculateTimeDifference(data.date, data.slotDuration);
 
-                if (timeDifference <= 60) {
+                if (timeDifference <= 15) {
                   CommonUtils.showCustomToastMessageLong(
-                    'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
+                    'The Request Should Not be Rescheduled Within 15 minutes Before the Slot',
                     context,
                     0,
                     2,

@@ -258,26 +258,6 @@ class _AddInventoryState extends State<AddInventory> {
                 quantityField(),
                 const SizedBox(height: 10),
                 productColorName(context),
-                /*  if (isProductColorValidate)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 5),
-                        child: Text(
-                          'Please Select Product Color',
-                          // style: CommonStyles.texthintstyle,
-                          style: CommonStyles.texthintstyle.copyWith(
-                            color: const Color.fromARGB(255, 175, 15, 4),
-                            fontSize: 11,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ), */
-
-                // procustColor(context),
                 const SizedBox(height: 10),
                 descriptionfield(),
                 const SizedBox(height: 10),
@@ -539,7 +519,6 @@ class _AddInventoryState extends State<AddInventory> {
     return null;
   }
 
-
   CustomeFormField descriptionfield() {
     return CustomeFormField(
       label: 'Product Description',
@@ -723,7 +702,7 @@ class _AddInventoryState extends State<AddInventory> {
                           }
                         },
                         items: [
-                         const DropdownMenuItem<int>(
+                          const DropdownMenuItem<int>(
                             value: -1,
                             child: Text(
                               'Select Product Color',

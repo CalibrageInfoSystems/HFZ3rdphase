@@ -61,8 +61,6 @@ class MyAppointments_screenState extends State<MyAppointments> {
     });
   }
 
-
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -84,89 +82,33 @@ class MyAppointments_screenState extends State<MyAppointments> {
         builder: (context, provider, _) => Scaffold(
           backgroundColor: CommonStyles.whiteColor,
           body: WillPopScope(
-            onWillPop: () async {
-              provider.clearFilter();
-              return true;
-            },
-            child:
-            //SingleChildScrollView(child:
-            Column(
-              children: [
-                // search and filter
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10)
-                      .copyWith(top: 10),
-                  child: _searchBarAndFilter(),
-                ),
+              onWillPop: () async {
+                provider.clearFilter();
+                return true;
+              },
+              child:
+                  //SingleChildScrollView(child:
+                  Column(
+                children: [
+                  // search and filter
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10)
+                        .copyWith(top: 10),
+                    child: _searchBarAndFilter(),
+                  ),
 
-                //MARK: Appointment
-                Expanded(
+                  //MARK: Appointment
+                  Expanded(
 //height: MediaQuery.of(context).size.height,
-                  child:
-                  FutureBuilder(
-                    future: apiData,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return  Center(
-                          child: CircularProgressIndicator.adaptive(),
-                        );
-                      } else if (snapshot.hasError) {
-                        return const Center(
-                          child: Text(
-                            'No Appointments Available',
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Outfit",
-                            ),
-                          ),
-                        );
-                      } else {
-                        List<MyAppointment_Model> data =
-                            provider.proAppointments;
-                        if (data.isNotEmpty) {
-                          return Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ListView.builder(
-
-                              itemCount: data.length,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return Column(
-
-                                  children: [
-                                    OpCard(
-                                      data: data[index],
-                                      onRefresh: () {
-                                        // Implement the refresh logic here
-                                        setState(() {
-                                          // Refresh logic
-                                          refreshTheScreen();
-                                        });
-                                      },
-                                    ),
-                                    // Text(
-                                    //   'this is  sample text view ',
-                                    //   style: TextStyle(
-                                    //     fontSize: 12.0,
-                                    //     color: Colors.black,
-                                    //     fontWeight: FontWeight.bold,
-                                    //     fontFamily: "Outfit",
-                                    //   ),
-                                    // ),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                  ],
-                                );
-                                // return AppointmentCard(
-                                //     data: data[index],
-                                //     day: parseDayFromDate(data[index].date),);
-                              },
-                            ),
+                    child: FutureBuilder(
+                      future: apiData,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator.adaptive(),
                           );
-                        } else {
+                        } else if (snapshot.hasError) {
                           return const Center(
                             child: Text(
                               'No Appointments Available',
@@ -178,15 +120,69 @@ class MyAppointments_screenState extends State<MyAppointments> {
                               ),
                             ),
                           );
+                        } else {
+                          List<MyAppointment_Model> data =
+                              provider.proAppointments;
+                          if (data.isNotEmpty) {
+                            return Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: ListView.builder(
+                                itemCount: data.length,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  return Column(
+                                    children: [
+                                      OpCard(
+                                        data: data[index],
+                                        onRefresh: () {
+                                          // Implement the refresh logic here
+                                          setState(() {
+                                            // Refresh logic
+                                            refreshTheScreen();
+                                          });
+                                        },
+                                      ),
+                                      // Text(
+                                      //   'this is  sample text view ',
+                                      //   style: TextStyle(
+                                      //     fontSize: 12.0,
+                                      //     color: Colors.black,
+                                      //     fontWeight: FontWeight.bold,
+                                      //     fontFamily: "Outfit",
+                                      //   ),
+                                      // ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                    ],
+                                  );
+                                  // return AppointmentCard(
+                                  //     data: data[index],
+                                  //     day: parseDayFromDate(data[index].date),);
+                                },
+                              ),
+                            );
+                          } else {
+                            return const Center(
+                              child: Text(
+                                'No Appointments Available',
+                                style: TextStyle(
+                                  fontSize: 12.0,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "Outfit",
+                                ),
+                              ),
+                            );
+                          }
                         }
-                      }
-                    },
+                      },
+                    ),
                   ),
-                ),
-              ],
-            )
-            //),
-          ),
+                ],
+              )
+              //),
+              ),
         ),
       ),
     );
@@ -215,9 +211,11 @@ class MyAppointments_screenState extends State<MyAppointments> {
   Future<List<MyAppointment_Model>> fetchMyAppointments(int? userId) async {
     final url = Uri.parse(baseUrl + GetAppointmentByUserid);
     final DateTime currentDate = DateTime.now();
-    final DateTime threeMonthsAgo = DateTime(currentDate.year, currentDate.month - 3, currentDate.day);
+    final DateTime threeMonthsAgo =
+        DateTime(currentDate.year, currentDate.month - 3, currentDate.day);
 
-    final String formattedFromDate = DateFormat('yyyy-MM-dd').format(threeMonthsAgo);
+    final String formattedFromDate =
+        DateFormat('yyyy-MM-dd').format(threeMonthsAgo);
     final String formattedToDate = DateFormat('yyyy-MM-dd').format(currentDate);
 
     try {
@@ -269,7 +267,7 @@ class MyAppointments_screenState extends State<MyAppointments> {
 
   void refreshTheScreen() {
     CommonUtils.checkInternetConnectivity().then(
-          (isConnected) {
+      (isConnected) {
         if (isConnected) {
           print('The Internet Is Connected');
 
@@ -308,7 +306,7 @@ class MyAppointments_screenState extends State<MyAppointments> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide:
-                    const BorderSide(color: CommonUtils.primaryTextColor),
+                        const BorderSide(color: CommonUtils.primaryTextColor),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(
@@ -385,11 +383,11 @@ class MyAppointments_screenState extends State<MyAppointments> {
       setState(() {
         myAppointmentsProvider!.filterProviderData(data
             .where((item) =>
-        // Uncomment and modify the condition to filter by name
-        item.purposeOfVisit
-            .toLowerCase()
-            .contains(input.toLowerCase()) ||
-            item.branch.toLowerCase().contains(input.toLowerCase()))
+                // Uncomment and modify the condition to filter by name
+                item.purposeOfVisit
+                    .toLowerCase()
+                    .contains(input.toLowerCase()) ||
+                item.branch.toLowerCase().contains(input.toLowerCase()))
             .toList());
       });
     });
@@ -476,7 +474,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
 
           // Filter out records with "statusTypeId": 19
           List<dynamic> filteredList =
-          listResult.where((item) => item['statusTypeId'] != 18).toList();
+              listResult.where((item) => item['statusTypeId'] != 18).toList();
 
           // Convert the filtered list to MyAppointment_Model objects if needed
           myAppointmentsProvider.storeIntoProvider = filteredList
@@ -521,10 +519,13 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                   GestureDetector(
                     onTap: () {
                       final DateTime currentDate = DateTime.now();
-                      final DateTime threeMonthsAgo = DateTime(currentDate.year, currentDate.month - 3, currentDate.day);
+                      final DateTime threeMonthsAgo = DateTime(currentDate.year,
+                          currentDate.month - 3, currentDate.day);
 
-                      final String formattedFromDate = DateFormat('yyyy-MM-dd').format(threeMonthsAgo);
-                      final String formattedToDate = DateFormat('yyyy-MM-dd').format(currentDate);
+                      final String formattedFromDate =
+                          DateFormat('yyyy-MM-dd').format(threeMonthsAgo);
+                      final String formattedToDate =
+                          DateFormat('yyyy-MM-dd').format(currentDate);
                       clearFilterAppointments({
                         "userid": widget.userId,
                         "branchId": null,
@@ -622,7 +623,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                               return CircularProgressIndicator.adaptive(
                                 backgroundColor: Colors.transparent,
                                 valueColor:
-                                AlwaysStoppedAnimation<Color>(orangeColor),
+                                    AlwaysStoppedAnimation<Color>(orangeColor),
                               );
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
@@ -650,7 +651,8 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                                         closeTime: '',
                                         room: 0,
                                         mobileNumber: "",
-                                        isActive: true, locationUrl: '',
+                                        isActive: true,
+                                        locationUrl: '',
                                       );
                                     } else {
                                       branchmodel = data[index - 1];
@@ -686,17 +688,17 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                                             width: 1.0,
                                           ),
                                           borderRadius:
-                                          BorderRadius.circular(8.0),
+                                              BorderRadius.circular(8.0),
                                         ),
                                         child: IntrinsicWidth(
                                           child: Column(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                                MainAxisAlignment.center,
                                             children: [
                                               Container(
                                                 padding:
-                                                const EdgeInsets.symmetric(
-                                                    horizontal: 15.0),
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 15.0),
                                                 child: Row(
                                                   children: [
                                                     Text(
@@ -705,7 +707,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                                                       style: TextStyle(
                                                         fontSize: 12.0,
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                         fontFamily: "Outfit",
                                                         color: isSelected
                                                             ? Colors.white
@@ -740,7 +742,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                               return CircularProgressIndicator.adaptive(
                                 backgroundColor: Colors.transparent,
                                 valueColor:
-                                AlwaysStoppedAnimation<Color>(orangeColor),
+                                    AlwaysStoppedAnimation<Color>(orangeColor),
                               );
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
@@ -800,17 +802,17 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                                             width: 1.0,
                                           ),
                                           borderRadius:
-                                          BorderRadius.circular(8.0),
+                                              BorderRadius.circular(8.0),
                                         ),
                                         child: IntrinsicWidth(
                                           child: Column(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                                MainAxisAlignment.center,
                                             children: [
                                               Container(
                                                 padding:
-                                                const EdgeInsets.symmetric(
-                                                    horizontal: 15.0),
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 15.0),
                                                 child: Row(
                                                   children: [
                                                     Text(
@@ -818,7 +820,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                                                       style: TextStyle(
                                                         fontSize: 12.0,
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                         fontFamily: "Outfit",
                                                         color: isSelected
                                                             ? Colors.white
@@ -887,15 +889,15 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                                   filterAppointments({
                                     "userid": widget.userId,
                                     "branchId":
-                                    myAppointmentsProvider.getApiBranchId,
+                                        myAppointmentsProvider.getApiBranchId,
                                     "fromdate":
-                                    myAppointmentsProvider.getApiFromDate,
+                                        myAppointmentsProvider.getApiFromDate,
                                     "toDate":
-                                    myAppointmentsProvider.getApiToDate,
+                                        myAppointmentsProvider.getApiToDate,
                                     "statustypeId": myAppointmentsProvider
                                         .getApiStatusTypeId,
                                   }).whenComplete(
-                                          () => provider.filterStatus = true);
+                                      () => provider.filterStatus = true);
                                 },
                                 child: Container(
                                   // width: desiredWidth * 0.9,
@@ -936,19 +938,19 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
     final response = await http.get(Uri.parse(baseUrl + getstatus));
     if (response.statusCode == 200) {
       final List<dynamic> responseData =
-      json.decode(response.body)['listResult'];
+          json.decode(response.body)['listResult'];
 
       print('Before filtering: $responseData');
 
       // Filter out items with "typeCdId": 19
       final List<dynamic> filteredData =
-      responseData.where((item) => item['typeCdId'] != 18).toList();
+          responseData.where((item) => item['typeCdId'] != 18).toList();
 
       print('After filtering: $filteredData');
 
       // Map the filtered data to Statusmodel
       List<Statusmodel> result =
-      filteredData.map((json) => Statusmodel.fromJson(json)).toList();
+          filteredData.map((json) => Statusmodel.fromJson(json)).toList();
 
       print('fetch branchname: ${result[0].desc}');
       return result;
@@ -961,9 +963,9 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
     final response = await http.get(Uri.parse(baseUrl + getbranches));
     if (response.statusCode == 200) {
       final List<dynamic> responseData =
-      json.decode(response.body)['listResult'];
+          json.decode(response.body)['listResult'];
       List<BranchModel> result =
-      responseData.map((json) => BranchModel.fromJson(json)).toList();
+          responseData.map((json) => BranchModel.fromJson(json)).toList();
       print('fetch branchname: ${result[0].name}');
       return result;
     } else {
@@ -994,7 +996,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
 
           // Filter out records with "statusTypeId": 19
           List<dynamic> filteredList =
-          listResult.where((item) => item['statusTypeId'] != 18).toList();
+              listResult.where((item) => item['statusTypeId'] != 18).toList();
 
           // Convert the filtered list to MyAppointment_Model objects if needed
           myAppointmentsProvider.storeIntoProvider = filteredList
@@ -1029,7 +1031,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
     endDate = values.length > 1 ? values[1] : null;
     String? formattedStartDate = DateFormat('dd/MM/yyyy').format(startDate!);
     String? formattedEndDate =
-    endDate != null ? DateFormat('dd/MM/yyyy').format(endDate) : 'null';
+        endDate != null ? DateFormat('dd/MM/yyyy').format(endDate) : 'null';
 
     return [formattedStartDate, formattedEndDate];
   }
@@ -1042,7 +1044,8 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
     return formattedDate;
   }
 
-  Future<void> _selectDate(BuildContext context, MyAppointmentsProvider provider) async {
+  Future<void> _selectDate(
+      BuildContext context, MyAppointmentsProvider provider) async {
     final DateTime currentDate = DateTime.now();
     final DateTime initialDate = selectedDate ?? currentDate;
     // final DateTime threeMonthsAgo = DateTime(currentDate.year, currentDate.month - 3, currentDate.day);
@@ -1052,8 +1055,9 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
       context: context,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       initialDate: initialDate,
-     firstDate: DateTime(2020),
-      lastDate: DateTime(currentDate.year + 1, currentDate.month, currentDate.day),
+      firstDate: DateTime(2020),
+      lastDate:
+          DateTime(currentDate.year + 1, currentDate.month, currentDate.day),
       initialDatePickerMode: DatePickerMode.day,
     );
 
@@ -1091,7 +1095,7 @@ class OpCard extends StatefulWidget {
 class _OpCardState extends State<OpCard> {
   late List<dynamic> dateValues;
   final TextEditingController _commentstexteditcontroller =
-  TextEditingController();
+      TextEditingController();
   double Serv_rating_star = 0.0;
   double Qul_rating_star = 0.0;
   int? userId;
@@ -1124,7 +1128,7 @@ class _OpCardState extends State<OpCard> {
           width: MediaQuery.of(context).size.height,
           child: Card(
             shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             elevation: 5,
             child: Container(
               //  height: widget.data.statusTypeId == 4 || widget.data.statusTypeId == 6 ? 90 : 120,
@@ -1213,11 +1217,12 @@ class _OpCardState extends State<OpCard> {
                             children: [
                               Expanded(
                                 flex: 1,
-                                child:
-                                Container(
+                                child: Container(
                                   child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         widget.data.slotTime,
@@ -1238,7 +1243,7 @@ class _OpCardState extends State<OpCard> {
                                             const Text(
                                               'Technician: ',
                                               style:
-                                              CommonStyles.txSty_16blu_f5,
+                                                  CommonStyles.txSty_16blu_f5,
                                             ),
                                             Text(widget.data.technicianName!,
                                                 style: CommonStyles
@@ -1248,12 +1253,12 @@ class _OpCardState extends State<OpCard> {
                                       if (widget.data.paymentType != null)
                                         Text(widget.data.paymentType ?? ' ',
                                             style:
-                                            CommonStyles.txSty_16black_f5),
+                                                CommonStyles.txSty_16black_f5),
                                     ],
                                   ),
                                 ),
                               ),
-                              Container (
+                              Container(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
@@ -1271,7 +1276,7 @@ class _OpCardState extends State<OpCard> {
                                     if (widget.data.rating != null)
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.end,
+                                            MainAxisAlignment.end,
                                         children: [
                                           Row(
                                             children: [
@@ -1283,11 +1288,11 @@ class _OpCardState extends State<OpCard> {
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     right:
-                                                    0.0), // Adjust the value as needed
+                                                        0.0), // Adjust the value as needed
                                                 child: Text(
                                                   '${widget.data.rating ?? ''}',
                                                   style:
-                                                  CommonStyles.txSty_14g_f5,
+                                                      CommonStyles.txSty_14g_f5,
                                                 ),
                                               ),
                                             ],
@@ -1388,11 +1393,11 @@ class _OpCardState extends State<OpCard> {
             GestureDetector(
               onTap: () {
                 int timeDifference =
-                calculateTimeDifference(data.date, data.slotDuration);
+                    calculateTimeDifference(data.date, data.slotDuration);
 
-                if (timeDifference <= 60) {
+                if (timeDifference <= 15) {
                   CommonUtils.showCustomToastMessageLong(
-                    'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
+                    'The Request Should Not be Rescheduled Within 15 minutes Before the Slot',
                     context,
                     0,
                     2,
@@ -1421,9 +1426,10 @@ class _OpCardState extends State<OpCard> {
                     ),
                   ),
                   padding:
-                  const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                   child: Row(
                     children: [
+                      //MARK: Reschedule
                       SvgPicture.asset(
                         'assets/calendar-_3_.svg',
                         width: 13,
@@ -1445,7 +1451,6 @@ class _OpCardState extends State<OpCard> {
                 ),
               ),
             ),
-
           ],
         );
       case 5: // Accepted
@@ -1454,11 +1459,10 @@ class _OpCardState extends State<OpCard> {
             GestureDetector(
               onTap: () {
                 int timeDifference =
-                calculateTimeDifference(data.date, data.slotDuration);
-
-                if (timeDifference <= 60) {
+                    calculateTimeDifference(data.date, data.slotDuration);
+                if (timeDifference <= 15) {
                   CommonUtils.showCustomToastMessageLong(
-                    'The Request Should Not be Rescheduled Within 1 hour Before the Slot',
+                    'The Request Should Not be Rescheduled Within 15 minutes Before the Slot',
                     context,
                     0,
                     2,
@@ -1487,7 +1491,7 @@ class _OpCardState extends State<OpCard> {
                     ),
                   ),
                   padding:
-                  const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                   child: Row(
                     children: [
                       SvgPicture.asset(
@@ -1516,9 +1520,19 @@ class _OpCardState extends State<OpCard> {
             ),
             GestureDetector(
               onTap: () {
-                if (!isPastDate(data.date, data.slotDuration)) {
-                  conformation(context, data);
-                  // Add your logic here for when the 'Cancel' container is tapped
+                int timeDifference =
+                    calculateTimeDifference(data.date, data.slotDuration);
+                if (timeDifference <= 15) {
+                  CommonUtils.showCustomToastMessageLong(
+                    'The Request Should Not be Cancelled Within 15 minutes Before the Slot',
+                    context,
+                    0,
+                    2,
+                  );
+                } else {
+                  if (!isPastDate(data.date, data.slotDuration)) {
+                    conformation(context, data);
+                  }
                 }
               },
               child: IgnorePointer(
@@ -1533,7 +1547,7 @@ class _OpCardState extends State<OpCard> {
                     ),
                   ),
                   padding:
-                  const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                   child: Row(
                     children: [
                       SvgPicture.asset(
@@ -1563,13 +1577,13 @@ class _OpCardState extends State<OpCard> {
         );
       case 6: // Declined
         return const SizedBox();
-    // case 11: // FeedBack
-    //   return Flexible(
-    //     child: Text('" ${data.review} "' ?? '',
-    //         overflow: TextOverflow.ellipsis,
-    //         maxLines: 2,
-    //         style: CommonStyles.txSty_16blu_f5),
-    //   );
+      // case 11: // FeedBack
+      //   return Flexible(
+      //     child: Text('" ${data.review} "' ?? '',
+      //         overflow: TextOverflow.ellipsis,
+      //         maxLines: 2,
+      //         style: CommonStyles.txSty_16blu_f5),
+      //   );
 
       case 17: // Closed
         if (data.rating == null) {
@@ -1632,28 +1646,28 @@ class _OpCardState extends State<OpCard> {
         return const SizedBox();
       default:
         return const SizedBox();
-    //  return Container(
-    //     decoration: BoxDecoration(
-    //         borderRadius: BorderRadius.circular(3),
-    //         border: Border.all(color: CommonUtils.blackColor)),
-    //     padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-    //     child: const Row(
-    //       children: [
-    //         Icon(
-    //           Icons.star_border_outlined,
-    //           size: 13,
-    //           color: CommonStyles.primaryTextColor,
-    //         ),
-    //         Text(
-    //           ' Rate Us',
-    //           style: TextStyle(
-    //             fontSize: 11,
-    //             color: CommonStyles.primaryTextColor,
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //   );
+      //  return Container(
+      //     decoration: BoxDecoration(
+      //         borderRadius: BorderRadius.circular(3),
+      //         border: Border.all(color: CommonUtils.blackColor)),
+      //     padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+      //     child: const Row(
+      //       children: [
+      //         Icon(
+      //           Icons.star_border_outlined,
+      //           size: 13,
+      //           color: CommonStyles.primaryTextColor,
+      //         ),
+      //         Text(
+      //           ' Rate Us',
+      //           style: TextStyle(
+      //             fontSize: 11,
+      //             color: CommonStyles.primaryTextColor,
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   );
     }
   }
 
@@ -1714,299 +1728,299 @@ class _OpCardState extends State<OpCard> {
               titlePadding: EdgeInsets.zero, // Ensure no default padding
               content: SingleChildScrollView(
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 0.8, // Reduced width
-                    padding: const EdgeInsets.only(
-                      top: 5.0,
-                      //    left: 15.0,
-                      //  right: 15.0,
-                      //  bottom: 20.0,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xffffffff),
-                          Color(0xffffffff),
+                width: MediaQuery.of(context).size.width * 0.8, // Reduced width
+                padding: const EdgeInsets.only(
+                  top: 5.0,
+                  //    left: 15.0,
+                  //  right: 15.0,
+                  //  bottom: 20.0,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xffffffff),
+                      Color(0xffffffff),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const CircleAvatar(
+                              backgroundColor: CommonStyles.primaryColor,
+                              radius: 12,
+                              child: Center(
+                                child: Icon(
+                                  Icons.close,
+                                  color: CommonStyles.primaryTextColor,
+                                  size: 15,
+                                ),
+                              ),
+                            ),
+                          )
                         ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.end,
+                    //   children: [
+                    //     IconButton(
+                    //       icon: const Icon(Icons.close),
+                    //       onPressed: () {
+                    //         Navigator.of(context).pop();
+                    //       },
+                    //     ),
+                    //   ],
+                    // ),
+                    Container(
+                      width: MediaQuery.of(context).size.width *
+                          0.8, // Reduced width
+                      padding: const EdgeInsets.only(
+                        // top: 15.0,
+                        left: 15.0,
+                        right: 15.0,
+                        bottom: 20.0,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xffffffff),
+                            Color(0xffffffff),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Stack(
+                            alignment: Alignment
+                                .topRight, // Align icon to the top right corner
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const CircleAvatar(
-                                  backgroundColor: CommonStyles.primaryColor,
-                                  radius: 12,
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.close,
-                                      color: CommonStyles.primaryTextColor,
-                                      size: 15,
-                                    ),
-                                  ),
+                              // Close Icon in the top right corner
+                              // IconButton(
+                              //   icon: Icon(Icons.close),
+                              //   onPressed: () {
+                              //     Navigator.of(context).pop();
+                              //   },
+                              // ),
+                              // SVG Image at the center
+                              Center(
+                                child: SvgPicture.asset(
+                                  'assets/feedbackbanner.svg', // Provide the path to your SVG image
+                                  width: MediaQuery.of(context).size.width *
+                                      0.8, // Adjusted width
+                                  height: 150, // Adjust as needed
                                 ),
-                              )
+                              ),
                             ],
                           ),
-                        ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.end,
-                        //   children: [
-                        //     IconButton(
-                        //       icon: const Icon(Icons.close),
-                        //       onPressed: () {
-                        //         Navigator.of(context).pop();
-                        //       },
-                        //     ),
-                        //   ],
-                        // ),
-                        Container(
-                          width: MediaQuery.of(context).size.width *
-                              0.8, // Reduced width
-                          padding: const EdgeInsets.only(
-                            // top: 15.0,
-                            left: 15.0,
-                            right: 15.0,
-                            bottom: 20.0,
+                          const SizedBox(
+                            height: 15.0,
                           ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xffffffff),
-                                Color(0xffffffff),
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                          Center(
+                            child: Text(
+                              'Please Rate us Your Experience for the ${appointments.slotDuration} Slot at the ${appointments.branch} Hair Fixing Zone.',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: CommonUtils.primaryTextColor,
+                                fontFamily: 'Outfit',
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                          const SizedBox(
+                            height: 5.0,
+                          ),
+                          Row(
                             children: [
-                              Stack(
-                                alignment: Alignment
-                                    .topRight, // Align icon to the top right corner
-                                children: [
-                                  // Close Icon in the top right corner
-                                  // IconButton(
-                                  //   icon: Icon(Icons.close),
-                                  //   onPressed: () {
-                                  //     Navigator.of(context).pop();
-                                  //   },
-                                  // ),
-                                  // SVG Image at the center
-                                  Center(
-                                    child: SvgPicture.asset(
-                                      'assets/feedbackbanner.svg', // Provide the path to your SVG image
-                                      width: MediaQuery.of(context).size.width *
-                                          0.8, // Adjusted width
-                                      height: 150, // Adjust as needed
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 15.0,
-                              ),
-                              Center(
-                                child: Text(
-                                  'Please Rate us Your Experience for the ${appointments.slotDuration} Slot at the ${appointments.branch} Hair Fixing Zone.',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: CommonUtils.primaryTextColor,
-                                    fontFamily: 'Outfit',
-                                  ),
-                                  textAlign: TextAlign.center,
+                              const Text(
+                                'Quality',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: CommonUtils.primaryTextColor,
+                                  fontFamily: 'Outfit',
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                              const SizedBox(
-                                height: 5.0,
-                              ),
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Quality',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: CommonUtils.primaryTextColor,
-                                      fontFamily: 'Outfit',
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Container(
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.5, // Adjusted width
-                                      child: Center(
-                                        child: RatingBar.builder(
-                                          initialRating: 0,
-                                          minRating: 0,
-                                          direction: Axis.horizontal,
-                                          allowHalfRating: true,
-                                          itemCount: 5,
-                                          itemSize: 30,
-                                          itemPadding: const EdgeInsets.symmetric(
-                                              horizontal: 0.5),
-                                          itemBuilder: (context, _) => const Icon(
-                                            Icons.star,
-                                            color: CommonUtils.primaryTextColor,
-                                          ),
-                                          onRatingUpdate: (rating) {
-                                            setState(() {
-                                              Qul_rating_star = rating;
-                                              print(
-                                                  'Qul_rating_star$Qul_rating_star');
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 5.0,
-                              ),
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Service',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: CommonUtils.primaryTextColor,
-                                      fontFamily: 'Outfit',
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Container(
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.5, // Adjusted width
-                                      child: Center(
-                                        child: RatingBar.builder(
-                                          initialRating: 0,
-                                          minRating: 0,
-                                          direction: Axis.horizontal,
-                                          itemSize: 30,
-                                          allowHalfRating: true,
-                                          itemCount: 5,
-                                          itemPadding: const EdgeInsets.symmetric(
-                                              horizontal: 1.0),
-                                          itemBuilder: (context, _) => const Icon(
-                                            Icons.star,
-                                            color: CommonUtils.primaryTextColor,
-                                          ),
-                                          onRatingUpdate: (rating) {
-                                            setState(() {
-                                              Serv_rating_star = rating;
-                                              print(
-                                                  'Serv_rating_star$Serv_rating_star');
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 0, top: 15.0, right: 0),
-                                child: GestureDetector(
-                                  onTap: () async {},
-                                  child: Container(
-                                    height: 80,
-                                    width: MediaQuery.of(context).size.width *
-                                        0.8, // Adjusted width
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
+                              Container(
+                                child: SizedBox(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.5, // Adjusted width
+                                  child: Center(
+                                    child: RatingBar.builder(
+                                      initialRating: 0,
+                                      minRating: 0,
+                                      direction: Axis.horizontal,
+                                      allowHalfRating: true,
+                                      itemCount: 5,
+                                      itemSize: 30,
+                                      itemPadding: const EdgeInsets.symmetric(
+                                          horizontal: 0.5),
+                                      itemBuilder: (context, _) => const Icon(
+                                        Icons.star,
                                         color: CommonUtils.primaryTextColor,
-                                        width: 1.5,
                                       ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      color: Colors.white,
-                                    ),
-                                    child: TextFormField(
-                                      controller: _commentstexteditcontroller,
-                                      style: const TextStyle(
-                                        fontFamily: 'Outfit',
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w300,
-                                      ),
-                                      maxLines: null,
-                                      maxLength: 250,
-                                      // Set maxLines to null for multiline input
-                                      decoration: const InputDecoration(
-                                        hintText: 'Comment',
-                                        hintStyle: TextStyle(
-                                          color: Colors.black54,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'Outfit',
-                                        ),
-                                        contentPadding: EdgeInsets.symmetric(
-                                          horizontal: 16.0,
-                                          vertical: 12.0,
-                                        ),
-                                        border: InputBorder.none,
-                                      ),
+                                      onRatingUpdate: (rating) {
+                                        setState(() {
+                                          Qul_rating_star = rating;
+                                          print(
+                                              'Qul_rating_star$Qul_rating_star');
+                                        });
+                                      },
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 15.0,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: SizedBox(
-                                      child: Center(
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            validateRating(appointments);
-                                          },
-                                          child: Container(
-                                            // width: desiredWidth * 0.9,
-                                            height: 40.0,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                              BorderRadius.circular(15.0),
-                                              color: CommonUtils.primaryTextColor,
-                                            ),
-                                            child: const Center(
-                                              child: Text(
-                                                'Rate Now',
-                                                style: TextStyle(
-                                                  fontFamily: 'Outfit',
-                                                  fontSize: 14,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 5.0,
+                          ),
+                          Row(
+                            children: [
+                              const Text(
+                                'Service',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: CommonUtils.primaryTextColor,
+                                  fontFamily: 'Outfit',
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Container(
+                                child: SizedBox(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.5, // Adjusted width
+                                  child: Center(
+                                    child: RatingBar.builder(
+                                      initialRating: 0,
+                                      minRating: 0,
+                                      direction: Axis.horizontal,
+                                      itemSize: 30,
+                                      allowHalfRating: true,
+                                      itemCount: 5,
+                                      itemPadding: const EdgeInsets.symmetric(
+                                          horizontal: 1.0),
+                                      itemBuilder: (context, _) => const Icon(
+                                        Icons.star,
+                                        color: CommonUtils.primaryTextColor,
+                                      ),
+                                      onRatingUpdate: (rating) {
+                                        setState(() {
+                                          Serv_rating_star = rating;
+                                          print(
+                                              'Serv_rating_star$Serv_rating_star');
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 0, top: 15.0, right: 0),
+                            child: GestureDetector(
+                              onTap: () async {},
+                              child: Container(
+                                height: 80,
+                                width: MediaQuery.of(context).size.width *
+                                    0.8, // Adjusted width
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: CommonUtils.primaryTextColor,
+                                    width: 1.5,
+                                  ),
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  color: Colors.white,
+                                ),
+                                child: TextFormField(
+                                  controller: _commentstexteditcontroller,
+                                  style: const TextStyle(
+                                    fontFamily: 'Outfit',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                  maxLines: null,
+                                  maxLength: 250,
+                                  // Set maxLines to null for multiline input
+                                  decoration: const InputDecoration(
+                                    hintText: 'Comment',
+                                    hintStyle: TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Outfit',
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 16.0,
+                                      vertical: 12.0,
+                                    ),
+                                    border: InputBorder.none,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15.0,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: SizedBox(
+                                  child: Center(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        validateRating(appointments);
+                                      },
+                                      child: Container(
+                                        // width: desiredWidth * 0.9,
+                                        height: 40.0,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          color: CommonUtils.primaryTextColor,
+                                        ),
+                                        child: const Center(
+                                          child: Text(
+                                            'Rate Now',
+                                            style: TextStyle(
+                                              fontFamily: 'Outfit',
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  )),
+                  ],
+                ),
+              )),
             );
           },
         );
@@ -2158,7 +2172,7 @@ class _OpCardState extends State<OpCard> {
                   'Are You Sure You Want to Cancel The appointment at ${appointments.branch} Branch for ${appointments.purposeOfVisit}?',
                   style: CommonUtils.txSty_18b_fb,
                   textAlign:
-                  TextAlign.center, // Optionally, align the text center
+                      TextAlign.center, // Optionally, align the text center
                 ),
               ),
               const SizedBox(
@@ -2314,7 +2328,7 @@ class _OpCardState extends State<OpCard> {
       "SlotTime": appointmens.slotTime,
       "CustomerName": appointmens.customerName,
       "PhoneNumber":
-      appointmens.contactNumber, // Changed from appointments.phoneNumber
+          appointmens.contactNumber, // Changed from appointments.phoneNumber
       "Email": appointmens.email,
       "GenderTypeId": appointmens.genderTypeId,
       "StatusTypeId": 6,
@@ -2351,7 +2365,8 @@ class _OpCardState extends State<OpCard> {
         if (isSuccess == true) {
           print('Request sent successfully');
           openDialogreject();
-          int notificationId =  data['response']['id'];; // Use a unique identifier for the slot
+          int notificationId = data['response']['id'];
+          ; // Use a unique identifier for the slot
           await cancelNotification(notificationId);
           //  fetchMyAppointments(userId);
           //    CommonUtils.showCustomToastMessageLong('Cancelled  Successfully ', context, 0, 4);
@@ -2404,7 +2419,7 @@ class _OpCardState extends State<OpCard> {
                   'Your Appointment Has Been Cancelled Successfully.',
                   style: CommonUtils.txSty_18b_fb,
                   textAlign:
-                  TextAlign.center, // Optionally, align the text center
+                      TextAlign.center, // Optionally, align the text center
                 ),
               ),
               const SizedBox(
@@ -2442,9 +2457,9 @@ class _OpCardState extends State<OpCard> {
 
     // Parse the concatenated string into a DateTime object
     DateTime selectedDateTime =
-    DateFormat('yyyy-MM-dd hh:mm a').parse(selectedDateTimeString);
+        DateFormat('yyyy-MM-dd hh:mm a').parse(selectedDateTimeString);
     DateTime currentDateTime =
-    DateFormat('yyyy-MM-dd hh:mm a').parse(formattedTime);
+        DateFormat('yyyy-MM-dd hh:mm a').parse(formattedTime);
 
     print(
         'Time difference in selectedDateTime: ${selectedDateTime.toString()}');
@@ -2463,7 +2478,9 @@ class _OpCardState extends State<OpCard> {
     NumberFormat formatter = NumberFormat("#,##,##,##,##,##,##0.00", "en_US");
     return formatter.format(number);
   }
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
   Future<void> cancelNotification(int notificationId) async {
     try {
       await flutterLocalNotificationsPlugin.cancel(notificationId);
