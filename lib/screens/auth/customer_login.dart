@@ -10,6 +10,7 @@ import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/api_config.dart';
 import 'package:hairfixingzone/screens/auth/customer__login_otp.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomerLogin extends StatefulWidget {
   const CustomerLogin({super.key});
@@ -202,6 +203,9 @@ class _CustomerLoginState extends State<CustomerLogin> {
 
         if (response['isSuccess'] == true) {
           if (response['listResult'] != null) {
+            /*  List<dynamic> listResult = response['listResult'];
+            Map<String, dynamic> user = listResult.first;
+            await saveUserDataToSharedPreferences(user); */
             // existing user
             Navigator.push(
               context,
@@ -236,6 +240,25 @@ class _CustomerLoginState extends State<CustomerLogin> {
       progressDialog.dismiss();
       rethrow;
     }
+  }
+
+  Future<void> saveUserDataToSharedPreferences(
+      Map<String, dynamic> userData) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //
+    // prefs.setBool('isLoggedIn', true);
+    // Save user data using unique keys
+    await prefs.setInt('userId', userData['id']);
+    await prefs.setString('userFullName', userData['firstName']);
+    await prefs.setString('username', userData['userName']);
+    await prefs.setInt('userRoleId', userData['roleID']);
+    await prefs.setString('email', userData['email']);
+    await prefs.setString('contactNumber', userData['contactNumber']);
+    await prefs.setString('gender', userData['gender']);
+    await prefs.setString('dateofbirth', userData['dateofbirth'] ?? '');
+    await prefs.setString('password', userData['password']);
+    await prefs.setInt('genderTypeId', userData['genderTypeId']);
+    // Save other user data as needed
   }
 
   String? validateMobileNumber(String? value) {
