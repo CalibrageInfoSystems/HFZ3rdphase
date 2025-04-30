@@ -7,6 +7,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hairfixingzone/EditProfile.dart';
 import 'package:hairfixingzone/Privacy_policy.dart';
+import 'package:hairfixingzone/screens/auth/customer_login.dart';
+import 'package:hairfixingzone/screens/login_screen.dart';
 import 'package:hairfixingzone/startingscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -44,70 +46,30 @@ class _NewScreenState extends State<NewScreen> {
   int Id = 0;
   int? loginUserId;
   String? loginUserFullName;
-  late Future<void> _fetchUserDataFuture;
+
+  late Future<Map<String, dynamic>> futureCustomerDetails;
+
   @override
   void initState() {
     super.initState();
 
-    print('username===47 ${widget.userName}');
-    // getUserDataFromSharedPreferences();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitDown,
       DeviceOrientation.portraitUp,
     ]);
 
-    CommonUtils.checkInternetConnectivity().then((isConnected) async {
-      if (isConnected) {
-        print('The Internet Is Connected');
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        setState(() {
-          Id = prefs.getInt('userId') ?? 0;
-          fetchdetailsofcustomer(Id);
-          // _fetchUserDataFuture = fetchLoginUserData();
-        });
-
-        // fetchMyAppointments(userId);
-      } else {
-        print('The Internet Is not  Connected');
-      }
-    });
+    futureCustomerDetails = getCustomerDetails();
   }
 
   @override
   Widget build(BuildContext context) {
-    //  _fetchUserDataFuture = fetchLoginUserData();
     return WillPopScope(
       onWillPop: () => onBackPressed(context),
       child: Scaffold(
         backgroundColor: CommonStyles.whiteColor,
-        // appBar: AppBar(
-        //   elevation: 0,
-        //   backgroundColor: const Color(0xffffffff),
-        //   leading: IconButton(
-        //     icon: const Icon(
-        //       Icons.arrow_back_ios,
-        //       color: CommonUtils.primaryTextColor, // Adjust the color as needed
-        //     ),
-        //     onPressed: () {
-        //       Navigator.of(context).pop();
-        //     },
-        //   ),
-        // ),
         body: SingleChildScrollView(
           child: Column(
             children: [
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.start,
-              //   children: [
-              //     const SizedBox(
-              //       width: 20,
-              //     ),
-              //     Text(
-              //       'Profile',
-              //       style: CommonStyles.txSty_20b_fb.copyWith(fontSize: 24),
-              //     ),
-              //   ],
-              // ),
               const SizedBox(height: 20),
               GestureDetector(
                 onTap: () {
@@ -124,7 +86,6 @@ class _NewScreenState extends State<NewScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
-                    // color: Colors.grey,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.grey),
                   ),
@@ -141,30 +102,26 @@ class _NewScreenState extends State<NewScreen> {
                               fontSize: 22, color: Colors.white),
                         ),
                       ),
-                      // Container(
-                      //   width: 40,
-                      //   height: 40,
-                      //   decoration: const BoxDecoration(
-                      //     color: CommonStyles.primaryTextColor,
-                      //     shape: BoxShape.circle,
-                      //   ),
-                      //   child: Center(
-                      //     child: Text(
-                      //       widget.userName[0].toUpperCase(),
-                      //       style: const TextStyle(
-                      //           fontSize: 22, color: Colors.white),
-                      //     ),
-                      //   ),
-                      // ),
                       const SizedBox(width: 15),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            loginUserFullName ?? '',
-                            style: CommonStyles.txSty_20black_fb,
-                          ),
+                          FutureBuilder(
+                              future: getLoginUserName(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError ||
+                                    snapshot.data == null) {
+                                  return const Text(
+                                    'User Name',
+                                    style: CommonStyles.txSty_20black_fb,
+                                  );
+                                }
+                                return Text(
+                                  '${snapshot.data}',
+                                  style: CommonStyles.txSty_20black_fb,
+                                );
+                              }),
                           const Text('Edit Profile',
                               style: CommonStyles.txSty_16black_f5),
                         ],
@@ -173,15 +130,12 @@ class _NewScreenState extends State<NewScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(
                 height: 10,
                 width: 10,
               ),
-
               const Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Divider(),
               ),
               ListTile(
@@ -190,18 +144,17 @@ class _NewScreenState extends State<NewScreen> {
                   'assets/about_us.svg',
                   width: 25,
                   height: 25,
-                  color: const Color(0xFF11528f), // Adjust color as needed
+                  color: const Color(0xFF11528f),
                 ),
                 title: const Text('About Us', style: CommonStyles.txSty_18b_fb),
                 trailing: const Icon(Icons.arrow_forward_ios,
-                    color: Colors.grey, size: 16), // Add trailing icon here
+                    color: Colors.grey, size: 16),
                 onTap: () {
-                  AboutUs(context);
+                  aboutUs(context);
                 },
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Divider(),
               ),
               ListTile(
@@ -258,16 +211,15 @@ class _NewScreenState extends State<NewScreen> {
                 trailing: const Icon(Icons.arrow_forward_ios,
                     color: Colors.grey, size: 16), // Add trailing icon here
                 onTap: () {
-                  contact_us(context); // Execute your action here
+                  contactUs(context); // Execute your action here
                 },
               ),
-
               const Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
               ),
-              ListTile(
+              /* ListTile(
                 minTileHeight: 40.0,
                 leading: SvgPicture.asset(
                   'assets/change-password-icon.svg',
@@ -289,12 +241,12 @@ class _NewScreenState extends State<NewScreen> {
                     ),
                   ); // Execute your action here
                 },
-              ),
+              ), 
               const Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: 16.0), // Adjust padding as needed
                 child: Divider(),
-              ),
+              ), */
               ListTile(
                 minTileHeight: 40.0,
                 leading: SvgPicture.asset(
@@ -336,6 +288,30 @@ class _NewScreenState extends State<NewScreen> {
                   logOutDialog(context); // Execute your action here
                 },
               ),
+              /* const Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: 16.0), // Adjust padding as needed
+                child: Divider(),
+              ),
+              ListTile(
+                minTileHeight: 40.0,
+                leading: SvgPicture.asset(
+                  'assets/logout_new.svg',
+                  width: 25,
+                  height: 25,
+                  color: const Color(0xFF11528f), // Adjust color as needed
+                ),
+                title: const Text('Test', style: CommonStyles.txSty_18b_fb),
+                trailing: const Icon(Icons.arrow_forward_ios,
+                    color: Colors.grey, size: 16), // Add trailing icon here
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CustomerLogin(),
+                    ),
+                  );
+                },
+              ), */
               const Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: 16.0), // Adjust padding as needed
@@ -353,14 +329,6 @@ class _NewScreenState extends State<NewScreen> {
         ),
       ),
     );
-  }
-
-  void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 
   Widget referBox() {
@@ -505,7 +473,7 @@ class _NewScreenState extends State<NewScreen> {
     return Future.value(false);
   }
 
-  void contact_us(BuildContext context) {
+  void contactUs(BuildContext context) {
     // Implement your contact us logic here, like navigating to a contact screen
     print('Navigating to Contact Us screen');
     // Example navigation
@@ -514,7 +482,7 @@ class _NewScreenState extends State<NewScreen> {
     );
   }
 
-  void AboutUs(BuildContext context) {
+  void aboutUs(BuildContext context) {
     print('Navigating to About Us screen');
     // Example navigation
 
@@ -535,38 +503,76 @@ class _NewScreenState extends State<NewScreen> {
     );
   }
 
-  Future<void> fetchdetailsofcustomer(int id) async {
-    // String apiUrl = 'http://182.18.157.215/SaloonApp/API/GetCustomerData?id=$id';
+  Future<String> getLoginUserName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final userFullName = prefs.getString('userFullName') ?? '';
+    return userFullName;
+  }
+
+  Future<Map<String, dynamic>> getCustomerDetails() async {
+    final isConnected = await CommonUtils.checkInternetConnectivity();
+    if (!isConnected) {
+      CommonUtils.showCustomToastMessageLong(
+          'Please Check Your Internet Connection', context, 1, 4);
+      throw Exception('No internet connection');
+    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final id = prefs.getInt('userId') ?? 0;
     String apiUrl = '$baseUrl$getCustomerDatabyid$id';
-    setState(() {
-      //   isloading = true;
-    });
+
     try {
       final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
-        // Parse the JSON response
         Map<String, dynamic> jsonResponse = json.decode(response.body);
 
-        // Access the 'listResult' from the response
+        if (jsonResponse['listResult'] != null) {
+          List<dynamic> listResult = jsonResponse['listResult'];
+
+          Map<String, dynamic> customerData = listResult[0];
+          setState(() {
+            password = customerData['password'] ?? '';
+            loginUserFullName = customerData['firstname'] ?? '';
+          });
+          return customerData;
+        } else {
+          throw Exception('No data found');
+        }
+      } else {
+        throw Exception('Failed to fetch customer details');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /* Future<void> fetchdetailsofcustomer() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final id = prefs.getInt('userId') ?? 0;
+    // String apiUrl = 'http://182.18.157.215/SaloonApp/API/GetCustomerData?id=$id';
+    String apiUrl = '$baseUrl$getCustomerDatabyid$id';
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+
         List<dynamic> listResult = jsonResponse['listResult'];
 
-        // Assuming there's only one item in the listResult
         Map<String, dynamic> customerData = listResult[0];
 
         setState(() {
-          ;
+          print('Customer Data: ${customerData['firstname']}');
           password = customerData['password'] ?? '';
           loginUserFullName = customerData['firstname'] ?? '';
 
           print('Role Name: $password');
         });
-
-        // await saveUserDataToSharedPreferences(customerData);
-        // Now you can access individual fields like 'firstname', 'lastname', etc.
       } else {
-        // Handle error cases
-
         print('Request failed with status: ${response.statusCode}');
       }
     } catch (e) {
@@ -575,7 +581,7 @@ class _NewScreenState extends State<NewScreen> {
       print('Exception occurred: $e');
     }
   }
-
+ */
   void products(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const ProductsMy()),

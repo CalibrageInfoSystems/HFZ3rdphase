@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../CommonUtils.dart';
@@ -12,12 +11,17 @@ class CustomButton extends StatelessWidget {
   final double textSize;
   final Color textColor;
   final Color borderColor;
+  final double radius;
+  final double allPadding;
+
   const CustomButton({
     super.key,
     required this.buttonText,
     required this.color,
     required this.onPressed,
     this.textSize = 16.0,
+    this.radius = 10.0,
+    this.allPadding = 10.0,
     this.textColor = Colors.white,
     this.borderColor = Colors.transparent,
   });
@@ -28,10 +32,9 @@ class CustomButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         // minimumSize: const Size.fromHeight(33),
-        padding: const EdgeInsets.all(10),
-
+        padding: EdgeInsets.all(allPadding),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(radius),
           side: BorderSide(color: borderColor),
         ),
         backgroundColor: color,

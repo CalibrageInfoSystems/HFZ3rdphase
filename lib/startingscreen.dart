@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
+import 'package:hairfixingzone/screens/auth/customer_login.dart';
+import 'package:hairfixingzone/screens/login_screen.dart';
 
 import 'AgentLogin.dart';
 import 'CommonUtils.dart';
 import 'CustomerLoginScreen.dart';
 import 'CustomerRegisterScreen.dart';
-
 
 class startingscreen extends StatefulWidget {
   @override
@@ -38,7 +39,6 @@ class _startingscreenState extends State<startingscreen> {
           SystemNavigator.pop();
           return true;
         },
-
         child: Scaffold(
           backgroundColor: Color(0xFFefdbfe), // Background color
           body: Column(
@@ -81,98 +81,81 @@ class _startingscreenState extends State<startingscreen> {
                         Align(
                           alignment: Alignment.topCenter,
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 20.0, left: 12.0, right: 12.0),
-                            child: Text('Helping You to Take Good ', style: CommonUtils.header_Styles),
+                            padding: const EdgeInsets.only(
+                                top: 20.0, left: 12.0, right: 12.0),
+                            child: Text('Helping You to Take Good ',
+                                style: CommonUtils.header_Styles),
                           ),
                         ),
 
                         Align(
                           alignment: Alignment.topCenter,
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 5.0, left: 12.0, right: 12.0),
-                            child: Text(' Care of Your Hair!', style: CommonUtils.header_Styles),
+                            padding: const EdgeInsets.only(
+                                top: 5.0, left: 12.0, right: 12.0),
+                            child: Text(' Care of Your Hair!',
+                                style: CommonUtils.header_Styles),
                           ),
                         ),
                         SizedBox(height: 20), // Space between text and buttons
                         Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(builder: (context) => CustomerLoginScreen()),
-                                );
-                              },
-                              child: Text(
-                                'Login',
-                                style: CommonStyles.txSty_20wh_fb, // Increased font size
-                              ),
-                              style: ButtonStyle(
-                                minimumSize: MaterialStateProperty.all(Size(150, 40)), // Set the minimum size for the button
-                                foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    return Colors.white; // Use white text color
-                                  },
-                                ),
-                                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    return Color(0xFF11528f); // Use purple background color
-                                  },
-                                ),
-                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25.0),
-                                    side: BorderSide(color: Color(0xFF11528f), width: 2.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 20),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(builder: (context) => CustomerRegisterScreen()),
-                                );
+                        //MARK: loginNdRegister
+                        loginNdRegister(context),
 
-                                // Action for Register button
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      // CustomerLogin()),
+                                      const CustomerLogin()),
+                            );
+                          },
+                          child: Text(
+                            'Login With Customer',
+                            style: CommonStyles
+                                .txSty_20wh_fb, // Increased font size
+                          ),
+                          style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all(Size(150,
+                                40)), // Set the minimum size for the button
+                            foregroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                return Colors.white; // Use white text color
                               },
-                              child: Text(
-                                'Register',
-                                style: CommonStyles.txSty_20bl_fb, // Increased font size
-                              ),
-                              style: ButtonStyle(
-                                minimumSize: MaterialStateProperty.all(Size(150, 40)), // Set the minimum size for the button
-                                foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    return Color(0xFF0f75bc); // Use blue text color
-                                  },
-                                ),
-                                backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    return Colors.white; // Use white background color
-                                  },
-                                ),
-                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25.0),
-                                    side: BorderSide(color: Color(0xFF11528f), width: 2.0),
-                                  ),
-                                ),
+                            ),
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                return Color(
+                                    0xFF11528f); // Use purple background color
+                              },
+                            ),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25.0),
+                                side: BorderSide(
+                                    color: Color(0xFF11528f), width: 2.0),
                               ),
                             ),
-                          ],
+                          ),
                         ),
-
-                        Spacer(),
+                        SizedBox(height: 5.0),
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 10.0, left: 12.0, right: 12.0, bottom: 20.0),
+                            padding: const EdgeInsets.only(
+                                top: 10.0,
+                                left: 12.0,
+                                right: 12.0,
+                                bottom: 20.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('Agent Login?', style: CommonUtils.Mediumtext_14),
+                                Text('Agent Login?',
+                                    style: CommonUtils.Mediumtext_14),
                                 SizedBox(width: 8.0),
                                 GestureDetector(
                                   onTap: () {
@@ -185,12 +168,14 @@ class _startingscreenState extends State<startingscreen> {
                                       ),
                                     );
                                   },
-                                  child: Text('Click Here!', style: CommonUtils.Mediumtext_o_14),
+                                  child: Text('Click Here!',
+                                      style: CommonUtils.Mediumtext_o_14),
                                 )
                               ],
                             ),
                           ),
-                        )
+                        ),
+                        Spacer(),
                       ],
                     ),
                   ),
@@ -199,5 +184,79 @@ class _startingscreenState extends State<startingscreen> {
             ],
           ),
         ));
+  }
+
+  Row loginNdRegister(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => CustomerLoginScreen()),
+              // CustomerLoginScreen()),
+            );
+          },
+          child: Text(
+            'Login',
+            style: CommonStyles.txSty_20wh_fb, // Increased font size
+          ),
+          style: ButtonStyle(
+            minimumSize: MaterialStateProperty.all(
+                Size(150, 40)), // Set the minimum size for the button
+            foregroundColor: MaterialStateProperty.resolveWith<Color>(
+              (Set<MaterialState> states) {
+                return Colors.white; // Use white text color
+              },
+            ),
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+              (Set<MaterialState> states) {
+                return Color(0xFF11528f); // Use purple background color
+              },
+            ),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25.0),
+                side: BorderSide(color: Color(0xFF11528f), width: 2.0),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 20),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => CustomerRegisterScreen()),
+            );
+
+            // Action for Register button
+          },
+          child: Text(
+            'Register',
+            style: CommonStyles.txSty_20bl_fb, // Increased font size
+          ),
+          style: ButtonStyle(
+            minimumSize: MaterialStateProperty.all(
+                Size(150, 40)), // Set the minimum size for the button
+            foregroundColor: MaterialStateProperty.resolveWith<Color>(
+              (Set<MaterialState> states) {
+                return Color(0xFF0f75bc); // Use blue text color
+              },
+            ),
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+              (Set<MaterialState> states) {
+                return Colors.white; // Use white background color
+              },
+            ),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25.0),
+                side: BorderSide(color: Color(0xFF11528f), width: 2.0),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

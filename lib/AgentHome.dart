@@ -9,6 +9,7 @@ import 'package:hairfixingzone/CustomerLoginScreen.dart';
 import 'package:hairfixingzone/Inventory_screen.dart';
 import 'package:hairfixingzone/MyAppointments.dart';
 import 'package:hairfixingzone/branchesforagent.dart';
+import 'package:hairfixingzone/screens/customer_enquiry/add_customer_enquiry.dart';
 import 'package:hairfixingzone/startingscreen.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -126,11 +127,50 @@ class _AgentHomeState extends State<AgentHome> {
         appBar: CommonStyles.agentAppbar(
           context: context,
           title: buildTitle(_currentIndex, context),
-          userName:
-              userFullName.isNotEmpty ? userFullName[0].toUpperCase() : "A",
-          onTap: () {
-            logOutDialog(context);
-          },
+          actions: [
+            IconButton(
+              icon: Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: CommonStyles.primaryTextColor,
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                    child: Icon(Icons.help_outline, color: Colors.white)),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Branches_screen(
+                        userId: widget.userId, isBranchFrom: 'CustomerEnquiry'),
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: CommonStyles.primaryTextColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    userFullName.isNotEmpty
+                        ? userFullName[0].toUpperCase()
+                        : "A",
+                    style: const TextStyle(fontSize: 22, color: Colors.white),
+                  ),
+                ),
+              ),
+              onPressed: () {
+                logOutDialog(context);
+              },
+            ),
+          ],
         ),
         body: _buildScreens(_currentIndex),
         bottomNavigationBar: BottomNavigationBar(

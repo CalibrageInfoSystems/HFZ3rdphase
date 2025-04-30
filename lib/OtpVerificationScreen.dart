@@ -79,7 +79,9 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
       int atIndex = email.indexOf('@');
 
       // Mask the part before the "@" symbol, leaving the first 2 and last 2 characters unmasked
-      String maskedPart = email.substring(0, 2) + '*' * (atIndex - 4) + email.substring(atIndex - 2, atIndex);
+      String maskedPart = email.substring(0, 2) +
+          '*' * (atIndex - 4) +
+          email.substring(atIndex - 2, atIndex);
 
       // Combine the masked part with the domain part
       return maskedPart + email.substring(atIndex);
@@ -139,8 +141,11 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      const Text('We Just Sent Your Otp Via Email to ', style: CommonUtils.Sub_header_Styles),
-                      Text(maskedEmail, style: CommonUtils.Sub_header_Styles), // Display the masked email
+                      const Text('We Just Sent Your Otp Via Email to ',
+                          style: CommonUtils.Sub_header_Styles),
+                      Text(maskedEmail,
+                          style: CommonUtils
+                              .Sub_header_Styles), // Display the masked email
                       // const Text('to Your Email to Continue ',
                       //     style: CommonUtils.Sub_header_Styles),
                       // const Text('Please Enter 6 Digits OTP sent',
@@ -153,13 +158,16 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
                 ),
               ),
               SizedBox(
-                  height: MediaQuery.of(context).size.height - MediaQuery.of(context).size.height / 2, // Adjust the height here
+                  height: MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).size.height /
+                          2, // Adjust the height here
                   child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       child: Form(
                         key: _formKey,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
                           decoration: const BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.only(
@@ -186,19 +194,25 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
                                       borderRadius: BorderRadius.circular(10),
                                       fieldHeight: 50,
                                       fieldWidth: 45,
-                                      activeColor: const Color.fromARGB(255, 63, 3, 109),
-                                      selectedColor: const Color.fromARGB(255, 63, 3, 109),
+                                      activeColor:
+                                          const Color.fromARGB(255, 63, 3, 109),
+                                      selectedColor:
+                                          const Color.fromARGB(255, 63, 3, 109),
                                       selectedFillColor: Colors.white,
                                       activeFillColor: Colors.white,
                                       inactiveFillColor: Colors.white,
-                                      inactiveColor: CommonUtils.primaryTextColor,
+                                      inactiveColor:
+                                          CommonUtils.primaryTextColor,
                                     ),
-                                    animationDuration: const Duration(milliseconds: 300),
+                                    animationDuration:
+                                        const Duration(milliseconds: 300),
                                     // backgroundColor: Colors
                                     //     .blue.shade50, // Set background color
                                     enableActiveFill: true,
                                     controller: _otpController,
-                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly
+                                    ],
                                     keyboardType: TextInputType.number,
                                     validator: validateotp,
                                     onCompleted: (v) {
@@ -215,25 +229,6 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
                                       return true;
                                     },
                                   ),
-
-                                  // OTPTextField(
-                                  //   length: 6,
-                                  //   spaceBetween: 10,
-                                  //   width: MediaQuery.of(context).size.width,
-                                  //   fieldWidth: 40,
-                                  //   style: const TextStyle(fontSize: 20),
-                                  //   textFieldAlignment:
-                                  //       MainAxisAlignment.center,
-                                  //   fieldStyle: FieldStyle.box,
-                                  //   otpFieldStyle: OtpFieldStyle(
-                                  //     borderColor: CommonUtils.primaryTextColor,
-                                  //     enabledBorderColor:
-                                  //         CommonUtils.primaryTextColor,
-                                  //   ),
-                                  //   onCompleted: (pin) {
-                                  //     print("Completed: ");
-                                  //   },
-                                  // ),
                                   const SizedBox(
                                     height: 20,
                                   ),
@@ -267,8 +262,12 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
                                           // Add your custom logic or navigation code here
                                           Resendotpmethod();
                                         },
-                                        child:
-                                            const Text('Resend OTP', style: TextStyle(fontSize: 20, fontFamily: "Outfit", fontWeight: FontWeight.w700, color: Color(0xFF662e91))),
+                                        child: const Text('Resend OTP',
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontFamily: "Outfit",
+                                                fontWeight: FontWeight.w700,
+                                                color: Color(0xFF662e91))),
                                       )
                                       // Text(
                                       //   ' Resend code',
@@ -292,14 +291,14 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
                                       onPressed: checkInternetConnection,
                                     ),
                                   ),
-
                                   const SizedBox(
                                     height: 20,
                                   ),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Text('Back to Login?', style: CommonUtils.Mediumtext_14),
+                                      const Text('Back to Login?',
+                                          style: CommonUtils.Mediumtext_14),
                                       GestureDetector(
                                         onTap: () {
                                           // Handle the click event for the "Click here!" text
@@ -307,7 +306,8 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
                                           // Add your custom logic or navigation code here
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
-                                              builder: (context) => const CustomerLoginScreen(),
+                                              builder: (context) =>
+                                                  const CustomerLoginScreen(),
                                             ),
                                           );
                                         },
@@ -368,7 +368,8 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
         validateOtp();
         print('The Internet Is Connected');
       } else {
-        CommonUtils.showCustomToastMessageLong('Please Check Your Internet Connection', context, 1, 4);
+        CommonUtils.showCustomToastMessageLong(
+            'Please Check Your Internet Connection', context, 1, 4);
         print('The Internet Is not Connected');
       }
     });
@@ -380,7 +381,10 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
       String otpentered = _otpController.text;
       print('otpentered: $otpentered');
 
-      Map<String, String> requestBody = {"id": widget.id.toString(), "otp": otpentered};
+      Map<String, String> requestBody = {
+        "id": widget.id.toString(),
+        "otp": otpentered
+      };
       print('requestBody: ${requestBody}');
       //  print('apiUrl: $apiUrl');
       //CommonStyles.progressBar(context);
@@ -407,7 +411,7 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
         // Print the result
         print('Is Success: $isSuccess');
         print('Status Message: $statusMessage');
-       // LoadingProgress.stop(context);
+        // LoadingProgress.stop(context);
         // Handle the data accordingly
         if (isSuccess) {
           // If the user is valid, you can extract more data from 'listResult'
@@ -422,23 +426,29 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
             progressDialog.dismiss();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen(boolflagpopup: true,)),
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(
+                        boolflagpopup: true,
+                      )),
             );
             // LoadingProgress.stop(context);
-            CommonUtils.showCustomToastMessageLongbottom(data['statusMessage'], context, 0, 4);
-          //  CommonUtils.showCustomToastMessageLong('${data["statusMessage"]}', context, 0, 3, toastPosition: MediaQuery.of(context).size.height / 2);
+            CommonUtils.showCustomToastMessageLongbottom(
+                data['statusMessage'], context, 0, 4);
+            //  CommonUtils.showCustomToastMessageLong('${data["statusMessage"]}', context, 0, 3, toastPosition: MediaQuery.of(context).size.height / 2);
           } else {
-         //   LoadingProgress.stop(context);
+            //   LoadingProgress.stop(context);
             progressDialog.dismiss();
             FocusScope.of(context).unfocus();
-            CommonUtils.showCustomToastMessageLongbottom(data['statusMessage'], context, 1, 4);
-          //  CommonUtils.showCustomToastMessageLong('${data["statusMessage"]}', context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
+            CommonUtils.showCustomToastMessageLongbottom(
+                data['statusMessage'], context, 1, 4);
+            //  CommonUtils.showCustomToastMessageLong('${data["statusMessage"]}', context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
           }
           // LoadingProgress.stop(context);
         } else {
           progressDialog.dismiss();
           FocusScope.of(context).unfocus();
-          CommonUtils.showCustomToastMessageLongbottom(data['statusMessage'], context, 1, 4);
+          CommonUtils.showCustomToastMessageLongbottom(
+              data['statusMessage'], context, 1, 4);
           //CommonUtils.showCustomToastMessageLong("${data["statusMessage"]}", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
           // Handle the case where the user is not valid
           // List<dynamic> validationErrors = data['validationErrors'];
@@ -449,7 +459,8 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
       } else {
         progressDialog.dismiss();
         // Handle any error cases here
-        print('Failed to connect to the API. Status code: ${response.statusCode}');
+        print(
+            'Failed to connect to the API. Status code: ${response.statusCode}');
       }
     }
     // Navigator.of(context).push(
@@ -506,20 +517,23 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
           print('userid: ${user['id']}');
           _otpController.clear();
           LoadingProgress.stop(context);
-          CommonUtils.showCustomToastMessageLongbottom('OTP Has Sent To Your Email', context, 0, 4);
+          CommonUtils.showCustomToastMessageLongbottom(
+              'OTP Has Sent To Your Email', context, 0, 4);
           //CommonUtils.showCustomToastMessageLong('OTP Has Sent To Your Email', context, 0, 3, toastPosition: MediaQuery.of(context).size.height / 2);
           restartTimer();
         } else {
           FocusScope.of(context).unfocus();
           LoadingProgress.stop(context);
-          CommonUtils.showCustomToastMessageLongbottom('Invalid User ', context, 1, 4);
+          CommonUtils.showCustomToastMessageLongbottom(
+              'Invalid User ', context, 1, 4);
           //CommonUtils.showCustomToastMessageLong('Invalid User ', context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
         }
       } else {
         LoadingProgress.stop(context);
         FocusScope.of(context).unfocus();
-        CommonUtils.showCustomToastMessageLongbottom("${data["statusMessage"]}", context, 1, 4);
-       // CommonUtils.showCustomToastMessageLong("${data["statusMessage"]}", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
+        CommonUtils.showCustomToastMessageLongbottom(
+            "${data["statusMessage"]}", context, 1, 4);
+        // CommonUtils.showCustomToastMessageLong("${data["statusMessage"]}", context, 1, 3, toastPosition: MediaQuery.of(context).size.height / 2);
         // Handle the case where the user is not valid
         setState(() {
           _isloading = false; //Enable loading before getQuestions
@@ -535,7 +549,8 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
       });
       LoadingProgress.stop(context);
       // Handle any error cases here
-      print('Failed to connect to the API. Status code: ${response.statusCode}');
+      print(
+          'Failed to connect to the API. Status code: ${response.statusCode}');
     }
   }
 }

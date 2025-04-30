@@ -18,7 +18,8 @@ import 'HomeScreen.dart';
 import 'package:http/http.dart' as http;
 
 class CustomerRegisterScreen extends StatefulWidget {
-  const CustomerRegisterScreen({super.key});
+  final String? contactNumber;
+  const CustomerRegisterScreen({super.key, this.contactNumber});
 
   @override
   State<CustomerRegisterScreen> createState() => _LoginPageState();
@@ -152,6 +153,11 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
     return Scaffold(
       backgroundColor: CommonUtils.primaryColor,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+      ),
+/*       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,
@@ -166,37 +172,36 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
         ),
         backgroundColor: Colors.transparent, // Transparent app bar
         elevation: 0, // No shadow
-      ),
-      body: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height / 5.7,
-              decoration: const BoxDecoration(),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      // height: MediaQuery.of(context).size.height / 5.7,
-                      width: MediaQuery.of(context).size.height / 4.2,
-                      child: Image.asset('assets/hfz_logo.png'),
-                    ),
-                    const Text('Customer Registration',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontFamily: "Outfit",
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 2,
-                          color: Color(0xFF11528f),
-                        )),
-                  ],
-                ),
+      ), */
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height / 5.7,
+            decoration: const BoxDecoration(),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    // height: MediaQuery.of(context).size.height / 5.7,
+                    width: MediaQuery.of(context).size.height / 4.2,
+                    child: Image.asset('assets/hfz_logo.png'),
+                  ),
+                  const Text('Customer Registration',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontFamily: "Outfit",
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 2,
+                        color: Color(0xFF11528f),
+                      )),
+                ],
               ),
             ),
-            Form(
+          ),
+          Expanded(
+            child: Form(
               key: _formKey,
               child: Container(
                 padding:
@@ -208,915 +213,263 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                     topRight: Radius.circular(30.0),
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                        height: MediaQuery.of(context).size.height -
-                            MediaQuery.of(context).size.height / 2.5,
-                        //      height: MediaQuery.of(context).size.height,
-                        child: SingleChildScrollView(
-                            controller: _scrollController,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                //MARK: Full Name
-                                CustomeFormField(
-                                  label: 'Full Name',
-                                  maxLength: 50,
-                                  validator: validatefullname,
-                                  focusNode: FullnameFocus,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(RegExp(
-                                        r'[a-zA-Z\s]')), // Including '\s' for space
-                                  ],
-                                  controller: fullNameController,
-                                  keyboardType: TextInputType.name,
-                                  errorText:
-                                      _fullNameError ? _fullNameErrorMsg : null,
-                                  onChanged: (value) {
-                                    //MARK: Space restrict
-                                    setState(() {
-                                      if (value.startsWith(' ')) {
-                                        fullNameController.value =
-                                            TextEditingValue(
-                                          text: value.trimLeft(),
-                                          selection: TextSelection.collapsed(
-                                              offset: value.trimLeft().length),
-                                        );
-                                      }
-                                      _fullNameError = false;
-                                    });
-                                  },
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-
-                                // CustomeFormField(
-                                //   label: 'Date of Birth',
-                                //   validator: validatedob,
-                                //   controller: DateofBirth,
-                                //   focusNode: DateofBirthdFocus,
-                                //   onTap: () => _selectDate(context),
-                                // ),
-                                const Row(
-                                  children: [
-                                    Text(
-                                      'Date of Birth',
-                                      style: CommonUtils.txSty_12b_fb,
-                                    ),
-                                    Text(
-                                      ' *',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ],
-                                ),
-
-                                TextFormField(
-                                  //MARK: DOB
-                                  controller: dobController,
-                                  onTap: () {
-                                    _selectDate(context);
-                                  },
-                                  focusNode: DateofBirthdFocus,
-                                  readOnly: true,
-                                  decoration: InputDecoration(
-                                    errorText: _dobError ? _dobErrorMsg : null,
-                                    errorStyle: CommonStyles.texterrorstyle,
-                                    contentPadding: const EdgeInsets.only(
-                                        top: 15,
-                                        bottom: 10,
-                                        left: 15,
-                                        right: 15),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: CommonUtils.primaryTextColor,
-                                      ),
-                                      borderRadius: BorderRadius.circular(6.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                        color: CommonUtils.primaryTextColor,
-                                      ),
-                                      borderRadius: BorderRadius.circular(6.0),
-                                    ),
-                                    border: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                    ),
-                                    hintText: 'Select Date of Birth',
-                                    counterText: "",
-                                    hintStyle: CommonStyles.texthintstyle,
-                                    suffixIcon: Icon(Icons.calendar_today),
-                                  ),
-                                  validator: validateDOB,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _dobError = false;
-                                    });
-                                  },
-                                  style: CommonStyles.txSty_14b_fb,
-                                ),
-
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Row(
-                                  children: [
-                                    Text(
-                                      'Gender ',
-                                      style: CommonUtils.txSty_12b_fb,
-                                    ),
-                                    Text(
-                                      ' *',
-                                      style: TextStyle(
-                                          color:
-                                              Color.fromARGB(255, 175, 15, 4)),
-                                    ),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 0, top: 5.0, right: 0),
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: isGenderSelected
-                                            ? const Color.fromARGB(
-                                                255, 175, 15, 4)
-                                            : CommonUtils.primaryTextColor,
-                                      ),
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      color: Colors.white,
-                                    ),
-                                    child: DropdownButtonHideUnderline(
-                                      child: ButtonTheme(
-                                        alignedDropdown: true,
-                                        child: DropdownButton<int>(
-                                            value: selectedTypeCdId,
-                                            iconSize: 30,
-                                            icon: null,
-                                            style: CommonUtils.txSty_12b_fb,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                selectedTypeCdId = value!;
-                                                if (selectedTypeCdId != -1) {
-                                                  selectedValue = dropdownItems[
-                                                          selectedTypeCdId]
-                                                      ['typeCdId'];
-                                                  selectedName = dropdownItems[
-                                                      selectedTypeCdId]['desc'];
-
-                                                  print(
-                                                      "selectedValue:$selectedValue");
-                                                  print(
-                                                      "selectedName:$selectedName");
-                                                  isGenderSelected = false;
-                                                } else {
-                                                  print("==========");
-                                                  print(selectedValue);
-                                                  print(selectedName);
-                                                }
-                                                // isDropdownValid = selectedTypeCdId != -1;
-                                                isGenderSelected = false;
-                                              });
-                                            },
-                                            items: [
-                                              const DropdownMenuItem<int>(
-                                                  value: -1,
-                                                  child: Text(
-                                                    'Select Gender',
-                                                    style: CommonStyles
-                                                        .texthintstyle,
-                                                  )),
-                                              ...dropdownItems
-                                                  .asMap()
-                                                  .entries
-                                                  .map((entry) {
-                                                final index = entry.key;
-                                                final item = entry.value;
-                                                return DropdownMenuItem<int>(
-                                                  value: index,
-                                                  child: Text(item['desc']),
-                                                );
-                                              }).toList(),
-                                            ]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                //MARK: Gender condition
-                                if (isGenderSelected)
-                                  const Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 16, vertical: 5),
-                                        child: Text(
-                                          'Please Select Gender',
-                                          // style: CommonStyles.texthintstyle,
-                                          style: CommonStyles.texterrorstyle,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                CustomeFormField(
-                                  //MARK: Mobile Number
-                                  label: 'Mobile Number',
-                                  validator: validateMobilenum,
-                                  controller: mobileNumberController,
-                                  maxLength: 10,
-
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9]')),
-                                  ],
-                                  keyboardType: TextInputType.phone,
-                                  errorText: _mobileNumberError
-                                      ? _mobileNumberErrorMsg
-                                      : null,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value.length == 1 &&
-                                          ['0', '1', '2', '3', '4']
-                                              .contains(value)) {
-                                        mobileNumberController.clear();
-                                      }
-                                      if (value.startsWith(' ')) {
-                                        mobileNumberController.value =
-                                            TextEditingValue(
-                                          text: value.trimLeft(),
-                                          selection: TextSelection.collapsed(
-                                              offset: value.trimLeft().length),
-                                        );
-                                      }
-                                      _mobileNumberError = false;
-                                    });
-                                  },
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                ListView(
-                                  padding: EdgeInsets.zero,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    // SizedBox(height: 5),
-                                    const Row(
-                                      children: [
-                                        Text(
-                                          'Alternate Mobile Number',
-                                          style: CommonUtils.txSty_12b_fb,
-                                        )
-                                        // Text(
-                                        //   '',
-                                        //   style: TextStyle(color: Colors.red),
-                                        // ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    TextFormField(
-                                      controller:
-                                          alernateMobileNumberController,
-                                      keyboardType: TextInputType.phone,
-                                      onTap: () {
-                                        setState(() {
-                                          AlernateMobilenumFocus.addListener(
-                                              () {
-                                            if (AlernateMobilenumFocus
-                                                .hasFocus) {
-                                              Future.delayed(
-                                                  const Duration(
-                                                      milliseconds: 300), () {
-                                                Scrollable.ensureVisible(
-                                                  AlernateMobilenumFocus
-                                                      .context!,
-                                                  duration: const Duration(
-                                                      milliseconds: 300),
-                                                  curve: Curves.easeInOut,
-                                                );
-                                              });
-                                            }
-                                          });
-                                        });
-                                      },
-                                      focusNode: AlernateMobilenumFocus,
-                                      decoration: InputDecoration(
-                                        counterText: '',
-                                        errorText: _altNumberError
-                                            ? _altNumberErrorMsg
-                                            : null,
-                                        contentPadding: const EdgeInsets.only(
-                                            top: 15,
-                                            bottom: 10,
-                                            left: 15,
-                                            right: 15),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            color: Color(0xFF0f75bc),
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(6.0),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            color: CommonUtils.primaryTextColor,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(6.0),
-                                        ),
-                                        border: const OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(10),
-                                          ),
-                                        ),
-                                        hintText:
-                                            'Enter Alternate Mobile Number',
-                                        hintStyle: CommonStyles.texthintstyle,
-                                      ),
-                                      maxLength: 10,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'[0-9]')),
-                                      ],
-                                      validator: validateAlterMobilenum,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value.length == 1 &&
-                                              ['0', '1', '2', '3', '4']
-                                                  .contains(value)) {
-                                            alernateMobileNumberController
-                                                .clear();
-                                          }
-                                          if (value.startsWith(' ')) {
-                                            alernateMobileNumberController
-                                                .value = TextEditingValue(
-                                              text: value.trimLeft(),
-                                              selection:
-                                                  TextSelection.collapsed(
-                                                      offset: value
-                                                          .trimLeft()
-                                                          .length),
-                                            );
-                                          }
-                                          _altNumberError = false;
-                                        });
-                                      },
-                                      style: CommonStyles.txSty_14b_fb,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                ListView(
-                                  padding: EdgeInsets.zero,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    const SizedBox(height: 5),
-                                    const Row(
-                                      children: [
-                                        Text(
-                                          'Email',
-                                          style: CommonStyles.txSty_12b_fb,
-                                        ),
-                                        Text(
-                                          ' *',
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    TextFormField(
-                                      controller: emailController,
-                                      maxLength: 60,
-                                      maxLengthEnforcement:
-                                          MaxLengthEnforcement.enforced,
-                                      keyboardType: TextInputType.emailAddress,
-                                      onTap: () {
-                                        setState(() {
-                                          EmailFocus.addListener(() {
-                                            if (EmailFocus.hasFocus) {
-                                              Future.delayed(
-                                                  const Duration(
-                                                      milliseconds: 300), () {
-                                                Scrollable.ensureVisible(
-                                                  EmailFocus.context!,
-                                                  duration: const Duration(
-                                                      milliseconds: 300),
-                                                  curve: Curves.easeInOut,
-                                                );
-                                              });
-                                            }
-                                          });
-                                        });
-                                      },
-                                      focusNode: EmailFocus,
-                                      decoration: InputDecoration(
-                                        errorText:
-                                            _emailError ? _emailErrorMsg : null,
-                                        errorStyle: CommonStyles.texterrorstyle,
-                                        contentPadding: const EdgeInsets.only(
-                                            top: 15,
-                                            bottom: 10,
-                                            left: 15,
-                                            right: 15),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            color: Color(0xFF0f75bc),
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(6.0),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            color: CommonUtils.primaryTextColor,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(6.0),
-                                        ),
-                                        border: const OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(10),
-                                          ),
-                                        ),
-                                        hintText: 'Enter Email',
-                                        counterText: "",
-                                        hintStyle: CommonStyles.texthintstyle,
-                                      ),
-                                      validator: validateEmail,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _emailError = false;
-                                        });
-                                      },
-                                      style: CommonStyles.txSty_14b_fb,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                ListView(
-                                  padding: EdgeInsets.zero,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    const SizedBox(height: 5),
-                                    const Row(
-                                      children: [
-                                        Text(
-                                          'User Name',
-                                          style: CommonStyles.txSty_12b_fb,
-                                        ),
-                                        Text(
-                                          ' *',
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    TextFormField(
-                                      controller: userNameController,
-                                      maxLength: 50,
-                                      keyboardType:
-                                          TextInputType.visiblePassword,
-                                      onTap: () {
-                                        setState(
-                                          () {
-                                            usernameFocus.addListener(
-                                              () {
-                                                if (usernameFocus.hasFocus) {
-                                                  Future.delayed(
-                                                      const Duration(
-                                                          milliseconds: 300),
-                                                      () {
-                                                    Scrollable.ensureVisible(
-                                                      usernameFocus.context!,
-                                                      duration: const Duration(
-                                                          milliseconds: 300),
-                                                      curve: Curves.easeInOut,
-                                                    );
-                                                  });
-                                                }
-                                              },
-                                            );
-                                          },
-                                        );
-                                      },
-                                      //     focusNode: usernameFocus,
-                                      decoration: InputDecoration(
-                                        contentPadding: const EdgeInsets.only(
-                                            top: 15,
-                                            bottom: 10,
-                                            left: 15,
-                                            right: 15),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            color: Color(0xFF0f75bc),
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(6.0),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            color: CommonUtils.primaryTextColor,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(6.0),
-                                        ),
-                                        border: const OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(10),
-                                          ),
-                                        ),
-                                        hintText: 'Enter User Name',
-                                        counterText: "",
-                                        hintStyle: CommonStyles.texthintstyle,
-                                        errorText: _userNameError
-                                            ? _userNameErrorMsg
-                                            : null,
-                                        errorStyle: CommonStyles.texterrorstyle,
-                                      ),
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.allow(RegExp(
-                                            r'[a-zA-Z0-9!@#$%^&*(),.?":{}|<>_-]')),
-                                      ],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value.startsWith(' ')) {
-                                            userNameController.value =
-                                                TextEditingValue(
-                                              text: value.trimLeft(),
-                                              selection:
-                                                  TextSelection.collapsed(
-                                                      offset: value
-                                                          .trimLeft()
-                                                          .length),
-                                            );
-                                            return;
-                                          }
-                                          _userNameError = false;
-                                        });
-                                      },
-                                      validator: validateUserName,
-                                      style: CommonStyles.txSty_14b_fb,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                ListView(
-                                  padding: EdgeInsets.zero,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    const SizedBox(height: 5),
-                                    const Row(
-                                      children: [
-                                        Text(
-                                          'Password',
-                                          style: CommonStyles.txSty_12b_fb,
-                                        ),
-                                        Text(
-                                          ' *',
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    Column(
-                                      children: [
-                                        TextFormField(
-                                          controller: passwordController,
-                                          keyboardType:
-                                              TextInputType.visiblePassword,
-                                          obscureText: showPassword,
-                                          maxLength: 25,
-                                          maxLengthEnforcement:
-                                              MaxLengthEnforcement.enforced,
-                                          onTap: () {
-                                            setState(() {
-                                              PasswordFocus.addListener(() {
-                                                if (PasswordFocus.hasFocus) {
-                                                  Future.delayed(
-                                                      const Duration(
-                                                          milliseconds: 300),
-                                                      () {
-                                                    Scrollable.ensureVisible(
-                                                      PasswordFocus.context!,
-                                                      duration: const Duration(
-                                                          milliseconds: 300),
-                                                      curve: Curves.easeInOut,
-                                                    );
-                                                  });
-                                                }
-                                              });
-                                            });
-                                          },
-                                          focusNode: PasswordFocus,
-                                          decoration: InputDecoration(
-                                            errorMaxLines: 5,
-                                            errorText: _passwordError
-                                                ? _passwordErrorMsg
-                                                : null,
-                                            errorStyle:
-                                                CommonStyles.texterrorstyle,
-                                            suffixIcon: GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  showPassword = !showPassword;
-                                                });
-                                              },
-                                              child: Icon(showPassword
-                                                  ? Icons.visibility_off
-                                                  : Icons.visibility),
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.only(
-                                                    top: 15,
-                                                    bottom: 10,
-                                                    left: 15,
-                                                    right: 15),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: const BorderSide(
-                                                color: Color(0xFF0f75bc),
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(6.0),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderSide: const BorderSide(
-                                                color: CommonUtils
-                                                    .primaryTextColor,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(6.0),
-                                            ),
-                                            border: const OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(10),
-                                              ),
-                                            ),
-                                            hintText: 'Enter Password',
-                                            counterText: "",
-                                            hintStyle:
-                                                CommonStyles.texthintstyle,
-                                          ),
-                                          validator: validatePassword,
-                                          inputFormatters: [
-                                            FilteringTextInputFormatter.allow(
-                                                RegExp(
-                                                    r'[a-zA-Z0-9!@#$%^&*(),.?":{}|<>_-]')),
-                                          ],
-                                          onChanged: (value) {
-                                            setState(() {
-                                              if (value.startsWith(' ')) {
-                                                passwordController.value =
-                                                    TextEditingValue(
-                                                  text: value.trimLeft(),
-                                                  selection:
-                                                      TextSelection.collapsed(
-                                                          offset: value
-                                                              .trimLeft()
-                                                              .length),
-                                                );
-                                                return;
-                                              }
-                                              _passwordError = false;
-                                              isPasswordValidate = true;
-                                              // if (isPasswordValidate) {
-                                              //   _updatePasswordStrengthMessage(value);
-                                              // }
-                                            });
-                                          },
-                                          style: CommonStyles.txSty_14b_fb,
-                                        ),
-                                        if (isPasswordValidate)
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 5, left: 12),
-                                                child: Text(
-                                                  _passwordStrengthMessage,
-                                                  style: TextStyle(
-                                                      color:
-                                                          _passwordStrengthColor,
-                                                      fontSize: 12),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                ListView(
-                                  padding: EdgeInsets.zero,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    const SizedBox(height: 5),
-                                    const Row(
-                                      children: [
-                                        Text(
-                                          'Confirm Password ',
-                                          style: CommonStyles.txSty_12b_fb,
-                                        ),
-                                        Text(
-                                          ' *',
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    TextFormField(
-                                      controller: confirmPasswordController,
-                                      keyboardType:
-                                          TextInputType.visiblePassword,
-                                      obscureText: showConfirmPassword,
-                                      maxLength: 25,
-                                      maxLengthEnforcement:
-                                          MaxLengthEnforcement.enforced,
-                                      onTap: () {
-                                        setState(() {
-                                          ConfrimPasswordFocus.addListener(() {
-                                            if (ConfrimPasswordFocus.hasFocus) {
-                                              Future.delayed(
-                                                  const Duration(
-                                                      milliseconds: 300), () {
-                                                Scrollable.ensureVisible(
-                                                  ConfrimPasswordFocus.context!,
-                                                  duration: const Duration(
-                                                      milliseconds: 300),
-                                                  curve: Curves.easeInOut,
-                                                );
-                                              });
-                                            }
-                                          });
-                                        });
-                                      },
-                                      focusNode: ConfrimPasswordFocus,
-                                      decoration: InputDecoration(
-                                        errorMaxLines: 3,
-                                        errorText: _confirmPasswordError
-                                            ? _confirmPasswordErrorMsg
-                                            : null,
-                                        errorStyle: CommonStyles.texterrorstyle,
-                                        suffixIcon: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              showConfirmPassword =
-                                                  !showConfirmPassword;
-                                            });
-                                          },
-                                          child: Icon(showConfirmPassword
-                                              ? Icons.visibility_off
-                                              : Icons.visibility),
-                                        ),
-                                        contentPadding: const EdgeInsets.only(
-                                            top: 15,
-                                            bottom: 10,
-                                            left: 15,
-                                            right: 15),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            color: CommonUtils.primaryTextColor,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(6.0),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            color: CommonUtils.primaryTextColor,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(6.0),
-                                        ),
-                                        border: const OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(10),
-                                          ),
-                                        ),
-                                        hintText: 'Enter Confirm Password',
-                                        counterText: "",
-                                        hintStyle: CommonStyles.texthintstyle,
-                                      ),
-                                      validator: validateconfirmpassword,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.allow(RegExp(
-                                            r'[a-zA-Z0-9!@#$%^&*(),.?":{}|<>_-]')),
-                                      ],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          if (value.startsWith(' ')) {
-                                            confirmPasswordController.value =
-                                                TextEditingValue(
-                                              text: value.trimLeft(),
-                                              selection:
-                                                  TextSelection.collapsed(
-                                                      offset: value
-                                                          .trimLeft()
-                                                          .length),
-                                            );
-                                            return;
-                                          }
-                                          _confirmPasswordError = false;
-                                        });
-                                      },
-                                      style: CommonStyles.txSty_14b_fb,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ))),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomButton(
-                            //MARK: Here
-                            buttonText: 'Register',
-                            color: CommonUtils.primaryTextColor,
-                            onPressed: checkInternetConnection,
-                          ),
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      //MARK: Full Name
+                      CustomeFormField(
+                        label: 'Full Name',
+                        maxLength: 50,
+                        validator: validatefullname,
+                        focusNode: FullnameFocus,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(
+                              r'[a-zA-Z\s]')), // Including '\s' for space
+                        ],
+                        controller: fullNameController,
+                        keyboardType: TextInputType.name,
+                        errorText: _fullNameError ? _fullNameErrorMsg : null,
+                        errorStyle: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: CommonStyles.errorColor,
                         ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Already Have an Account?',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black,
+                        onChanged: (value) {
+                          //MARK: Space restrict
+                          setState(() {
+                            if (value.startsWith(' ')) {
+                              fullNameController.value = TextEditingValue(
+                                text: value.trimLeft(),
+                                selection: TextSelection.collapsed(
+                                    offset: value.trimLeft().length),
+                              );
+                            }
+                            _fullNameError = false;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 10),
+
+                      const Row(
+                        children: [
+                          Text(
+                            'Gender ',
+                            style: CommonUtils.txSty_12b_fb,
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text(
-                            ' Click Here!',
+                          Text(
+                            ' *',
                             style: TextStyle(
-                              fontSize: 15,
-                              color: CommonUtils.primaryTextColor,
+                                color: Color.fromARGB(255, 175, 15, 4)),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(left: 0, top: 5.0, right: 0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: isGenderSelected
+                                  ? const Color.fromARGB(255, 175, 15, 4)
+                                  : CommonUtils.primaryTextColor,
+                            ),
+                            borderRadius: BorderRadius.circular(5.0),
+                            color: Colors.white,
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: ButtonTheme(
+                              alignedDropdown: true,
+                              child: DropdownButton<int>(
+                                  value: selectedTypeCdId,
+                                  iconSize: 30,
+                                  icon: null,
+                                  style: CommonUtils.txSty_12b_fb,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedTypeCdId = value!;
+                                      if (selectedTypeCdId != -1) {
+                                        selectedValue =
+                                            dropdownItems[selectedTypeCdId]
+                                                ['typeCdId'];
+                                        selectedName =
+                                            dropdownItems[selectedTypeCdId]
+                                                ['desc'];
+
+                                        print("selectedValue:$selectedValue");
+                                        print("selectedName:$selectedName");
+                                        isGenderSelected = false;
+                                      } else {
+                                        print("==========");
+                                        print(selectedValue);
+                                        print(selectedName);
+                                      }
+                                      // isDropdownValid = selectedTypeCdId != -1;
+                                      isGenderSelected = false;
+                                    });
+                                  },
+                                  items: [
+                                    const DropdownMenuItem<int>(
+                                        value: -1,
+                                        child: Text(
+                                          'Select Gender',
+                                          style: CommonStyles.texthintstyle,
+                                        )),
+                                    ...dropdownItems
+                                        .asMap()
+                                        .entries
+                                        .map((entry) {
+                                      final index = entry.key;
+                                      final item = entry.value;
+                                      return DropdownMenuItem<int>(
+                                        value: index,
+                                        child: Text(item['desc']),
+                                      );
+                                    }).toList(),
+                                  ]),
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      //MARK: Gender condition
+                      if (isGenderSelected)
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 5),
+                              child: Text(
+                                'Please Select Gender',
+                                // style: CommonStyles.texthintstyle,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: CommonStyles.errorColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      //MARK: Email
+                      ListView(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          const SizedBox(height: 5),
+                          const Row(
+                            children: [
+                              Text(
+                                'Email',
+                                style: CommonStyles.txSty_12b_fb,
+                              ),
+                              Text(
+                                ' *',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5.0,
+                          ),
+                          TextFormField(
+                            controller: emailController,
+                            maxLength: 60,
+                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                            keyboardType: TextInputType.emailAddress,
+                            onTap: () {
+                              setState(() {
+                                EmailFocus.addListener(() {
+                                  if (EmailFocus.hasFocus) {
+                                    Future.delayed(
+                                        const Duration(milliseconds: 300), () {
+                                      Scrollable.ensureVisible(
+                                        EmailFocus.context!,
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    });
+                                  }
+                                });
+                              });
+                            },
+                            focusNode: EmailFocus,
+                            decoration: InputDecoration(
+                              errorText: _emailError ? _emailErrorMsg : null,
+                              // errorStyle: CommonStyles.texterrorstyle,
+                              contentPadding: const EdgeInsets.only(
+                                  top: 15, bottom: 10, left: 15, right: 15),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF0f75bc),
+                                ),
+                                borderRadius: BorderRadius.circular(6.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: CommonUtils.primaryTextColor,
+                                ),
+                                borderRadius: BorderRadius.circular(6.0),
+                              ),
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(6.0),
+                                ),
+                              ),
+                              hintText: 'Enter Email',
+                              counterText: "",
+                              hintStyle: CommonStyles.texthintstyle,
+                            ),
+                            validator: validateEmail,
+                            onChanged: (value) {
+                              setState(() {
+                                _emailError = false;
+                              });
+                            },
+                            style: CommonStyles.txSty_14b_fb,
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 30),
+                      //MARK: Register
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomButton(
+                              buttonText: 'Register',
+                              color: CommonUtils.primaryTextColor,
+                              onPressed: checkInternetConnection,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
                 ),
               ),
             ),
-            //   ),
-            // ),
-          ],
-        ),
+          ),
+          //   ),
+          // ),
+        ],
       ),
     );
   }
 
   Future<void> fetchRadioButtonOptions() async {
-    // Debugging: Print baseUrl and getgender to check their values.
     print('baseUrl: $baseUrl');
     print('getgender: $getgender');
 
@@ -1139,26 +492,6 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
       throw Exception('Error Radio: $e');
     }
   }
-
-  // Future<void> fetchRadioButtonOptions() async {
-  //   final url = Uri.parse(baseUrl + getgender);
-  //   print('url==>946: $url');
-  //
-  //   try {
-  //     final response = await http.get(url);
-  //     if (response.statusCode == 200) {
-  //       final dynamic responseData = jsonDecode(response.body);
-  //       final data = json.decode(response.body);
-  //       setState(() {
-  //         dropdownItems = data['listResult'];
-  //       });
-  //     } else {
-  //       throw Exception('Failed to fetch radio button options');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error Radio: $e');
-  //   }
-  // }
 
 //MARK: Validations
   String? validatefullname(String? value) {
@@ -1216,7 +549,7 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
   }
 
   void validateGender(String? value) {
-    if (value == null || value.isEmpty) {
+    if (value == null || value.isEmpty || selectedTypeCdId == -1) {
       isGenderSelected = true;
       isGenderValidate = false;
     } else {
@@ -1522,11 +855,9 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
     CommonUtils.checkInternetConnectivity().then((isConnected) {
       if (isConnected) {
         validating();
-        print('The Internet Is Connected');
       } else {
         CommonUtils.showCustomToastMessageLong(
             'Please Check Your Internet Connection', context, 1, 4);
-        print('The Internet Is not Connected');
       }
     });
   }
@@ -1545,27 +876,27 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
 
     if (_formKey.currentState!.validate()) {
       if (isFullNameValidate &&
-          isDobValidate &&
-          isGenderValidate &&
-          isMobileNumberValidate &&
-          isEmailValidate &&
-          isUserNameValidate &&
-          isPswdValidate &&
-          isConfirmPswdValidate) {
+              // isDobValidate &&
+              isGenderValidate &&
+              // isMobileNumberValidate &&
+              isEmailValidate
+          // isUserNameValidate &&
+          // isPswdValidate &&
+          // isConfirmPswdValidate
+          ) {
         FocusScope.of(context).unfocus();
-        print('xxx: api called');
         CommonStyles.startProgress(context);
-        String? fullName = fullNameController.text;
+        String? fullName = fullNameController.text.trim();
         String dob = dobController.text;
         //  String? gender = Gender.text;
-        String? mobileNum = mobileNumberController.text;
+        String? mobileNum = mobileNumberController.text.trim();
         String? alternateMobileNum = alernateMobileNumberController.text;
-        String? email = emailController.text;
+        String? email = emailController.text.trim();
         String? userName = userNameController.text;
         String? password = passwordController.text;
         String? confirmPassword = confirmPasswordController.text;
 
-        String formattedDOB = ''; // Format the DateTime
+        String formattedDOB = '';
         print('Formatted Date of Birth: $formattedDOB');
         formattedDOB = DateFormat('yyyy-MM-dd').format(selectedDate); //
 
@@ -1575,26 +906,46 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
         DateTime now = DateTime.now();
         // Using toString() method
 
-        final request = {
+/*         final request = {
           "id": null,
           "firstName": fullName.toString(),
           "middleName": null,
           "lastName": null,
-          "contactNumber": mobileNum.toString(),
-          "mobileNumber": alternateMobileNum.toString(),
-          "userName": userName.toString(),
-          "password": password.toString(),
-          "confirmPassword": confirmPassword.toString(),
+          "contactNumber": widget.contactNumber,
+          "mobileNumber": null,
+          "userName": fullName.toString(),
+          "password": 'Abcd@123',
+          "confirmPassword": 'Abcd@123',
           "email": email.toString(),
           "isActive": true,
-          "createdByUserId": null,
           "createdDate": "$now",
           "updatedByUserId": null,
           "updatedDate": "$now",
           "roleId": 2,
           "gender": selectedValue,
-          "dateOfBirth": formattedDOB,
+          "dateOfBirth": "2025-04-29",
           "branchIds": "null"
+        }; */
+
+        final request = {
+          "id": null,
+          "firstName": fullName.toString(),
+          "middleName": null,
+          "lastName": null,
+          "contactNumber": widget.contactNumber,
+          "mobileNumber": null,
+          "userName": null,
+          "password": null,
+          "confirmPassword": null,
+          "email": email.toString(),
+          "isActive": true,
+          "createdDate": "$now",
+          "updatedByUserId": null,
+          "updatedDate": "$now",
+          "roleId": 2,
+          "gender": null,
+          "dateOfBirth": null,
+          "branchIds": null
         };
 
         print('apiData: ${json.encode(request)}');
@@ -1615,19 +966,21 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
             // Extract the necessary information
             bool isSuccess = data['isSuccess'];
             if (isSuccess == true) {
-              print('Request sent successfully');
               CommonUtils.showCustomToastMessageLong(
                   'Customer Registered Sucessfully', context, 0, 5);
               FocusScope.of(context).unfocus();
 
-              /// CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 0, 2);
-              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomeScreen(boolflagpopup: true),
+                ),
+                (route) => false,
+              );
             } else {
               FocusScope.of(context).unfocus();
-              // CommonStyles.stopProgress(context);
-              print('Request sent failed');
 
-              invalidCredentials = data['statusMessage'];
+              /*  invalidCredentials = data['statusMessage'];
               String status_message = data['statusMessage'];
               if (status_message.contains('Email')) {
                 endUserMessageFromApiforemail(data['statusMessage']);
@@ -1636,13 +989,14 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
               if (status_message.contains('User')) {
                 endUserMessageFromApi(data['statusMessage']);
               }
-
-              //  CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 1, 5);
+ */
+              CommonUtils.showCustomToastMessageLong(
+                  '${data['statusMessage']}', context, 1, 5);
             }
           } else {
             FocusScope.of(context).unfocus();
             CommonUtils.showCustomToastMessageLong(
-                'Something went wrong', context, 0, 5);
+                'Something went wrong', context, 1, 5);
             print(
                 'Failed to send the request. Status code: ${response.statusCode}');
           }

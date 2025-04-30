@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:hairfixingzone/models/op_slot_model.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -762,7 +763,7 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                                               : () {
                                                   setState(() {
                                                     _selectedTimeSlot =
-                                                        slot.SlotTimeSpan;
+                                                        slot.slotTimeSpan;
                                                     _selectedSlot = slot.slot;
                                                     AvailableSlots = slot
                                                         .availableSlots
@@ -834,7 +835,7 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                                                 vertical: 1.0, horizontal: 1.0),
                                             backgroundColor:
                                                 _selectedTimeSlot ==
-                                                        slot.SlotTimeSpan
+                                                        slot.slotTimeSpan
                                                     ? CommonUtils
                                                         .primaryTextColor
                                                     : (slot.availableSlots <= 0
@@ -842,7 +843,7 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                                                         : Colors.white),
                                             side: BorderSide(
                                               color: _selectedTimeSlot ==
-                                                      slot.SlotTimeSpan
+                                                      slot.slotTimeSpan
                                                   ? CommonUtils.primaryTextColor
                                                   : (slot.availableSlots <= 0
                                                       ? Colors.transparent
@@ -856,16 +857,16 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                                             ),
                                             textStyle: TextStyle(
                                               color: _selectedTimeSlot ==
-                                                      slot.SlotTimeSpan
+                                                      slot.slotTimeSpan
                                                   ? Colors.white
                                                   : Colors.black,
                                             ),
                                           ),
                                           child: Text(
-                                            slot.SlotTimeSpan,
+                                            slot.slotTimeSpan,
                                             style: TextStyle(
                                               color: _selectedTimeSlot ==
-                                                      slot.SlotTimeSpan
+                                                      slot.slotTimeSpan
                                                   ? Colors.white
                                                   : (slot.availableSlots <= 0
                                                       ? Colors.white
@@ -936,6 +937,7 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                         ],
                       ),
                       const SizedBox(height: 5),
+                      //MARK: Purpose Of Visit
                       Padding(
                         padding:
                             const EdgeInsets.only(left: 0, top: .0, right: 0),
@@ -943,9 +945,6 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
-                            // border: Border.all(
-                            //   color: CommonUtils.primaryTextColor,
-                            // ),
                             border: Border.all(
                               color: ispurposeselected
                                   ? const Color.fromARGB(255, 175, 15, 4)
@@ -957,7 +956,6 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                               alignedDropdown: true,
                               child: DropdownButton2<int>(
                                 isExpanded: true,
-
                                 items: [
                                   DropdownMenuItem<int>(
                                     value: -1,
@@ -989,48 +987,6 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                                   }).toList(),
                                 ].toList(),
                                 value: selectedTypeCdId,
-                                // onChanged: (value) {
-                                //   setState(() {
-                                //     selectedTypeCdId = value!;
-                                //     if (selectedTypeCdId != -1) {
-                                //       selectedValue = dropdownItems[selectedTypeCdId]['typeCdId'];
-                                //       selectedName = dropdownItems[selectedTypeCdId]['desc'];
-                                //
-                                //       final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                                //       int selectedIndex = visibleSlots.indexWhere((slot) => slot.SlotTimeSpan == _selectedTimeSlot);
-                                //
-                                //       if (selectedIndex != -1) {
-                                //         // Current slot
-                                //         _selectedSlot = visibleSlots[selectedIndex].slot;
-                                //         AvailableSlots = visibleSlots[selectedIndex].availableSlots.toString();
-                                //
-                                //         // Next slot selection
-                                //         if (selectedName == "New Hair Patch" && selectedIndex + 1 < visibleSlots.length) {
-                                //           final nextSlot = visibleSlots[selectedIndex + 1];
-                                //           if (nextSlot.availableSlots > 0) {
-                                //             _nextTimeSlot = nextSlot.SlotTimeSpan; // Set next time slot
-                                //           } else {
-                                //             ScaffoldMessenger.of(context).showSnackBar(
-                                //               SnackBar(
-                                //                 content: Text('Next slot not available'),
-                                //                 backgroundColor: Colors.red,
-                                //                 duration: Duration(seconds: 2),
-                                //               ),
-                                //             );
-                                //
-                                //             _nextTimeSlot = null; // Reset if no next slot is available
-                                //           }
-                                //         } else {
-                                //           _nextTimeSlot = null; // Reset if not "New Hair Patch"
-                                //         }
-                                //       }
-                                //     } else {
-                                //       _selectedSlot = '';
-                                //       _nextTimeSlot = null; // Reset selections
-                                //     }
-                                //   });
-                                // },
-
                                 onChanged: (value) {
                                   setState(() {
                                     selectedTypeCdId = value!;
@@ -1041,65 +997,14 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
                                       selectedName =
                                           dropdownItems[selectedTypeCdId]
                                               ['desc'];
-
-                                      //   // Clear previously selected next slot
-                                      //   _nextTimeSlot = null;
-                                      //
-                                      //   // Check if a slot is selected
-                                      //   final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                                      //   int selectedIndex = visibleSlots.indexWhere((slot) => slot.SlotTimeSpan == _selectedTimeSlot);
-                                      //   setState(() {
-                                      //     _isLastSlotSelected = (selectedValue == 7 && selectedIndex == visibleSlots.length - 1);
-                                      //   });
-                                      //   if (selectedIndex != -1) {
-                                      //     // Current slot selection logic
-                                      //     _selectedSlot = visibleSlots[selectedIndex].slot;
-                                      //     AvailableSlots = visibleSlots[selectedIndex].availableSlots.toString();
-                                      //
-                                      //     // If the purpose of visit is "New Hair Patch", try to select the next slot
-                                      //     if (selectedValue ==7&& selectedIndex + 1 < visibleSlots.length) {
-                                      //       final nextSlot = visibleSlots[selectedIndex + 1];
-                                      //       if (nextSlot.availableSlots > 0) {
-                                      //         _nextTimeSlot = nextSlot.SlotTimeSpan;
-                                      //         isnextSlotsAvailable = true;
-                                      //         // Set next time slot
-                                      //       } else {
-                                      //         isnextSlotsAvailable = false;
-                                      //         // Show toast and reset next slot if it's not available
-                                      //         // ScaffoldMessenger.of(context).showSnackBar(
-                                      //         //   SnackBar(
-                                      //         //     content: Text('Next slot not available'),
-                                      //         //     backgroundColor: Colors.red,
-                                      //         //     duration: Duration(seconds: 2),
-                                      //         //   ),
-                                      //         // );
-                                      //         _nextTimeSlot = null; // Reset if next slot is not available
-                                      //       }
-                                      //     } else {
-                                      //       _nextTimeSlot = null; // Reset next slot if not "New Hair Patch"
-                                      //     }
-                                      //   }
-                                      // } else {
-                                      //   // Reset all selections if the purpose of visit is not selected
-                                      //   _selectedSlot = '';
-                                      //   _nextTimeSlot = null;
-                                      // }
                                     }
                                   });
+                                  ispurposeselected = false;
                                 },
-
                                 buttonStyleData: ButtonStyleData(
                                   height: 45,
                                   width: double.infinity,
                                   padding: EdgeInsets.only(left: 14, right: 14),
-                                  //decoration: BoxDecoration(
-                                  //  borderRadius: BorderRadius.circular(14),
-                                  //   border: Border.all(
-                                  //     color: Colors.black26,
-                                  //   ),
-                                  //   color: Colors.redAccent,
-                                  //    ),
-                                  // elevation: 2,
                                 ),
                                 iconStyleData: const IconStyleData(
                                   icon: Icon(
@@ -1240,54 +1145,15 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
           showCustomToastMessageLong('Please Select A Slot', context, 1, 2);
           return; // Stop execution if no slot has been selected
         }
-        if (value == null || value.isEmpty) {
+        if (value == null || value.isEmpty || selectedTypeCdId == -1) {
           ispurposeselected = true; // Flag purpose as not selected
           setState(() {}); // Trigger UI update for validation message
-          showCustomToastMessageLong(
-              'Please Select A Purpose of Visit', context, 1, 2);
+          /* showCustomToastMessageLong(
+              'Please Select A Purpose of Visit', context, 1, 2); */
           return; // Stop execution if purpose is not selected
         }
-
-        // If all validations pass, proceed to book the appointment
         bookappointment();
       }
-
-      // Check if no slots are available
-
-      // Check if the selected purpose is "New Hair Patch"
-
-      // if (selectedValue == 7) {
-      //
-      //   if (!isnextSlotsAvailable) {
-      //     // Show message if the next slot is not available
-      //     showCustomToastMessageLong('Next Slot is not Available', context, 1, 4);
-      //     return; // Stop execution since next slot is needed for "New Hair Patch"
-      //   }
-      // }
-      // print('_isLastSlotSelected:$_isLastSlotSelected');
-      // if ((selectedValue != 7 && !isnextSlotsAvailable) || (selectedValue == 7 && !isnextSlotsAvailable && !_isLastSlotSelected)) {
-      //   showCustomToastMessageLong('Next Slot is not Available', context, 1, 4);
-      //   return;
-      // }
-      // if (selectedValue == 7 && !_isLastSlotSelected && !isnextSlotsAvailable) {
-      //   showCustomToastMessageLong('Next Slot is not Available', context, 1, 4);
-      //   return;
-      // }
-      // if (selectedValue == 7) {
-      //   // If it's the last slot selected, do not show the toast
-      //   if (_isLastSlotSelected) {
-      //     return; // Exit without showing the toast
-      //   }
-      //
-      //   // If next slots are not available and it's not the last slot, show the toast
-      //   if (!isnextSlotsAvailable) {
-      //     showCustomToastMessageLong('Next Slot is not Available', context, 1, 4);
-      //     return;
-      //   }
-      // }
-      // Check if a slot has been selected
-
-      // Check if the purpose of visit has been selected
     }
   }
 
@@ -1603,7 +1469,7 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
     }
 
     return slots.where((slot) {
-      String timespan = slot.SlotTimeSpan;
+      String timespan = slot.slotTimeSpan;
       // Combine the current date and formatted time
       String SlotDateTimeString =
           '${DateFormat('yyyy-MM-dd').format(currentDate)} $timespan';
@@ -1615,7 +1481,7 @@ class _AgentbookingscreenState extends State<AgentbookingScreen> {
       DateTime slotDateTime;
       if (currentdate == formattedapiDate) {
         // If the slot is for the current date, use the slot's time
-        String timespan = slot.SlotTimeSpan;
+        String timespan = slot.slotTimeSpan;
 
         // Combine the current date and time span
         String SlotDateTimeString =

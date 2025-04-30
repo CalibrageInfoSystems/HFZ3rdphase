@@ -527,7 +527,11 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
                         child: Text(
                           'Please Select Gender',
                           // style: CommonStyles.texthintstyle,
-                          style: CommonStyles.texterrorstyle,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: CommonStyles.errorColor,
+                          ),
                         ),
                       ),
                     ],
@@ -976,11 +980,6 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
     if (_formKey.currentState!.validate() &&
         _formKey2.currentState!.validate()) {
       _printVisitingDateTime();
-      print(isFullNameValidate);
-      print(isGenderValidate);
-      print(isMobileNumberValidate);
-      print(isBranchValidate);
-
       if (isFullNameValidate && isGenderValidate && isMobileNumberValidate) {
         widget.screenForReschedule! ? rescheduleConsultation() : updateUser();
         // updateUser();
@@ -1210,37 +1209,36 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
   Future<void> updateUser() async {
     validateGender(selectedName);
     //   validatebranch(branchName);
-    if (_formKey.currentState!.validate()) {
-      DateTime now = DateTime.now();
-      String mobilenumber = mobileNumberController.text;
-      String apiEmail = emailController.text.toString();
-      String apiUsrname = fullNameController.text.toString();
-      String apiRemarks = remarksController.text.toString();
-      ProgressDialog progressDialog = ProgressDialog(context);
+    ProgressDialog progressDialog = ProgressDialog(context);
+    print('catch: ProgressDialogProgressDialogProgressDialogProgressDialog');
+    try {
+      if (_formKey.currentState!.validate()) {
+        DateTime now = DateTime.now();
+        String mobilenumber = mobileNumberController.text;
+        String apiEmail = emailController.text.toString();
+        String apiUsrname = fullNameController.text.toString();
+        String apiRemarks = remarksController.text.toString();
 
-      // Show the progress dialog
-      progressDialog.show();
-      final request = {
-        "id": null,
-        "name": apiUsrname,
-        "genderTypeId": selectedValue,
-        "phoneNumber": mobilenumber,
-        "email": apiEmail,
-        "branchId": widget.branch.id,
-        "isActive": true,
-        "remarks": apiRemarks,
-        "createdByUserId": widget.agentId,
-        "createdDate": '$now',
-        "updatedByUserId": null,
-        "updatedDate": null,
-        "visitingDate": visitingDateTime,
-        "statusTypeId": 5
-      };
-      print('Object: ${json.encode(request)}');
-      try {
+        // Show the progress dialog
+        progressDialog.show();
+        final request = {
+          "id": null,
+          "name": apiUsrname,
+          "genderTypeId": selectedValue,
+          "phoneNumber": mobilenumber,
+          "email": apiEmail,
+          "branchId": widget.branch.id,
+          "isActive": true,
+          "remarks": apiRemarks,
+          "createdByUserId": widget.agentId,
+          "createdDate": '$now',
+          "updatedByUserId": null,
+          "updatedDate": null,
+          "visitingDate": visitingDateTime,
+          "statusTypeId": 5
+        };
         final String ee = baseUrl + addupdateconsulation;
         //const String ee = 'http://182.18.157.215/SaloonApp/API/api/Consultation/AddUpdateConsultation';
-        print(ee);
         final url1 = Uri.parse(ee);
 
         // Send the POST request
@@ -1251,6 +1249,8 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
             'Content-Type': 'application/json', // Set the content type header
           },
         );
+        print('updateUser: $ee');
+        print('updateUser: ${json.encode(request)}');
         final jsonResponse = json.decode(response.body);
         final statusMessage = jsonResponse['statusMessage'];
         // Check the response status code
@@ -1258,6 +1258,7 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
           final isSuccess = jsonResponse['isSuccess'];
 
           if (isSuccess) {
+            print('updateUser: 222');
             DateTime testdate = DateTime.now();
             print('Request sent successfully');
             progressDialog.dismiss();
@@ -1278,12 +1279,19 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
               scheduledNotificationDateTime: VisitslotDateTime!,
               id: notificationId1,
             );
+            print('updateUser: 333');
             Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => AgentHome(userId: widget.agentId)),
             );
+          } else {
+            progressDialog.dismiss();
+
+            CommonUtils.showCustomToastMessageLong(
+                'Unable to book consultation', context, 1, 3);
           }
+
           // Navigator.pop(context);
         } else {
           progressDialog.dismiss();
@@ -1292,10 +1300,10 @@ class AddConsulationscreen_screenState extends State<AddConsulationscreen> {
           print(
               'Failed to send the request. Status code: ${response.statusCode}');
         }
-      } catch (e) {
-        progressDialog.dismiss();
-        print('Error slot: $e');
       }
+    } catch (e) {
+      progressDialog.dismiss();
+      print('catch: $e');
     }
   }
 

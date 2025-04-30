@@ -8,6 +8,7 @@ import 'package:hairfixingzone/Common/custome_form_field.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/api_config.dart';
 import 'package:hairfixingzone/models/colors_model.dart';
+import 'package:hairfixingzone/models/genders_model.dart';
 import 'package:hairfixingzone/models/inventory_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -47,6 +48,7 @@ class _AddInventoryState extends State<AddInventory> {
   TextEditingController quantityController = TextEditingController();
   TextEditingController descNameController = TextEditingController();
   int? selectedTypeCdId;
+  int? selectedGenderId;
   bool isProductActive = true;
   bool isRequestProcessing = false;
 
@@ -59,13 +61,17 @@ class _AddInventoryState extends State<AddInventory> {
   bool isProductQuantityValidate = false;
 
   bool isProductColorValidate = false;
+  bool isGenderValidate = false;
+  bool isGenderSelected = false;
 
   late Future<List<ColorsModel>> futureColors;
+  late Future<List<GendersModel>> futureGenders;
 
   @override
   void initState() {
     super.initState();
     futureColors = getColors();
+    futureGenders = getGenders();
     print('isUpdate: ${widget.isUpdate}');
 
     if (widget.inventory != null) {
@@ -73,12 +79,14 @@ class _AddInventoryState extends State<AddInventory> {
       quantityController.text = widget.inventory!.quantity!.toString();
       print('www: ${widget.inventory!.colorTypeId}');
       selectedTypeCdId = widget.inventory!.colorTypeId;
+      selectedGenderId = widget.inventory!.genderTypeId;
+      // selectedGenderId = widget.inventory!.colorTypeId;
       isProductActive = widget.inventory!.isActive!;
       descNameController.text = widget.inventory!.desc ?? '';
     }
   }
 
-  void validateProductColor(String? value) {
+/*   void validateProductColor(String? value) {
     print('validateProductColor: $value');
 
     setState(() {
@@ -88,6 +96,20 @@ class _AddInventoryState extends State<AddInventory> {
         isProductColorValidate = false;
       }
       print('validateProductColor: $isProductColorValidate');
+    });
+  } */
+
+  void validateGender(String? value) {
+    print('validateGender: $value');
+
+    setState(() {
+      if (value == null || value.isEmpty) {
+        isGenderSelected = true;
+        isGenderValidate = false;
+      } else {
+        isGenderSelected = false;
+        isGenderValidate = true;
+      }
     });
   }
 
@@ -107,7 +129,8 @@ class _AddInventoryState extends State<AddInventory> {
         "createdByUserId": widget.userId,
         "createdDate": DateTime.now().toIso8601String(),
         "updatedByUserId": widget.userId,
-        "updatedDate": DateTime.now().toIso8601String()
+        "updatedDate": DateTime.now().toIso8601String(),
+        "genderTypeId": selectedGenderId
       }
           /* {
       'Id': widget.inventory != null ? widget.inventory!.id.toString() : '0',
@@ -197,6 +220,29 @@ class _AddInventoryState extends State<AddInventory> {
     }
   }
  */
+
+  Future<List<GendersModel>> getGenders() async {
+    try {
+      // const apiUrl = 'http://182.18.157.215/SaloonApp/API/api/TypeCdDmt/1';
+      final apiUrl = '$baseUrl$getgender';
+      final jsonResponse = await http.get(Uri.parse(apiUrl));
+      if (jsonResponse.statusCode == 200) {
+        final response = jsonDecode(jsonResponse.body);
+        if (response['isSuccess']) {
+          List<dynamic>? genders = response['listResult'];
+          if (genders == null || genders.isEmpty) {
+            return throw Exception('No gender found');
+          }
+          return genders.map((e) => GendersModel.fromJson(e)).toList();
+        }
+        throw Exception('No gender found');
+      }
+      throw Exception('Failed to load branches');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<ColorsModel>> getColors() async {
     try {
       const apiUrl = 'http://182.18.157.215/SaloonApp/API/api/TypeCdDmt/8';
@@ -257,7 +303,27 @@ class _AddInventoryState extends State<AddInventory> {
                 const SizedBox(height: 10),
                 quantityField(),
                 const SizedBox(height: 10),
-                productColorName(context),
+                genderDropdown(context),
+                if (isGenderSelected)
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                        child: Text(
+                          'Please Select Gender',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: CommonStyles.errorColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                const SizedBox(height: 10),
+                productColorDropdown(context),
                 const SizedBox(height: 10),
                 descriptionfield(),
                 const SizedBox(height: 10),
@@ -336,90 +402,17 @@ class _AddInventoryState extends State<AddInventory> {
       isRequestProcessing = true;
     });
     // validateProductColor(selectedTypeCdId?.toString());
+    validateGender(selectedGenderId?.toString());
 // formKey.currentState!.validate() &&
     print(
-        'formValidation: ${formKey.currentState!.validate()}  | $isProductNameValidate | $isProductQuantityValidate');
+        'formValidation: ${formKey.currentState!.validate()}  | $isProductNameValidate | $isProductQuantityValidate | $isGenderValidate');
     if (formKey.currentState!.validate() &&
         isProductNameValidate &&
-        isProductQuantityValidate) {
+        isProductQuantityValidate &&
+        isGenderValidate) {
       addInventory();
     }
   }
-
-/* 
-  Column procustColor(BuildContext context) {
-    return Column(
-      children: [
-        const Row(
-          children: [
-            Text(
-              'Product Color ',
-              style: CommonUtils.txSty_12b_fb,
-            ),
-            Text(
-              '*',
-              style: TextStyle(color: Colors.red),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 0, top: 0.0, right: 0),
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: isGenderSelected
-                    ? const Color.fromARGB(255, 175, 15, 4)
-                    : CommonUtils.primaryTextColor,
-              ),
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: ButtonTheme(
-                alignedDropdown: true,
-                child: DropdownButton<int>(
-                    value: selectedColorId,
-                    iconSize: 30,
-                    icon: null,
-                    style: CommonUtils.txSty_12b_fb,
-                    onChanged: (value) {
-                      if (value != -1) {
-                        setState(() {
-                          selectedColorId = value;
-                        });
-                      }
-                    },
-                    items: [
-                      const DropdownMenuItem<int>(
-                        value: -1,
-                        child: Text(
-                          'Select Color',
-                          style: CommonStyles.texthintstyle,
-                        ),
-                      ),
-                      ...dropdownForColor.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final item = entry.value;
-                        return DropdownMenuItem<int>(
-                          value: index,
-                          child: Text(
-                            item['desc']!,
-                            style: CommonUtils.txSty_12b_fb,
-                          ),
-                        );
-                      }).toList(),
-                    ]),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
- */
 
   //MARK: Product Name
   CustomeFormField productfield() {
@@ -526,120 +519,14 @@ class _AddInventoryState extends State<AddInventory> {
       maxLines: 3,
       maxLength: 200,
       isMandatory: false,
-      // errorText:
-      // _fullNameError ? _fullNameErrorMsg : null,
       onChanged: (value) {
         setState(() {});
       },
     );
   }
 
-/* 
-  Column branchName(BuildContext context) {
-    return Column(
-      children: [
-        const Row(
-          children: [
-            Text(
-              'Branch Name ',
-              style: CommonUtils.txSty_12b_fb,
-            ),
-            Text(
-              '*',
-              style: TextStyle(color: Colors.red),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        widget.inventory != null
-            ? Container(
-                padding: const EdgeInsets.all(13),
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: isGenderSelected
-                        ? const Color.fromARGB(255, 175, 15, 4)
-                        : CommonUtils.primaryTextColor,
-                  ),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: Text('${widget.inventory!.branch}'),
-              )
-            : Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: isGenderSelected
-                        ? const Color.fromARGB(255, 175, 15, 4)
-                        : CommonUtils.primaryTextColor,
-                  ),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: FutureBuilder(
-                    future: futureBranches,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Padding(
-                          padding: EdgeInsets.all(13),
-                          child: Text('Loading Branches'),
-                        );
-                      }
-                      if (snapshot.hasError) {
-                        return Padding(
-                          padding: const EdgeInsets.all(13),
-                          child: Text(snapshot.error
-                              .toString()
-                              .replaceAll('Exception: ', '')),
-                        );
-                      }
-                      final List<BranchModel> branchList =
-                          snapshot.data as List<BranchModel>;
-                      return DropdownButtonHideUnderline(
-                        child: ButtonTheme(
-                          alignedDropdown: true,
-                          child: DropdownButton<int>(
-                              value: selectedBranchId,
-                              iconSize: 30,
-                              icon: null,
-                              style: CommonUtils.txSty_12b_fb,
-                              onChanged: (value) {
-                                if (value != -1) {
-                                  setState(() {
-                                    selectedBranchId = value;
-                                  });
-                                }
-                              },
-                              items: [
-                                const DropdownMenuItem<int>(
-                                  value: -1,
-                                  child: Text(
-                                    'Select Branch',
-                                    style: CommonStyles.texthintstyle,
-                                  ),
-                                ),
-                                ...branchList.map((branch) {
-                                  return DropdownMenuItem<int>(
-                                    value: branch.id,
-                                    child: Text(
-                                      branch.name,
-                                      style: CommonUtils.txSty_12b_fb,
-                                    ),
-                                  );
-                                }).toList()
-                              ]),
-                        ),
-                      );
-                    }),
-              ),
-      ],
-    );
-  } 
- */
-
 //MARK: Product Color
-  Column productColorName(BuildContext context) {
+  Column productColorDropdown(BuildContext context) {
     return Column(
       children: [
         const Row(
@@ -669,16 +556,17 @@ class _AddInventoryState extends State<AddInventory> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
                     padding: EdgeInsets.all(13),
-                    child: Text('Loading Colors'),
+                    child: Text(''),
                   );
                 }
                 if (snapshot.hasError) {
-                  return Padding(
+                  /*  return Padding(
                     padding: const EdgeInsets.all(13),
                     child: Text(snapshot.error
                         .toString()
                         .replaceAll('Exception: ', '')),
-                  );
+                  ); */
+                  return const SizedBox();
                 }
                 final List<ColorsModel> branchList =
                     snapshot.data as List<ColorsModel>;
@@ -710,6 +598,100 @@ class _AddInventoryState extends State<AddInventory> {
                             ),
                           ),
                           ...branchList.map((branch) {
+                            return DropdownMenuItem<int>(
+                              value: branch.typeCdId,
+                              child: Text(
+                                '${branch.desc}',
+                                style: CommonUtils.txSty_12b_fb,
+                              ),
+                            );
+                          }).toList()
+                        ]),
+                  ),
+                );
+              }),
+        ),
+      ],
+    );
+  }
+
+//MARK: Gender
+  Column genderDropdown(BuildContext context) {
+    return Column(
+      children: [
+        const Row(
+          children: [
+            Text(
+              'Gender ',
+              style: CommonUtils.txSty_12b_fb,
+            ),
+            Text('*', style: TextStyle(color: Colors.red)),
+          ],
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            border: Border.all(
+              // color: isGenderValidate
+              //     ? const Color.fromARGB(255, 175, 15, 4)
+              //     : CommonUtils.primaryTextColor,
+              color: isGenderSelected
+                  ? const Color.fromARGB(255, 175, 15, 4)
+                  : CommonUtils.primaryTextColor,
+            ),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          child: FutureBuilder(
+              future: futureGenders,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.all(13),
+                    child: Text(''),
+                  );
+                }
+                if (snapshot.hasError) {
+                  /* return Padding(
+                    padding: const EdgeInsets.all(13),
+                    child: Text(snapshot.error
+                        .toString()
+                        .replaceAll('Exception: ', '')),
+                  ); */
+                  return const SizedBox();
+                }
+                final genders = snapshot.data as List<GendersModel>;
+                return DropdownButtonHideUnderline(
+                  child: ButtonTheme(
+                    alignedDropdown: true,
+                    child: DropdownButton<int>(
+                        value: selectedGenderId,
+                        iconSize: 30,
+                        icon: null,
+                        hint: const Text(
+                          'Select Gender',
+                          style: CommonStyles.texthintstyle,
+                        ),
+                        style: CommonUtils.txSty_12b_fb,
+                        onChanged: (value) {
+                          if (value != -1) {
+                            setState(() {
+                              selectedGenderId = value;
+                              isGenderSelected = false;
+                            });
+                          }
+                        },
+                        items: [
+                          const DropdownMenuItem<int>(
+                            value: -1,
+                            child: Text(
+                              'Select Gender',
+                              style: CommonStyles.texthintstyle,
+                            ),
+                          ),
+                          ...genders.map((branch) {
                             return DropdownMenuItem<int>(
                               value: branch.typeCdId,
                               child: Text(

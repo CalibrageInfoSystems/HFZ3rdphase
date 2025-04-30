@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final consultation = consultationFromJson(jsonString);
+
 import 'dart:convert';
 
 List<Consultation> consultationFromJson(String str) => List<Consultation>.from(
@@ -26,6 +30,11 @@ class Consultation {
   final DateTime? visitingDate;
   final int? statusTypeId;
   final String? status;
+  final double? price;
+  final int? paymentTypeId;
+  final int? technicianId;
+  final String? paymentType;
+  final String? technicianName;
 
   Consultation({
     this.consultationId,
@@ -47,6 +56,11 @@ class Consultation {
     this.visitingDate,
     this.statusTypeId,
     this.status,
+    this.price,
+    this.paymentTypeId,
+    this.technicianId,
+    this.paymentType,
+    this.technicianName,
   });
 
   factory Consultation.fromJson(Map<String, dynamic> json) => Consultation(
@@ -75,6 +89,11 @@ class Consultation {
             : DateTime.parse(json["visitingDate"]),
         statusTypeId: json["statusTypeId"],
         status: json["status"],
+        price: json["price"]?.toDouble(),
+        paymentTypeId: json["paymentTypeId"],
+        technicianId: json["technicianId"],
+        paymentType: json["paymentType"],
+        technicianName: json["technicianName"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -97,5 +116,10 @@ class Consultation {
         "visitingDate": visitingDate?.toIso8601String(),
         "statusTypeId": statusTypeId,
         "status": status,
+        "price": price,
+        "paymentTypeId": paymentTypeId,
+        "technicianId": technicianId,
+        "paymentType": paymentType,
+        "technicianName": technicianName,
       };
 }

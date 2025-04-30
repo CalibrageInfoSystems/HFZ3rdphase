@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hairfixingzone/inventory_screen.dart';
+import 'package:hairfixingzone/screens/customer_enquiry/add_customer_enquiry.dart';
+import 'package:hairfixingzone/screens/customer_enquiry/customer_enquiries.dart';
 import 'package:hairfixingzone/test_agent_oplist.dart';
 import 'package:hairfixingzone/test_screen.dart';
 
@@ -80,65 +82,59 @@ class _BranchesscreenState extends State<Branches_screen> {
     final desiredWidth = screenWidth;
 
     return Scaffold(
-        // appBar: AppBar(
-        //     elevation: 0,
-        //     backgroundColor: const Color(0xffe2f0fd),
-        //     title: const Text(
-        //       'Select Branch',
-        //       style: TextStyle(color: Color(0xFF11528f), fontSize: 16.0, fontFamily: "Outfit", fontWeight: FontWeight.w600),
-        //     ),
-        //     leading: IconButton(
-        //       icon: const Icon(
-        //         Icons.arrow_back_ios,
-        //         color: CommonUtils.primaryTextColor,
-        //       ),
-        //       onPressed: () {
-        //         Navigator.of(context).pop();
-        //       },
-        //     )),
+        appBar: widget.isBranchFrom == 'CustomerEnquiry'
+            ? AppBar(
+                backgroundColor: const Color(0xffffffff),
+                automaticallyImplyLeading: false,
+                title: const Text(
+                  'Branch Selection',
+                  style: CommonStyles.txSty_20b_fb,
+                ),
+              )
+            : null,
         body: Container(
-      color: Colors.white,
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(
-              child: ListView.builder(
-            itemCount: brancheslist.length,
-            itemBuilder: (context, index) {
-              BranchModel branchnames = brancheslist[index];
-              String? imageUrl = branchnames.imageName;
-              if (imageUrl == null || imageUrl.isEmpty) {
-                imageUrl = 'assets/top_image.png';
-              }
-              return BranchTemplate(
-                  branchnames: branchnames,
-                  imageUrl: imageUrl,
-                  userId: widget.userId,
-                  isBranchFrom: widget.isBranchFrom);
-            },
-          )
-
-              //   ListView.builder(
-              //     itemCount: brancheslist.length,
-              //     // shrinkWrap: true,
-              //     // physics: const PageScrollPhysics(),
-              //     itemBuilder: (context, index) {
-              //       BranchModel branchnames = brancheslist[index];
-              //       String? imageUrl = branchnames.imageName;
-              //       if (imageUrl == null || imageUrl.isEmpty) {
-              //         imageUrl = 'assets/top_image.png';
-              //       }
-              //       return BranchTemplate(
-              //           branchnames: branchnames, imageUrl: imageUrl, userId: widget.userId);
-              //     },
-              //   ),
-              // ),
+          color: Colors.white,
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 10,
               ),
-        ],
-      ),
-    ));
+              Expanded(
+                  child: ListView.builder(
+                itemCount: brancheslist.length,
+                itemBuilder: (context, index) {
+                  BranchModel branchnames = brancheslist[index];
+                  String? imageUrl = branchnames.imageName;
+                  if (imageUrl == null || imageUrl.isEmpty) {
+                    imageUrl = 'assets/top_image.png';
+                  }
+                  return BranchTemplate(
+                      branchnames: branchnames,
+                      imageUrl: imageUrl,
+                      userId: widget.userId,
+                      isBranchFrom: widget.isBranchFrom);
+                },
+              )
+
+                  //   ListView.builder(
+                  //     itemCount: brancheslist.length,
+                  //     // shrinkWrap: true,
+                  //     // physics: const PageScrollPhysics(),
+                  //     itemBuilder: (context, index) {
+                  //       BranchModel branchnames = brancheslist[index];
+                  //       String? imageUrl = branchnames.imageName;
+                  //       if (imageUrl == null || imageUrl.isEmpty) {
+                  //         imageUrl = 'assets/top_image.png';
+                  //       }
+                  //       return BranchTemplate(
+                  //           branchnames: branchnames, imageUrl: imageUrl, userId: widget.userId);
+                  //     },
+                  //   ),
+                  // ),
+                  ),
+            ],
+          ),
+        ));
   }
 
   void _handleButtonPress() {
@@ -256,6 +252,15 @@ class BranchTemplate extends StatelessWidget {
                         branchImage: imageUrl,
                         branchNumber: branchnames.mobileNumber,
                         branchAddress: branchnames.address)),
+              );
+            } else if (isBranchFrom == 'CustomerEnquiry') {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => CustomerEnquiries(
+                          branchId: branchnames.id,
+                          userId: userId,
+                          agentBranch: branchnames,
+                        )),
               );
             } else {
               Navigator.of(context).push(

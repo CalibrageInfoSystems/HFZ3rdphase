@@ -32,9 +32,10 @@ import 'CommonUtils.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
- final bool boolflagpopup;
+  final bool boolflagpopup;
 
-  const HomeScreen({super.key, this.initialIndex = 0, required this.boolflagpopup});
+  const HomeScreen(
+      {super.key, this.initialIndex = 0, required this.boolflagpopup});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -66,10 +67,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool ismatchedlogin = false;
 
   String imagename = '';
- bool? _popupflag;
+  bool? _popupflag;
   // List<LastAppointment> appointments = [];
 
-  final TextEditingController _commentstexteditcontroller = TextEditingController();
+  final TextEditingController _commentstexteditcontroller =
+      TextEditingController();
   double ratingStar = 0.0;
   double qualityRating = 0.0;
 
@@ -87,12 +89,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
         //();
       } else {
-        CommonUtils.showCustomToastMessageLong('Please Check Your Internet Connection', context, 1, 4);
+        CommonUtils.showCustomToastMessageLong(
+            'Please Check Your Internet Connection', context, 1, 4);
         print('Not connected to the internet'); // Not connected to the internet
       }
     });
     super.initState();
-
   }
 
   void _onItemTapped(int index) {
@@ -114,7 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               // Wrap the Dialog in a SizedBox to set a fixed height
               child: SizedBox(
-                height: MediaQuery.of(context).size.height / 2, // Set height for both dialog and image
+                height: MediaQuery.of(context).size.height /
+                    2, // Set height for both dialog and image
                 width: double.infinity,
                 child: Stack(
                   children: [
@@ -131,7 +134,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (loadingProgress == null) return child;
                           return Center(
                             child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : null,
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      (loadingProgress.expectedTotalBytes ?? 1)
+                                  : null,
                             ),
                           );
                         },
@@ -245,7 +251,8 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text('Confirm Exit'),
-                  content: const Text('Are You Sure You Want to Close The App?'),
+                  content:
+                      const Text('Are You Sure You Want to Close The App?'),
                   actions: [
                     Container(
                       child: ElevatedButton(
@@ -319,13 +326,15 @@ class _HomeScreenState extends State<HomeScreen> {
           appBar: CommonStyles.customerAppbar(
             context: context,
             title: buildTitle(_currentIndex, context),
-            userName: userFullName.isNotEmpty ? userFullName[0].toUpperCase() : "H",
+            userName:
+                userFullName.isNotEmpty ? userFullName[0].toUpperCase() : "H",
             userFullName: userFullName,
             email: email,
           ),
 
           //   body: SliderScreen(),
-          body: _buildScreens(_currentIndex, context, userFullName,_popupflag!),
+          body:
+              _buildScreens(_currentIndex, context, userFullName, _popupflag!),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _currentIndex,
             showSelectedLabels: true,
@@ -343,7 +352,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (_previousIndex != 0) {
                   _popupflag = false;
                 } else {
-                  _popupflag = widget.boolflagpopup; // Keep the original flag if coming back from the same tab
+                  _popupflag = widget
+                      .boolflagpopup; // Keep the original flag if coming back from the same tab
                 }
               } else {
                 // Set popupflag to false if navigating to any other index
@@ -434,7 +444,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if (userId != null) {
         // Use the user ID as needed
         print('User ID: $userId');
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Branches_screen(userId: userId)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => Branches_screen(userId: userId)));
       } else {
         // Handle the case where the user ID is not available
         print('User ID not found in SharedPreferences');
@@ -466,7 +479,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-Widget _buildScreens(int index, BuildContext context, String userFullName, bool popupflag) {
+Widget _buildScreens(
+    int index, BuildContext context, String userFullName, bool popupflag) {
   switch (index) {
     case 0:
       return CustomerDashBoard(

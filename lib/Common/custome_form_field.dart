@@ -24,6 +24,8 @@ class CustomeFormField extends StatelessWidget {
   final int? maxLines;
   final bool isMandatory;
   final bool enabled;
+  final bool isLableRequired;
+  final double radius;
 
   const CustomeFormField({
     Key? key,
@@ -47,6 +49,8 @@ class CustomeFormField extends StatelessWidget {
     this.errorStyle,
     this.textStyle,
     this.focusNode,
+    this.radius = 6.0,
+    this.isLableRequired = true,
   }) : super(key: key);
 
   @override
@@ -55,26 +59,28 @@ class CustomeFormField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // label text
-        Row(
-          children: [
-            Text(
-              '$label ',
-              style: CommonUtils.txSty_12b_fb.copyWith(
-                color: screenForReschedule ? Colors.grey : Colors.black,
-              ),
-            ),
-            if (isMandatory)
+        if (isLableRequired)
+          Row(
+            children: [
               Text(
-                '*',
-                style: const TextStyle(color: Colors.red).copyWith(
-                  color: screenForReschedule ? Colors.grey : Colors.red,
+                '$label ',
+                style: CommonUtils.txSty_12b_fb.copyWith(
+                  color: screenForReschedule ? Colors.grey : Colors.black,
                 ),
               ),
-          ],
-        ),
-        const SizedBox(
-          height: 5.0,
-        ),
+              if (isMandatory)
+                Text(
+                  '*',
+                  style: const TextStyle(color: Colors.red).copyWith(
+                    color: screenForReschedule ? Colors.grey : Colors.red,
+                  ),
+                ),
+            ],
+          ),
+        if (isLableRequired)
+          const SizedBox(
+            height: 5.0,
+          ),
         // textfield
         TextFormField(
           controller: controller,
@@ -88,30 +94,31 @@ class CustomeFormField extends StatelessWidget {
               borderSide: const BorderSide(
                 color: Color(0xFF0f75bc),
               ),
-              borderRadius: BorderRadius.circular(6.0),
+              borderRadius: BorderRadius.circular(radius),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: const BorderSide(
                 color: CommonUtils.primaryTextColor,
               ),
-              borderRadius: BorderRadius.circular(6.0),
+              borderRadius: BorderRadius.circular(radius),
             ),
-            border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
+            border: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: CommonUtils.primaryTextColor,
               ),
+              borderRadius: BorderRadius.circular(radius),
             ),
             errorBorder: OutlineInputBorder(
               borderSide: const BorderSide(
                 color: Color.fromARGB(255, 175, 15, 4),
               ),
-              borderRadius: BorderRadius.circular(6.0),
+              borderRadius: BorderRadius.circular(radius),
             ),
             hintText: 'Enter $label',
             hintStyle: CommonStyles.texthintstyle,
             errorText: errorText,
             errorStyle: CommonStyles.texthintstyle.copyWith(
-              color: Color.fromARGB(255, 175, 15, 4),
+              color: const Color.fromARGB(255, 175, 15, 4),
               fontSize: 11,
             ),
             counterText: "",

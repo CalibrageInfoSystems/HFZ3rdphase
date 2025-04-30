@@ -1,8 +1,7 @@
-
-
 import 'dart:convert';
 
-Product_Model productModelFromJson(String str) => Product_Model.fromJson(json.decode(str));
+Product_Model productModelFromJson(String str) =>
+    Product_Model.fromJson(json.decode(str));
 
 String productModelToJson(Product_Model data) => json.encode(data.toJson());
 
@@ -26,11 +25,13 @@ class Product_Model {
   });
 
   factory Product_Model.fromJson(Map<String, dynamic> json) => Product_Model(
-        productList: List<ProductList>.from(json["productList"].map((x) => ProductList.fromJson(x))),
+        productList: List<ProductList>.from(
+            json["productList"].map((x) => ProductList.fromJson(x))),
         isSuccess: json["isSuccess"],
         affectedRecords: json["affectedRecords"],
         statusMessage: json["statusMessage"],
-        validationErrors: List<dynamic>.from(json["validationErrors"].map((x) => x)),
+        validationErrors:
+            List<dynamic>.from(json["validationErrors"].map((x) => x)),
         exception: json["exception"],
         links: json["links"],
       );
@@ -62,7 +63,7 @@ class ProductList {
   final String fileExtension;
   final bool isActive;
   final String categoryName;
-  final dynamic gender;
+  final String? gender;
   final String createdBy;
   final String updatedBy;
   dynamic bestseller;
@@ -87,8 +88,7 @@ class ProductList {
       required this.createdBy,
       required this.updatedBy,
       required this.bestseller,
-      required this.farvoirte
-      });
+      required this.farvoirte});
 
   factory ProductList.fromJson(Map<String, dynamic> json) => ProductList(
         id: json["id"],
@@ -133,6 +133,6 @@ class ProductList {
         "createdBy": createdBy,
         "bestSeller": bestseller,
         "updatedBy": updatedBy,
-    "isFavourite":farvoirte
+        "isFavourite": farvoirte
       };
 }

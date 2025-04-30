@@ -7,6 +7,7 @@ import 'package:hairfixingzone/CustomerLoginScreen.dart';
 import 'package:hairfixingzone/Dashboard_Screen.dart';
 import 'package:hairfixingzone/HomeScreen.dart';
 import 'package:hairfixingzone/MyAppointment_Model.dart';
+import 'package:hairfixingzone/models/op_slot_model.dart';
 import 'package:hairfixingzone/services/notifi_service.dart';
 
 // import 'package:hairfixingzone/services/notification_service.dart';
@@ -51,13 +52,13 @@ class Bookingscreen extends StatefulWidget {
   State<Bookingscreen> createState() => _BookingScreenState();
 }
 
-class Slot {
+/* class Slot {
   final int branchId;
   final String name;
   final DateTime date;
   final int room;
   final String slot;
-  final String SlotTimeSpan;
+  final String slotTimeSpan;
 
   final int availableSlots;
 
@@ -68,7 +69,7 @@ class Slot {
     required this.room,
     required this.slot,
     required this.availableSlots,
-    required this.SlotTimeSpan,
+    required this.slotTimeSpan,
   });
 
   factory Slot.fromJson(Map<String, dynamic> json) {
@@ -79,10 +80,10 @@ class Slot {
       room: json['room'],
       slot: json['slot'],
       availableSlots: json['availableSlots'],
-      SlotTimeSpan: json['slotTimeSpan'],
+      slotTimeSpan: json['slotTimeSpan'],
     );
   }
-}
+} */
 
 class _BookingScreenState extends State<Bookingscreen> {
   List<String> timeSlots = [];
@@ -120,6 +121,8 @@ class _BookingScreenState extends State<Bookingscreen> {
 
 //  TextEditingController textController4 = TextEditingController(text: 'Initial value 4');
   List<Slot> slots = [];
+
+  late Future<List<Slot>> futureSlots;
 
   // String _selectedTimeSlot = '';
   // String AvailableSlots = '';
@@ -181,9 +184,7 @@ class _BookingScreenState extends State<Bookingscreen> {
     getUserDataFromSharedPreferences();
     //fetchdropdown();
     BranchId = widget.branchId;
-    print('BranchId:$BranchId');
-    print('latitude  ${widget.latitude}');
-    print('longitude  ${widget.longitude}');
+    futureSlots = getAvailableSlotByDate();
 
     dropValue = 'Select';
     _dateController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
@@ -368,14 +369,6 @@ class _BookingScreenState extends State<Bookingscreen> {
     isSlotsAvailable = getVisibleSlots(slots, isTodayHoliday).isNotEmpty;
     disabledSlots = getDisabledSlots(slots);
     visableSlots = getVisibleSlots(slots, isTodayHoliday);
-    // return WillPopScope(
-    //     onWillPop: () async {
-    //       // Show a confirmation dialog
-    //       Navigator.of(context).pop(); // Navigate back to the previous screen
-    //       // Return false to prevent default back button behavior
-    //       return true;
-    //     },
-    //     child:
     return WillPopScope(
         onWillPop: () => onBackPressed(context),
         child: Scaffold(
@@ -390,21 +383,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600),
                 ),
-                // actions: [
-                //   IconButton(
-                //     icon: SvgPicture.asset(
-                //       'assets/sign-out-alt.svg', // Path to your SVG asset
-                //       color: Color(0xFF662e91),
-                //       width: 24, // Adjust width as needed
-                //       height: 24, // Adjust height as needed
-                //     ),
-                //     onPressed: () {
-                //       logOutDialog(context);
-                //       // Add logout functionality here
-                //     },
-                //   ),
-                // ],
-                // centerTitle: true,
                 leading: IconButton(
                   icon: const Icon(
                     Icons.arrow_back_ios,
@@ -414,7 +392,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                     Navigator.of(context).pop();
                   },
                 )),
-            //body: YourBodyWidget(),
             body: SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -424,9 +401,7 @@ class _BookingScreenState extends State<Bookingscreen> {
                     children: [
                       IntrinsicHeight(
                         child: Container(
-                          //  height: MediaQuery.of(context).size.height / 6,
                           width: MediaQuery.of(context).size.width,
-
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [
@@ -438,31 +413,15 @@ class _BookingScreenState extends State<Bookingscreen> {
                             ),
                             border: Border.all(
                               color: Colors.grey,
-                              //  color: const Color(0xFF8d97e2), // Add your desired border color here
-                              width: 1.0, // Set the border width
+                              width: 1.0,
                             ),
-                            borderRadius: BorderRadius.circular(
-                                10.0), // Optional: Add border radius if needed
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                          // borderRadius: BorderRadius.circular(30), //border corner radius
-                          // boxShadow: [
-                          //   BoxShadow(
-                          //     color: const Color(0xFF960efd)
-                          //         .withOpacity(0.2), //color of shadow
-                          //     spreadRadius: 2, //spread radius
-                          //     blurRadius: 4, // blur radius
-                          //     offset: const Offset(
-                          //         0, 2), // changes position of shadow
-                          //   ),
-                          // ],
-
                           child: Row(
                             children: [
                               Container(
                                 padding: const EdgeInsets.all(10),
-                                // width: MediaQuery.of(context).size.width / 4,
                                 child: ClipRRect(
-                                  //  borderRadius: BorderRadius.circular(10.0),
                                   child: Image.network(
                                     widget.branchImage.isNotEmpty
                                         ? widget.branchImage
@@ -488,17 +447,10 @@ class _BookingScreenState extends State<Bookingscreen> {
                                     },
                                   ),
                                 ),
-                                // child: Image.asset(
-                                //   'assets/top_image.png',
-                                //   fit: BoxFit.cover,
-                                //   height: MediaQuery.of(context).size.height / 4 / 2,
-                                //   width: MediaQuery.of(context).size.width / 2.8,
-                                // )
                               ),
                               Container(
                                 width: MediaQuery.of(context).size.width / 2,
                                 padding: const EdgeInsets.only(top: 4),
-                                // width: MediaQuery.of(context).size.width / 4,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -528,7 +480,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                           ),
                         ),
                       ),
-
                       const SizedBox(
                         height: 25,
                       ),
@@ -558,7 +509,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                         onTap: () {
                           _openDatePicker(_isTodayHoliday);
                         },
-                        // focusNode: DateofBirthdFocus,
                         readOnly: true,
                         validator: (value) {
                           if (value!.isEmpty || value.isEmpty) {
@@ -595,7 +545,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                             color: Color(0xFF11528f),
                           ),
                         ),
-                        //          validator: validateDate,
                       ),
                       const SizedBox(
                         height: 15,
@@ -634,7 +583,7 @@ class _BookingScreenState extends State<Bookingscreen> {
                                               : () {
                                                   setState(() {
                                                     _selectedTimeSlot =
-                                                        slot.SlotTimeSpan;
+                                                        slot.slotTimeSpan;
                                                     _selectedSlot = slot.slot;
                                                     AvailableSlots = slot
                                                         .availableSlots
@@ -642,11 +591,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                                                     timeSlotParts =
                                                         _selectedSlot
                                                             .split(' - ');
-                                                    // if (timeSlotParts
-                                                    //     .isNotEmpty) {
-                                                    //   fetchTechnicians();
-                                                    //   selectedTechnician = -1;
-                                                    // }
                                                     fetchTechnicians();
                                                     selectedTechnician = -1;
                                                     slotselection = true;
@@ -687,8 +631,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                                                                 days: 20));
                                                     print(
                                                         'New DateTime after adding 20 days: $newDateTime');
-                                                    // Parse the concatenated string into a DateTime object
-                                                    //  DateTime SlotselectedDateTime = DateFormat('yyyy-MM-dd hh:mm a').parse(selectedDateTimeString);
                                                     print(
                                                         'SlotselectedDateTime==613==$selectedDateTimeString');
                                                     print(
@@ -706,7 +648,7 @@ class _BookingScreenState extends State<Bookingscreen> {
                                                 vertical: 1.0, horizontal: 1.0),
                                             backgroundColor:
                                                 _selectedTimeSlot ==
-                                                        slot.SlotTimeSpan
+                                                        slot.slotTimeSpan
                                                     ? CommonUtils
                                                         .primaryTextColor
                                                     : (slot.availableSlots <= 0
@@ -714,7 +656,7 @@ class _BookingScreenState extends State<Bookingscreen> {
                                                         : Colors.white),
                                             side: BorderSide(
                                               color: _selectedTimeSlot ==
-                                                      slot.SlotTimeSpan
+                                                      slot.slotTimeSpan
                                                   ? CommonUtils.primaryTextColor
                                                   : (slot.availableSlots <= 0
                                                       ? Colors.transparent
@@ -728,16 +670,16 @@ class _BookingScreenState extends State<Bookingscreen> {
                                             ),
                                             textStyle: TextStyle(
                                               color: _selectedTimeSlot ==
-                                                      slot.SlotTimeSpan
+                                                      slot.slotTimeSpan
                                                   ? Colors.white
                                                   : Colors.black,
                                             ),
                                           ),
                                           child: Text(
-                                            slot.SlotTimeSpan,
+                                            slot.slotTimeSpan,
                                             style: TextStyle(
                                               color: _selectedTimeSlot ==
-                                                      slot.SlotTimeSpan
+                                                      slot.slotTimeSpan
                                                   ? Colors.white
                                                   : (slot.availableSlots <= 0
                                                       ? Colors.white
@@ -767,8 +709,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                                           ],
                                         ),
                                       )
-                                    // Show your regular widget when today is not a holiday
-
                                     : const Center(
                                         child: Column(
                                           mainAxisAlignment:
@@ -786,271 +726,10 @@ class _BookingScreenState extends State<Bookingscreen> {
                                         ),
                                       ),
                       ),
-                      // Scrollbar(
-                      //   child: isLoading
-                      //       ? const Center(child: CircularProgressIndicator())
-                      //       : isSlotsAvailable
-                      //       ? GridView.builder(
-                      //     shrinkWrap: true,
-                      //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      //       crossAxisCount: 3,
-                      //       childAspectRatio: 2.5,
-                      //     ),
-                      //     itemCount: getVisibleSlots(slots, isTodayHoliday).length,
-                      //     itemBuilder: (BuildContext context, int i) {
-                      //       final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                      //       if (i >= visibleSlots.length) return const SizedBox.shrink();
-                      //
-                      //       final slot = visibleSlots[i];
-                      //       return Container(
-                      //         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-                      //         child: ElevatedButton(
-                      //           onPressed: () {
-                      //             if (slot.availableSlots > 0) {
-                      //               setState(() {
-                      //                 // Select the current slot
-                      //                 _selectedTimeSlot = slot.SlotTimeSpan;
-                      //                 _selectedSlot = slot.slot;
-                      //                 AvailableSlots = slot.availableSlots.toString();
-                      //                 timeSlotParts = _selectedSlot.split(' - ');
-                      //                 fetchTechnicians();
-                      //                 selectedTechnician = -1;
-                      //                 slotselection = true;
-                      //
-                      //                 // Convert selected time slot to 24-hour format
-                      //                 _selectedTimeSlot24 = DateFormat('HH:mm').format(DateFormat('h:mm a').parse(_selectedTimeSlot));
-                      //                 String formattedDate = DateFormat("yyyy-MM-dd").format(_selectedDate);
-                      //                 String datePart = formattedDate.substring(0, 10);
-                      //                 String selectedDateTimeString = '$datePart $_selectedTimeSlot24';
-                      //                 slotSelected_DateTime = DateFormat('yyyy-MM-dd HH:mm').parse(selectedDateTimeString);
-                      //                 slotSelectedDateTime = slotSelected_DateTime!.subtract(const Duration(hours: 1));
-                      //                 newDateTime = slotSelected_DateTime!.add(const Duration(days: 20));
-                      //
-                      //                 // Clear previously selected next slot
-                      //                 _nextTimeSlot = null;
-                      //
-                      //                 final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                      //                 int selectedIndex = visibleSlots.indexWhere((s) => s.SlotTimeSpan == slot.SlotTimeSpan);
-                      //
-                      //
-                      //                 setState(() {
-                      //                   _isLastSlotSelected = (selectedValue == 7 && selectedIndex == visibleSlots.length - 1);
-                      //                 });
-                      //                 // Check the purpose of visit
-                      //                 if (selectedValue == 7) {
-                      //                   // Get the visible slots and the index of the currently selected slot
-                      //
-                      //                   // If the selected slot is the last one, clear the next slot
-                      //                   if (selectedIndex == visibleSlots.length - 1) {
-                      //                     _nextTimeSlot = null; // No next slot to select
-                      //                     print("Booked Slot: $_selectedTimeSlot");
-                      //                   } else {
-                      //                     // Try to select the next available slot
-                      //                     final nextSlot = visibleSlots[selectedIndex + 1];
-                      //                     if (nextSlot.availableSlots > 0) {
-                      //                       isnextSlotsAvailable = true;
-                      //                       _nextTimeSlot = nextSlot.SlotTimeSpan; // Set next time slot
-                      //                       print("Booked Slots: $_selectedTimeSlot, $_nextTimeSlot");
-                      //                     } else {
-                      //                       isnextSlotsAvailable = false;
-                      //                       // Show error toast when the next slot is not available
-                      //                       // ScaffoldMessenger.of(context).showSnackBar(
-                      //                       //   SnackBar(
-                      //                       //     content: Text('Next slot not available'),
-                      //                       //     backgroundColor: Colors.red,
-                      //                       //     duration: Duration(seconds: 2),
-                      //                       //   ),
-                      //                       // );
-                      //
-                      //                       print("Next slot not available");
-                      //                     }
-                      //                   }
-                      //                 } else {
-                      //                   // If the visit is not "New Hair Patch", print the selected slot
-                      //                   print("Booked Slot: $_selectedTimeSlot");
-                      //                 }
-                      //               });
-                      //             }
-                      //           },
-                      //           style: ElevatedButton.styleFrom(
-                      //             padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
-                      //             backgroundColor: (_selectedTimeSlot == slot.SlotTimeSpan || _nextTimeSlot == slot.SlotTimeSpan)
-                      //                 ? CommonUtils.primaryTextColor
-                      //                 : (slot.availableSlots <= 0 ? Colors.grey : Colors.white),
-                      //             side: BorderSide(
-                      //               color: (_selectedTimeSlot == slot.SlotTimeSpan || _nextTimeSlot == slot.SlotTimeSpan)
-                      //                   ? CommonUtils.primaryTextColor
-                      //                   : (slot.availableSlots <= 0 ? Colors.transparent : CommonUtils.primaryTextColor),
-                      //               width: 1.0,
-                      //             ),
-                      //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-                      //             textStyle: TextStyle(
-                      //               color: (_selectedTimeSlot == slot.SlotTimeSpan || _nextTimeSlot == slot.SlotTimeSpan)
-                      //                   ? Colors.white
-                      //                   : Colors.black,
-                      //             ),
-                      //           ),
-                      //           child: Text(
-                      //             slot.SlotTimeSpan,
-                      //             style: TextStyle(
-                      //               color: (_selectedTimeSlot == slot.SlotTimeSpan || _nextTimeSlot == slot.SlotTimeSpan)
-                      //                   ? Colors.white
-                      //                   : (slot.availableSlots <= 0 ? Colors.white : Colors.black),
-                      //               fontFamily: 'Outfit',
-                      //               fontSize: 12,
-                      //             ),
-                      //           ),
-                      //         ),
-                      //       );
-                      //
-                      //
-                      //       // return Container(
-                      //       //   margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-                      //       //   child: ElevatedButton(
-                      //       //     onPressed: () {
-                      //       //       if (slot.availableSlots > 0) {
-                      //       //         setState(() {
-                      //       //           _selectedTimeSlot = slot.SlotTimeSpan;
-                      //       //           _selectedSlot = slot.slot;
-                      //       //           AvailableSlots = slot.availableSlots.toString();
-                      //       //           timeSlotParts = _selectedSlot.split(' - ');
-                      //       //           fetchTechnicians();
-                      //       //           selectedTechnician = -1;
-                      //       //           slotselection = true;
-                      //       //           _selectedTimeSlot24 =
-                      //       //               DateFormat('HH:mm')
-                      //       //                   .format(DateFormat(
-                      //       //                   'h:mm a')
-                      //       //                   .parse(
-                      //       //                   _selectedTimeSlot));
-                      //       //           print(
-                      //       //               '_selectedTimeSlot24 $_selectedTimeSlot24');
-                      //       //           String formattedDate =
-                      //       //           DateFormat("yyyy-MM-dd")
-                      //       //               .format(
-                      //       //               _selectedDate);
-                      //       //           String datePart =
-                      //       //           formattedDate.substring(
-                      //       //               0, 10);
-                      //       //           String
-                      //       //           selectedDateTimeString =
-                      //       //               '$datePart $_selectedTimeSlot24';
-                      //       //           slotSelected_DateTime = DateFormat(
-                      //       //               'yyyy-MM-dd HH:mm')
-                      //       //               .parse(
-                      //       //               selectedDateTimeString);
-                      //       //           print(
-                      //       //               'SlotselectedDateTime: $slotSelected_DateTime');
-                      //       //           slotSelectedDateTime =
-                      //       //               slotSelected_DateTime!
-                      //       //                   .subtract(
-                      //       //                   const Duration(
-                      //       //                       hours: 1));
-                      //       //           print(
-                      //       //               '-1 hour Modified DateTime: $slotSelectedDateTime');
-                      //       //           newDateTime = slotSelected_DateTime!
-                      //       //                   .add(const Duration(
-                      //       //                   days: 20));
-                      //       //           print(
-                      //       //               'New DateTime after adding 20 days: $newDateTime');
-                      //       //           // Parse the concatenated string into a DateTime object
-                      //       //           //  DateTime SlotselectedDateTime = DateFormat('yyyy-MM-dd hh:mm a').parse(selectedDateTimeString);
-                      //       //           print(
-                      //       //               'SlotselectedDateTime==613==$selectedDateTimeString');
-                      //       //           print(
-                      //       //               '==234==$_selectedTimeSlot');
-                      //       //           print(
-                      //       //               '==234==$_selectedTimeSlot');
-                      //       //           print(
-                      //       //               '===567==$_selectedSlot');
-                      //       //           print(
-                      //       //               '==900==$AvailableSlots');
-                      //       //           print('-1 hour Modified DateTime: $slotSelectedDateTime');
-                      //       //           // Check the purpose of visit
-                      //       //           if (selectedName == "New Hair Patch") {
-                      //       //             // Find the index of the currently selected slot
-                      //       //             final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                      //       //             int selectedIndex = visibleSlots.indexWhere((s) => s.SlotTimeSpan == slot.SlotTimeSpan);
-                      //       //
-                      //       //             // If the selected slot is the last one, select only that slot
-                      //       //             if (selectedIndex == visibleSlots.length - 1) {
-                      //       //               _nextTimeSlot = null; // No next slot to select
-                      //       //               print("Booked Slot: $_selectedTimeSlot");
-                      //       //               // Add your booking logic here for the single slot
-                      //       //             } else {
-                      //       //               // Select the current slot and the next available slot
-                      //       //               final nextSlot = visibleSlots[selectedIndex + 1];
-                      //       //               if (nextSlot.availableSlots > 0) {
-                      //       //                 isnextSlotsAvailable = true;
-                      //       //                 _nextTimeSlot = nextSlot.SlotTimeSpan; // Set next time slot
-                      //       //                 print("Booked Slots: $_selectedTimeSlot, $_nextTimeSlot");
-                      //       //                 // Add your booking logic here for both slots
-                      //       //               } else {
-                      //       //                 isnextSlotsAvailable = false;
-                      //       //                 // Handle case where next slot is not available
-                      //       //                 print("Next slot not available");
-                      //       //               }
-                      //       //             }
-                      //       //           } else {
-                      //       //             // Handle other purposes of visit
-                      //       //             print("Booked Slot: $_selectedTimeSlot");
-                      //       //             // Add your booking logic for other cases here
-                      //       //           }
-                      //       //         });
-                      //       //       }
-                      //       //     },
-                      //       //
-                      //       //
-                      //       //     // onPressed: slot.availableSlots <= 0
-                      //       //     //     ? null
-                      //       //     //     : () {
-                      //       //     //   setState(() {
-                      //       //     //     _selectedTimeSlot = slot.SlotTimeSpan;
-                      //       //     //     _selectedSlot = slot.slot;
-                      //       //     //     AvailableSlots = slot.availableSlots.toString();
-                      //       //     //     // Other logic...
-                      //       //     //   });
-                      //       //     // },
-                      //       //     style: ElevatedButton.styleFrom(
-                      //       //       padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 1.0),
-                      //       //       backgroundColor: (_selectedTimeSlot == slot.SlotTimeSpan || _nextTimeSlot == slot.SlotTimeSpan)
-                      //       //           ? CommonUtils.primaryTextColor
-                      //       //           : (slot.availableSlots <= 0 ? Colors.grey : Colors.white),
-                      //       //       side: BorderSide(
-                      //       //         color: (_selectedTimeSlot == slot.SlotTimeSpan || _nextTimeSlot == slot.SlotTimeSpan)
-                      //       //             ? CommonUtils.primaryTextColor
-                      //       //             : (slot.availableSlots <= 0 ? Colors.transparent : CommonUtils.primaryTextColor),
-                      //       //         width: 1.0,
-                      //       //       ),
-                      //       //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-                      //       //       textStyle: TextStyle(
-                      //       //         color: (_selectedTimeSlot == slot.SlotTimeSpan || _nextTimeSlot == slot.SlotTimeSpan)
-                      //       //             ? Colors.white
-                      //       //             : Colors.black,
-                      //       //       ),
-                      //       //     ),
-                      //       //     child: Text(
-                      //       //       slot.SlotTimeSpan,
-                      //       //       style: TextStyle(
-                      //       //         color: (_selectedTimeSlot == slot.SlotTimeSpan || _nextTimeSlot == slot.SlotTimeSpan)
-                      //       //             ? Colors.white
-                      //       //             : (slot.availableSlots <= 0 ? Colors.white : Colors.black),
-                      //       //         fontFamily: 'Outfit',
-                      //       //         fontSize: 12,
-                      //       //       ),
-                      //       //     ),
-                      //       //   ),
-                      //       // );
-                      //     },
-                      //   )
-                      //       : isTodayHoliday
-                      //       ? const Center(child: Text('Today is a Holiday'))
-                      //       : const Center(child: Text('No Slots Are Available Today')),
-                      // ),
-
                       const SizedBox(
                         height: 15,
                       ),
+
                       const Row(
                         children: [
                           Text(
@@ -1069,6 +748,8 @@ class _BookingScreenState extends State<Bookingscreen> {
                         ],
                       ),
                       const SizedBox(height: 5),
+
+                      //MARK: Purpose Of Visit
                       Padding(
                         padding:
                             const EdgeInsets.only(left: 0, top: .0, right: 0),
@@ -1076,9 +757,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                           width: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.0),
-                            // border: Border.all(
-                            //   color: CommonUtils.primaryTextColor,
-                            // ),
                             border: Border.all(
                               color: ispurposeselected
                                   ? const Color.fromARGB(255, 175, 15, 4)
@@ -1090,19 +768,17 @@ class _BookingScreenState extends State<Bookingscreen> {
                               alignedDropdown: true,
                               child: DropdownButton2<int>(
                                 isExpanded: true,
-
                                 items: [
                                   DropdownMenuItem<int>(
                                     value: -1,
                                     child: Text(
                                       ' Select Purpose of Visit',
                                       style: TextStyle(
-                                        color: Colors.grey, fontSize: 14,
+                                        color: Colors.grey,
+                                        fontSize: 14,
                                         fontFamily: 'Outfit',
-                                        //  fontWeight: FontWeight.w500
                                       ),
                                     ),
-                                    // Static text
                                   ),
                                   ...dropdownItems.asMap().entries.map((entry) {
                                     final index = entry.key;
@@ -1122,48 +798,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                                   }).toList(),
                                 ].toList(),
                                 value: selectedTypeCdId,
-                                // onChanged: (value) {
-                                //   setState(() {
-                                //     selectedTypeCdId = value!;
-                                //     if (selectedTypeCdId != -1) {
-                                //       selectedValue = dropdownItems[selectedTypeCdId]['typeCdId'];
-                                //       selectedName = dropdownItems[selectedTypeCdId]['desc'];
-                                //
-                                //       final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                                //       int selectedIndex = visibleSlots.indexWhere((slot) => slot.SlotTimeSpan == _selectedTimeSlot);
-                                //
-                                //       if (selectedIndex != -1) {
-                                //         // Current slot
-                                //         _selectedSlot = visibleSlots[selectedIndex].slot;
-                                //         AvailableSlots = visibleSlots[selectedIndex].availableSlots.toString();
-                                //
-                                //         // Next slot selection
-                                //         if (selectedName == "New Hair Patch" && selectedIndex + 1 < visibleSlots.length) {
-                                //           final nextSlot = visibleSlots[selectedIndex + 1];
-                                //           if (nextSlot.availableSlots > 0) {
-                                //             _nextTimeSlot = nextSlot.SlotTimeSpan; // Set next time slot
-                                //           } else {
-                                //             ScaffoldMessenger.of(context).showSnackBar(
-                                //               SnackBar(
-                                //                 content: Text('Next slot not available'),
-                                //                 backgroundColor: Colors.red,
-                                //                 duration: Duration(seconds: 2),
-                                //               ),
-                                //             );
-                                //
-                                //             _nextTimeSlot = null; // Reset if no next slot is available
-                                //           }
-                                //         } else {
-                                //           _nextTimeSlot = null; // Reset if not "New Hair Patch"
-                                //         }
-                                //       }
-                                //     } else {
-                                //       _selectedSlot = '';
-                                //       _nextTimeSlot = null; // Reset selections
-                                //     }
-                                //   });
-                                // },
-
                                 onChanged: (value) {
                                   setState(() {
                                     selectedTypeCdId = value!;
@@ -1174,108 +808,14 @@ class _BookingScreenState extends State<Bookingscreen> {
                                       selectedName =
                                           dropdownItems[selectedTypeCdId]
                                               ['desc'];
-
-                                      //   // Clear previously selected next slot
-                                      //   _nextTimeSlot = null;
-                                      //
-                                      //   // Check if a slot is selected
-                                      //   final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                                      //   int selectedIndex = visibleSlots.indexWhere((slot) => slot.SlotTimeSpan == _selectedTimeSlot);
-                                      //   setState(() {
-                                      //     _isLastSlotSelected = (selectedValue == 7 && selectedIndex == visibleSlots.length - 1);
-                                      //   });
-                                      //   if (selectedIndex != -1) {
-                                      //     // Current slot selection logic
-                                      //     _selectedSlot = visibleSlots[selectedIndex].slot;
-                                      //     AvailableSlots = visibleSlots[selectedIndex].availableSlots.toString();
-                                      //
-                                      //     // If the purpose of visit is "New Hair Patch", try to select the next slot
-                                      //     if (selectedValue ==7&& selectedIndex + 1 < visibleSlots.length) {
-                                      //       final nextSlot = visibleSlots[selectedIndex + 1];
-                                      //       if (nextSlot.availableSlots > 0) {
-                                      //         _nextTimeSlot = nextSlot.SlotTimeSpan;
-                                      //         isnextSlotsAvailable = true;
-                                      //         // Set next time slot
-                                      //       } else {
-                                      //         isnextSlotsAvailable = false;
-                                      //         // Show toast and reset next slot if it's not available
-                                      //         // ScaffoldMessenger.of(context).showSnackBar(
-                                      //         //   SnackBar(
-                                      //         //     content: Text('Next slot not available'),
-                                      //         //     backgroundColor: Colors.red,
-                                      //         //     duration: Duration(seconds: 2),
-                                      //         //   ),
-                                      //         // );
-                                      //         _nextTimeSlot = null; // Reset if next slot is not available
-                                      //       }
-                                      //     } else {
-                                      //       _nextTimeSlot = null; // Reset next slot if not "New Hair Patch"
-                                      //     }
-                                      //   }
-                                      // } else {
-                                      //   // Reset all selections if the purpose of visit is not selected
-                                      //   _selectedSlot = '';
-                                      //   _nextTimeSlot = null;
-                                      // }
                                     }
                                   });
+                                  ispurposeselected = false;
                                 },
-
-                                // onChanged: (value) {
-                                //   setState(() {
-                                //     selectedTypeCdId = value!;
-                                //     if (selectedTypeCdId != -1) {
-                                //       selectedValue = dropdownItems[selectedTypeCdId]['typeCdId'];
-                                //       selectedName = dropdownItems[selectedTypeCdId]['desc'];
-                                //       // Logic to select the next available slot
-                                //       final visibleSlots = getVisibleSlots(slots, isTodayHoliday);
-                                //       int selectedIndex = visibleSlots.indexWhere((slot) => slot.SlotTimeSpan == _selectedTimeSlot);
-                                //
-                                //       if (selectedIndex != -1) {
-                                //         // Select current and next available slot
-                                //         _selectedSlot = visibleSlots[selectedIndex].slot;
-                                //         AvailableSlots = visibleSlots[selectedIndex].availableSlots.toString();
-                                //
-                                //         if (selectedIndex + 1 < visibleSlots.length && visibleSlots[selectedIndex + 1].availableSlots > 0) {
-                                //           _nextTimeSlot = visibleSlots[selectedIndex + 1].SlotTimeSpan;
-                                //           // You can also store next slot details as needed
-                                //         }
-                                //       }
-                                //
-                                //       print("Selected Value: $selectedValue");
-                                //       print("Selected Name: $selectedName");
-                                //       print("Current Slot: $_selectedSlot");
-                                //       print("Next Slot: $_nextTimeSlot");
-                                //
-                                //     } else {
-                                //       // Reset if not selected
-                                //       _selectedSlot = '';
-                                //       _nextTimeSlot = null;
-                                //       print("==========");
-                                //       print(selectedValue);
-                                //       print(selectedName);
-                                //     }
-                                //     // ispurposeselected = true;else {
-                                //     //   print("==========");
-                                //     //   print(selectedValue);
-                                //     //   print(selectedName);
-                                //     // }
-                                //     ispurposeselected = false;
-                                //     // isDropdownValid = selectedTypeCdId != -1;
-                                //   });
-                                // },
                                 buttonStyleData: ButtonStyleData(
                                   height: 45,
                                   width: double.infinity,
                                   padding: EdgeInsets.only(left: 14, right: 14),
-                                  //decoration: BoxDecoration(
-                                  //  borderRadius: BorderRadius.circular(14),
-                                  //   border: Border.all(
-                                  //     color: Colors.black26,
-                                  //   ),
-                                  //   color: Colors.redAccent,
-                                  //    ),
-                                  // elevation: 2,
                                 ),
                                 iconStyleData: const IconStyleData(
                                   icon: Icon(
@@ -1294,7 +834,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                                     borderRadius: BorderRadius.circular(12),
                                     color: Colors.grey.shade50,
                                   ),
-                                  //  offset: const Offset(-20, 0),
                                   scrollbarTheme: ScrollbarThemeData(
                                     radius: Radius.circular(40),
                                     thickness:
@@ -1471,17 +1010,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                       ),
 
                       const SizedBox(height: 40),
-                      // Visibility(
-                      //   visible: !isLoading, // Show the Container if isLoading is false
-                      //   child: Container(
-                      //     width: MediaQuery.of(context).size.width / 1.5,
-                      //     child: CustomButton(
-                      //       buttonText: 'Book Appointment',
-                      //       color: CommonUtils.primaryTextColor,
-                      //       onPressed: bookappointment,
-                      //     ),
-                      //   ),
-                      // )
                       Visibility(
                         visible: !isLoading,
                         child: Row(
@@ -1499,29 +1027,6 @@ class _BookingScreenState extends State<Bookingscreen> {
                           ],
                         ),
                       ),
-                      // Visibility(
-                      //   visible: !isLoading,
-                      //   child: SizedBox(
-                      //     width: MediaQuery.of(context).size.width / 1.5,
-                      //     child: CustomButton(
-                      //       buttonText: 'Book Appointment',
-                      //       color: CommonUtils.primaryTextColor,
-                      //       onPressed: () {
-                      //         // Validate purpose first
-                      //         validatePurpose(selectedName);
-                      //       },
-                      //     ),
-                      //   ),
-                      // ),
-
-                      // Container(
-                      //   width: MediaQuery.of(context).size.width / 1.5,
-                      //   child: CustomButton(
-                      //     buttonText: 'Book Appointment',
-                      //     color: CommonUtils.primaryTextColor,
-                      //     onPressed: bookappointment,
-                      //   ),
-                      // )
                     ],
                   ),
                 ),
@@ -1574,11 +1079,12 @@ class _BookingScreenState extends State<Bookingscreen> {
     }
 
     // Check if the purpose of visit has been selected
-    if (value == null || value.isEmpty) {
+    if (value == null || value.isEmpty || selectedTypeCdId == -1) {
       ispurposeselected = true; // Flag purpose as not selected
-      setState(() {}); // Trigger UI update for validation message
+      setState(() {});
+      /* // Trigger UI update for validation message
       showCustomToastMessageLong(
-          'Please Select A Purpose of Visit', context, 1, 4);
+          'Please Select A Purpose of Visit', context, 1, 4); */
       return; // Stop execution if purpose is not selected
     }
 
@@ -1630,7 +1136,7 @@ class _BookingScreenState extends State<Bookingscreen> {
   Future<void> bookappointment() async {
     if (_formKey.currentState!.validate()) {
       final url = Uri.parse(baseUrl + postApiAppointment);
-      print('url==>890: $url');
+      print('bookappointment url: $url');
 
       DateTime now = DateTime.now();
       ProgressDialog progressDialog = ProgressDialog(context);
@@ -1949,7 +1455,7 @@ class _BookingScreenState extends State<Bookingscreen> {
     }
 
     return slots.where((slot) {
-      String timespan = slot.SlotTimeSpan;
+      String timespan = slot.slotTimeSpan;
       // Combine the current date and formatted time
       String SlotDateTimeString =
           '${DateFormat('yyyy-MM-dd').format(currentDate)} $timespan';
@@ -1961,7 +1467,7 @@ class _BookingScreenState extends State<Bookingscreen> {
       DateTime slotDateTime;
       if (currentdate == formattedapiDate) {
         // If the slot is for the current date, use the slot's time
-        String timespan = slot.SlotTimeSpan;
+        String timespan = slot.slotTimeSpan;
 
         // Combine the current date and time span
         String SlotDateTimeString =
@@ -2107,35 +1613,8 @@ class _BookingScreenState extends State<Bookingscreen> {
 
   List<Slot> filteredSlots = [];
 
-  //List<Slot> slots = [];
-
-  // Future<List<Slot>> fetchTimeSlots(DateTime selectedDate, int branchId) async {
-  //   isLoading = false;
-  //   final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
-  //   final url = Uri.parse(baseUrl + GetSlotsByDateAndBranch + "$formattedDate/$branchId");
-  //   print('url==>969: $url');
-  //
-  //   try {
-  //     final response = await http.get(url);
-  //     if (response.statusCode == 200) {
-  //       final jsonResult = json.decode(response.body);
-  //       final List<dynamic> slotData = jsonResult['listResult'];
-  //
-  //       slots = slotData.map((slotJson) => Slot.fromJson(slotJson)).toList();
-  //
-  //       setState(() {
-  //         // Update any necessary state variables
-  //       });
-  //
-  //       return slots;
-  //     } else {
-  //       throw Exception('Failed to fetch slots');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Errortimeslots: $e');
-  //   }
-  // }
   Future<List<Slot>> fetchTimeSlots(DateTime selectedDate, int branchId) async {
+    print('xxx: called');
     setState(() {
       isLoading = true; // Set isLoading to true before making the API request
     });
@@ -2143,21 +1622,23 @@ class _BookingScreenState extends State<Bookingscreen> {
     final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
     final url =
         Uri.parse("$baseUrl$GetSlotsByDateAndBranch$formattedDate/$branchId");
-    print('url==>969: $url');
 
     try {
       final response = await http.get(url);
+      setState(() {
+        isLoading = false;
+      });
       if (response.statusCode == 200) {
-        final jsonResult = json.decode(response.body);
-        final List<dynamic> slotData = jsonResult['listResult'];
+        final jsonResult = jsonDecode(response.body);
 
-        List<Slot> slots =
-            slotData.map((slotJson) => Slot.fromJson(slotJson)).toList();
+        List<Slot> slots = [];
 
-        setState(() {
-          isLoading = false; // Set isLoading to false after data is fetched
-          // Update any necessary state variables
-        });
+        print('xxx: ${jsonResult['listResult']}');
+
+        if (jsonResult['listResult'] != null) {
+          final List<dynamic> slotData = jsonResult['listResult'];
+          slots = slotData.map((slotJson) => Slot.fromJson(slotJson)).toList();
+        }
 
         return slots;
       } else {
@@ -2168,6 +1649,36 @@ class _BookingScreenState extends State<Bookingscreen> {
         isLoading = false; // Set isLoading to false if error occurs
       });
       throw Exception('Error fetching time slots: $e');
+    }
+  }
+
+//MARK: Get Slots
+  Future<List<Slot>> getAvailableSlotByDate({DateTime? selectedDate}) async {
+    try {
+      final isConneted = await CommonUtils.checkInternetConnectivity();
+      if (!isConneted) {
+        CommonUtils.showCustomToastMessageLong(
+            'Please check your internet connection', context, 0, 2);
+        throw Exception('No internet connection');
+      }
+
+      final formattedDate =
+          DateFormat('yyyy-MM-dd').format(selectedDate ?? DateTime.now());
+      final apiUrl = Uri.parse(
+          "$baseUrl$GetSlotsByDateAndBranch$formattedDate/${widget.branchId}");
+
+      final jsonResponse = await http.get(apiUrl);
+      if (jsonResponse.statusCode == 200) {
+        final response = jsonDecode(jsonResponse.body);
+        final List<dynamic> slotData = response['listResult'];
+        List<Slot> slots =
+            slotData.map((slotJson) => Slot.fromJson(slotJson)).toList();
+        return slots;
+      } else {
+        throw Exception('Failed to fetch slots');
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -2255,7 +1766,7 @@ class _BookingScreenState extends State<Bookingscreen> {
 //MARK: fetchTechnicians
   Future<void> fetchTechnicians() async {
     try {
-      final url = Uri.parse(baseUrl + GetTechnicians);
+      final url = Uri.parse(baseUrl + getTechnicians);
       final requestBody = {
         "branchId": widget.branchId,
         "date": selecteddate,

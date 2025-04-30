@@ -1,8 +1,9 @@
-  import 'dart:ui';
+import 'dart:ui';
 
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hairfixingzone/screens/customer_enquiry/add_customer_enquiry.dart';
 
 import 'package:loading_progress/loading_progress.dart';
 
@@ -11,6 +12,11 @@ import '../NewScreen.dart';
 class CommonStyles {
   // colors
   static const statusBlueBg = Color(0xffc3c8cc);
+
+  static const followUpStatusColor = Color(0xff2196F3);
+  static const orderPlacedStatusColor = Color(0xff4CAF50);
+  static const notInterestedStatusColor = Color(0xff9E9E9E);
+
   static const statusBlueText = Color(0xFF11528f);
   static const statusGreenBg = Color(0xFFe5ffeb);
   static const statusGreenText = Color(0xFF287d02);
@@ -30,6 +36,7 @@ class CommonStyles {
   static const primarylightColor = Color(0xffe2f0fd);
   static const greenColor = Colors.greenAccent;
   static const whiteColor = Colors.white;
+  static const errorColor = Color.fromARGB(255, 175, 15, 4);
   // styles
   static const TextStyle txSty_12b_f5 = TextStyle(
     fontSize: 12,
@@ -47,7 +54,7 @@ class CommonStyles {
     fontSize: 14,
     fontFamily: "Outfit",
     fontWeight: FontWeight.w500,
-    color: Color.fromARGB(255, 175, 15, 4),
+    color: errorColor,
   );
   static const TextStyle txSty_20wh_fb = TextStyle(
     fontSize: 20,
@@ -178,11 +185,10 @@ class CommonStyles {
   );
 
   static const TextStyle txSty_12b_fb = TextStyle(
-    fontFamily: 'Outfit',
-    fontSize: 12,
-    color: Color(0xFF000000),
-    fontWeight: FontWeight.w500
-  );
+      fontFamily: 'Outfit',
+      fontSize: 12,
+      color: Color(0xFF000000),
+      fontWeight: FontWeight.w500);
   static const TextStyle txSty_12bl_fb = TextStyle(
     fontFamily: 'Outfit',
     fontSize: 12,
@@ -217,7 +223,8 @@ class CommonStyles {
   static const TextStyle text16white = TextStyle(
     fontSize: 16,
     fontFamily: "Outfit",
-    fontWeight: FontWeight.w600,backgroundColor:   Color(0xFF11528f),
+    fontWeight: FontWeight.w600,
+    backgroundColor: Color(0xFF11528f),
     color: CommonStyles.whiteColor,
   );
   static const TextStyle text14white = TextStyle(
@@ -404,8 +411,7 @@ class CommonStyles {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      NewScreen(userName: userFullName)),
+                  builder: (context) => NewScreen(userName: userFullName)),
             );
           },
         ),
@@ -418,16 +424,16 @@ class CommonStyles {
     required String userName,
     required String userFullName,
     required String email,
-    required Widget  title,
+    required Widget title,
   }) {
     return AppBar(
       backgroundColor: const Color(0xffffffff),
       automaticallyImplyLeading: false,
       title: title,
-     //  title: Text(
-     //    title,
-     // style: GoogleFonts.outfit(fontWeight: FontWeight.w500,fontSize: 22,color: Colors.black),
-     //  ),
+      //  title: Text(
+      //    title,
+      // style: GoogleFonts.outfit(fontWeight: FontWeight.w500,fontSize: 22,color: Colors.black),
+      //  ),
       // actions: [
       //   IconButton(
       //     icon: Container(
@@ -465,11 +471,11 @@ class CommonStyles {
     );
   }
 
-  static AppBar agentAppbar(
-      {required BuildContext context,
-      required String userName,
-      required String title,
-      required void Function()? onTap}) {
+  static AppBar agentAppbar({
+    required BuildContext context,
+    required String title,
+    List<Widget>? actions,
+  }) {
     return AppBar(
       backgroundColor: const Color(0xffffffff),
       automaticallyImplyLeading: false,
@@ -477,25 +483,7 @@ class CommonStyles {
         title,
         style: CommonStyles.txSty_20b_fb,
       ),
-      actions: [
-        IconButton(
-          icon: Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              color: CommonStyles.primaryTextColor,
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                userName,
-                style: const TextStyle(fontSize: 22, color: Colors.white),
-              ),
-            ),
-          ),
-          onPressed: onTap,
-        ),
-      ],
+      actions: actions,
     );
   }
 
@@ -624,6 +612,7 @@ class CommonStyles {
     );
   }
 }
+
 // class ProgressDialog {
 //   final BuildContext context;
 //   late OverlayEntry _overlayEntry;
@@ -691,8 +680,8 @@ class ProgressDialog {
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.grey,
                   ),
-                  padding:  EdgeInsets.all(20),
-                  child:  CircularProgressIndicator.adaptive()));
+                  padding: EdgeInsets.all(20),
+                  child: CircularProgressIndicator.adaptive()));
         },
       );
       _isShowing =

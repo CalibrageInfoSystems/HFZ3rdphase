@@ -11,6 +11,7 @@ import 'package:hairfixingzone/Common/common_widgets.dart';
 import 'package:hairfixingzone/Common/custom_button.dart';
 import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/api_config.dart';
+import 'package:hairfixingzone/models/technician_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -689,6 +690,7 @@ class OpCard extends StatefulWidget {
 
 class _OpCardState extends State<OpCard> {
   late List<dynamic> dateValues;
+  late Future<List<TechniciansModel>> futureTechnicians;
   final TextEditingController _commentstexteditcontroller =
       TextEditingController();
 
@@ -709,10 +711,17 @@ class _OpCardState extends State<OpCard> {
 
   // late List<StatusModel> paymentOptions;
   List<dynamic> paymentOptions = [];
+  List<dynamic> technicianOptions = [];
   int selectedPaymentOption = -1;
+  int? selectedTechnicianOption = -1;
+  int? selectedTechnicianId;
   int? apiPaymentMode;
   bool isPaymentValidate = false;
   bool isPaymentModeSelected = false;
+
+  bool isTechnicianValidate = false;
+  bool isTechnicianSelected = false;
+
   bool isFreeService = true;
   String? selectedPaymentMode;
   bool _isLoadingAccept = false;
@@ -725,10 +734,9 @@ class _OpCardState extends State<OpCard> {
     super.initState();
 
     dateValues = parseDateString(widget.data.date);
-    print('userid===userId,$dateValues');
-    print('userid===userId,$opuserId');
-    print('widget===userId,${widget.userId}');
     fetchPaymentOptions();
+    fetchTechnicianOptions();
+    print('xxx: ${widget.data.closedTechnicianName}');
   }
 
   @override
@@ -750,296 +758,125 @@ class _OpCardState extends State<OpCard> {
   Widget build(BuildContext context) {
     dateValues = parseDateString(widget.data.date);
     return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: 5,
-        child: IntrinsicHeight(
-          child: Container(
-            // height: widget.data.statusTypeId == 4 || widget.data.statusTypeId == 6
-            //     ? 150
-            //     : 180,
-            //   height: 150,
-            padding: const EdgeInsets.all(5),
-            // decoration: BoxDecoration(
-            //   borderRadius: BorderRadius.circular(10.0),
-            // ),
-            decoration: BoxDecoration(
-              color: const Color(0xffe2f0fd),
-              borderRadius: BorderRadius.circular(5.0),
-              // border: Border.all(
-              //   color: Colors.grey,
-              //   //  color: const Color(0xFF8d97e2), // Add your desired border color here
-              //   width: 1.0, // Set the border width
-              // ),
-            ),
-            child: Row(
-              children: [
-                SizedBox(
-                  //  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.height / 16,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        '${dateValues[1]}',
-                        style: CommonUtils.txSty_18p_f7,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      elevation: 5,
+      child: IntrinsicHeight(
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: const Color(0xffe2f0fd),
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.height / 16,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${dateValues[1]}',
+                      style: CommonUtils.txSty_18p_f7,
+                    ),
+                    Text(
+                      '${dateValues[0]}',
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontFamily: "Outfit",
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0f75bc),
                       ),
-                      Text(
-                        '${dateValues[0]}',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontFamily: "Outfit",
-                          // letterSpacing: 1.5,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF0f75bc),
-                        ),
+                    ),
+                    Text(
+                      '${dateValues[2]}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontFamily: "Outfit",
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0f75bc),
                       ),
-                      Text(
-                        '${dateValues[2]}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontFamily: "Outfit",
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF0f75bc),
-                        ),
-                      ),
-                      // const Divider(
-                      //   color: CommonUtils.primaryTextColor, // You can change the color as per your requirement
-                      //   thickness: 1, // You can change the thickness as per your requirement
-                      //   height: 20, // You can adjust the height as per your requirement
-                      // ),
-                      // Builder(
-                      //   builder: (context) {
-                      //     final parts = widget.data.slotDuration.split(' ');
-                      //     final time = parts[0];
-                      //     final period = parts.length > 1 ? parts[1] : '';
-                      //     return Column(
-                      //       children: [
-                      //         Text(
-                      //           time,
-                      //           style: const TextStyle(
-                      //             fontSize: 18,
-                      //             fontFamily: "Outfit",
-                      //             fontWeight: FontWeight.w700,
-                      //             color: Color(0xFF0f75bc),
-                      //           ),
-                      //         ),
-                      //         Text(
-                      //           period,
-                      //           style: const TextStyle(
-                      //             fontSize: 18,
-                      //             fontFamily: "Outfit",
-                      //             fontWeight: FontWeight.w700,
-                      //             color: Color(0xFF0f75bc),
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     );
-                      //   },
-                      // ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const VerticalDivider(
-                  color: CommonUtils.primaryTextColor,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              const VerticalDivider(
+                color: CommonUtils.primaryTextColor,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.data.slotTime,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: "Outfit",
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF0f75bc),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 2.0,
+                                ),
+                                Row(
                                   children: [
-                                    Text(
-                                      widget.data.slotTime,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: "Outfit",
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFF0f75bc),
+                                    Flexible(
+                                      child: Text(
+                                        widget.data.customerName,
+                                        style: CommonStyles.txSty_16b6_fb,
+                                        softWrap: true,
+                                        maxLines: null,
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 2.0,
-                                    ),
-                                    // Row(children: [
-                                    //   Text(widget.data.customerName, style: CommonStyles.txSty_16b6_fb),
-                                    //   GestureDetector(
-                                    //     key: _fullnameTipKey,
-                                    //     child: const Padding(
-                                    //       padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                    //       child: Icon(
-                                    //         Icons.copy,
-                                    //         size: 16,
-                                    //       ),
-                                    //     ),
-                                    //     onTap: () {
-                                    //       Clipboard.setData(ClipboardData(text: widget.data.customerName));
-                                    //       showTooltip(context, "Copied", _fullnameTipKey);
-                                    //     },
-                                    //   ),
-                                    // ]),
-                                    Row(
-                                      // crossAxisAlignment: CrossAxisAlignment.start,  // Aligns content to the top
-                                      children: [
-                                        Flexible(
-                                          child: Text(
-                                            widget.data.customerName,
-                                            style: CommonStyles.txSty_16b6_fb,
-                                            softWrap:
-                                                true, // Allows text to wrap
-                                            maxLines:
-                                                null, // No limit on the number of lines
-                                          ),
+                                    GestureDetector(
+                                      key: _fullnameTipKey,
+                                      child: const Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                        child: Icon(
+                                          Icons.copy,
+                                          size: 16,
                                         ),
-                                        GestureDetector(
-                                          key: _fullnameTipKey,
-                                          child: const Padding(
-                                            padding:
-                                                EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                            child: Icon(
-                                              Icons.copy,
-                                              size: 16,
-                                            ),
-                                          ),
-                                          onTap: () {
-                                            Clipboard.setData(ClipboardData(
-                                                text:
-                                                    widget.data.customerName));
-                                            showTooltip(context, "Copied",
-                                                _fullnameTipKey);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-
-                                    const SizedBox(
-                                      height: 2.0,
-                                    ),
-                                    if (widget.data.email!.isNotEmpty) ...{
-                                      Container(
-                                        // width: MediaQuery.of(context).size.width / 3.5,
-                                        child: Row(children: [
-                                          Flexible(
-                                            child: RichText(
-                                              text: TextSpan(
-                                                text: widget.data.email ?? '',
-                                                style:
-                                                    CommonStyles.txSty_14b_fb,
-                                                children: const <TextSpan>[],
-                                              ),
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            key: _emailtoolTipKey,
-                                            child: const Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  5, 0, 5, 0),
-                                              child: Icon(
-                                                Icons.copy,
-                                                size: 16,
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              Clipboard.setData(ClipboardData(
-                                                  text: widget.data.email!));
-                                              showTooltip(context, "Copied",
-                                                  _emailtoolTipKey);
-                                            },
-                                          ),
-                                        ]),
                                       ),
-                                    } else ...{
-                                      SizedBox.shrink()
-                                    },
-
-                                    const SizedBox(
-                                      height: 2.0,
+                                      onTap: () {
+                                        Clipboard.setData(ClipboardData(
+                                            text: widget.data.customerName));
+                                        showTooltip(
+                                            context, "Copied", _fullnameTipKey);
+                                      },
                                     ),
-                                    Text(widget.data.purposeOfVisit,
-                                        style: CommonStyles.txSty_14blu_f5),
-                                    const SizedBox(
-                                      height: 2.0,
-                                    ),
-                                    Text(widget.data.name,
-                                        style: CommonStyles.txSty_16b_fb),
-                                    const SizedBox(
-                                      height: 2.0,
-                                    ),
-                                    //MARK: technician
-                                    //    if (widget.data.technicianName != null)
-                                    if (widget
-                                        .data.technicianName!.isNotEmpty) ...{
-                                      Row(
-                                        children: [
-                                          const Text(
-                                            'Technician: ',
-                                            style: CommonStyles.txSty_16blu_f5,
-                                          ),
-                                          Text(widget.data.technicianName!,
-                                              style: CommonStyles.txSty_16b_fb),
-                                        ],
-                                      ),
-                                    } else ...{
-                                      SizedBox.shrink()
-                                    },
-
-                                    const SizedBox(
-                                      height: 2.0,
-                                    ),
-                                    if (widget.data.paymentType != null)
-                                      Text(widget.data.paymentType ?? ' ',
-                                          style: CommonStyles.txSty_16b_fb),
                                   ],
                                 ),
-                              ),
-                            ),
-                            Container(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  statusBasedBgById(widget.data.statusTypeId,
-                                      widget.data.status),
-                                  const SizedBox(height: 5.0),
 
-                                  Row(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          makePhoneCall(
-                                              'tel:+91${widget.data.phoneNumber}');
-                                        },
+                                const SizedBox(
+                                  height: 2.0,
+                                ),
+                                if (widget.data.email!.isNotEmpty) ...{
+                                  Container(
+                                    child: Row(children: [
+                                      Flexible(
                                         child: RichText(
                                           text: TextSpan(
-                                            text: widget.data.phoneNumber,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontFamily: "Outfit",
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xFF0f75bc),
-                                              decoration:
-                                                  TextDecoration.underline,
-                                              decorationColor: Color(
-                                                  0xFF0f75bc), // Change this to your desired underline color
-                                            ),
+                                            text: widget.data.email ?? '',
+                                            style: CommonStyles.txSty_14b_fb,
+                                            children: const <TextSpan>[],
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(
-                                        width: 5.0,
-                                      ),
                                       GestureDetector(
-                                        key: _toolTipKey,
+                                        key: _emailtoolTipKey,
                                         child: const Padding(
                                           padding:
-                                              EdgeInsets.fromLTRB(5, 0, 0, 0),
+                                              EdgeInsets.fromLTRB(5, 0, 5, 0),
                                           child: Icon(
                                             Icons.copy,
                                             size: 16,
@@ -1047,84 +884,198 @@ class _OpCardState extends State<OpCard> {
                                         ),
                                         onTap: () {
                                           Clipboard.setData(ClipboardData(
-                                              text: widget.data.phoneNumber!));
-                                          showTooltip(
-                                              context, "Copied", _toolTipKey);
+                                              text: widget.data.email!));
+                                          showTooltip(context, "Copied",
+                                              _emailtoolTipKey);
                                         },
+                                      ),
+                                    ]),
+                                  ),
+                                } else ...{
+                                  const SizedBox.shrink()
+                                },
+
+                                const SizedBox(
+                                  height: 2.0,
+                                ),
+                                Text(widget.data.purposeOfVisit,
+                                    style: CommonStyles.txSty_14blu_f5),
+                                const SizedBox(
+                                  height: 2.0,
+                                ),
+                                Text(widget.data.name,
+                                    style: CommonStyles.txSty_16b_fb),
+                                const SizedBox(
+                                  height: 2.0,
+                                ),
+                                //MARK: technician
+                                if (widget.data.closedTechnicianName != null &&
+                                    widget.data.closedTechnicianName!
+                                        .isNotEmpty) ...{
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        'Technician: ',
+                                        style: CommonStyles.txSty_16blu_f5,
+                                      ),
+                                      Text(widget.data.closedTechnicianName!,
+                                          style: CommonStyles.txSty_16b_fb),
+                                    ],
+                                  ),
+                                } else if (widget.data.technicianName != null &&
+                                    widget.data.technicianName!.isNotEmpty) ...{
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        'Technician: ',
+                                        style: CommonStyles.txSty_16blu_f5,
+                                      ),
+                                      Text(widget.data.technicianName!,
+                                          style: CommonStyles.txSty_16b_fb),
+                                    ],
+                                  ),
+                                },
+                                /* if (widget.data.technicianName!.isNotEmpty) ...{
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        'Technician: ',
+                                        style: CommonStyles.txSty_16blu_f5,
+                                      ),
+                                      Text(widget.data.technicianName!,
+                                          style: CommonStyles.txSty_16b_fb),
+                                    ],
+                                  ),
+                                } else ...{
+                                  const SizedBox.shrink()
+                                }, */
+
+                                if (widget.data.paymentType != null)
+                                  Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 2.0,
+                                      ),
+                                      Text(widget.data.paymentType ?? ' ',
+                                          style: CommonStyles.txSty_16b_fb),
+                                    ],
+                                  )
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                statusBasedBgById(widget.data.statusTypeId,
+                                    widget.data.status),
+                                const SizedBox(height: 5.0),
+                                Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        makePhoneCall(
+                                            'tel:+91${widget.data.phoneNumber}');
+                                      },
+                                      child: RichText(
+                                        text: TextSpan(
+                                          text: widget.data.phoneNumber,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: "Outfit",
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF0f75bc),
+                                            decoration:
+                                                TextDecoration.underline,
+                                            decorationColor: Color(0xFF0f75bc),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 5.0,
+                                    ),
+                                    GestureDetector(
+                                      key: _toolTipKey,
+                                      child: const Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(5, 0, 0, 0),
+                                        child: Icon(
+                                          Icons.copy,
+                                          size: 16,
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        Clipboard.setData(ClipboardData(
+                                            text: widget.data.phoneNumber!));
+                                        showTooltip(
+                                            context, "Copied", _toolTipKey);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 3.0,
+                                ),
+                                Text(widget.data.gender ?? ' ',
+                                    style: CommonStyles.txSty_16b_fb),
+                                const SizedBox(
+                                  height: 5.0,
+                                  width: 2.0,
+                                ),
+                                if (widget.data.price != null)
+                                  Text(
+                                    '₹${formatNumber(widget.data.price ?? 0)}',
+                                    style: CommonStyles.txSty_16b_fb,
+                                  ),
+                                const SizedBox(
+                                  height: 5.0,
+                                ),
+                                if (widget.data.rating != null)
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.star_border_outlined,
+                                            size: 13,
+                                            color: CommonStyles.statusGreenText,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 8.0),
+                                            child: Text(
+                                              '${widget.data.rating ?? ''}',
+                                              style: CommonStyles.txSty_14g_f5,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(
-                                    height: 3.0,
-                                  ),
-
-                                  Text(widget.data.gender ?? ' ',
-                                      style: CommonStyles.txSty_16b_fb),
-
-                                  //    Text(widget.data.gender!, style: CommonStyles.txSty_16black_f5),
-                                  const SizedBox(
-                                    height: 5.0,
-                                    width: 2.0,
-                                  ),
-                                  if (widget.data.price != null)
-                                    Text(
-                                      '₹${formatNumber(widget.data.price ?? 0)}',
-                                      style: CommonStyles.txSty_16b_fb,
-                                    ),
-
-                                  //    Text(widget.data.gender!, style: CommonStyles. ),
-                                  const SizedBox(
-                                    height: 5.0,
-                                  ),
-                                  if (widget.data.rating != null)
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.star_border_outlined,
-                                              size: 13,
-                                              color:
-                                                  CommonStyles.statusGreenText,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right:
-                                                      8.0), // Adjust the value as needed
-                                              child: Text(
-                                                '${widget.data.rating ?? ''}',
-                                                style:
-                                                    CommonStyles.txSty_14g_f5,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-
-                      // based on status hide this row
-                      Row(
-                        mainAxisAlignment: widget.data.rating != null
-                            ? MainAxisAlignment.start
-                            : MainAxisAlignment.end,
-                        children: [
-                          verifyStatus(widget.data, widget.userId),
+                          ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                    Row(
+                      mainAxisAlignment: widget.data.rating != null
+                          ? MainAxisAlignment.start
+                          : MainAxisAlignment.end,
+                      children: [
+                        verifyStatus(widget.data, widget.userId),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   void showTooltip(BuildContext context, String message, GlobalKey toolTipKey) {
@@ -1199,20 +1150,15 @@ class _OpCardState extends State<OpCard> {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15), color: statusBgColor),
-      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
-      child: Row(
-        children: [
-          // statusBasedBgById(widget.data.statusTypeId),
-          Text(
-            status,
-            style: TextStyle(
-              fontSize: 16,
-              fontFamily: "Outfit",
-              fontWeight: FontWeight.w500,
-              color: statusColor,
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+      child: Text(
+        status,
+        style: TextStyle(
+          fontSize: 13,
+          fontFamily: "Outfit",
+          fontWeight: FontWeight.w500,
+          color: statusColor,
+        ),
       ),
     );
   }
@@ -1394,7 +1340,7 @@ class _OpCardState extends State<OpCard> {
                       //   ),
                       // ),
                       if (_isLoadingAccept) // Show loading indicator if loading
-                        SizedBox(
+                        const SizedBox(
                           width: 13,
                           height: 13,
                           child: CircularProgressIndicator(
@@ -1411,7 +1357,7 @@ class _OpCardState extends State<OpCard> {
                               ? Colors.grey
                               : CommonUtils.primaryTextColor,
                         ),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
                         _isLoadingAccept
                             ? 'Loading...'
@@ -1470,7 +1416,7 @@ class _OpCardState extends State<OpCard> {
                       //   ),
                       // ),
                       if (_isLoadingCancel) // Show loading indicator if loading
-                        SizedBox(
+                        const SizedBox(
                           width: 13,
                           height: 13,
                           child: CircularProgressIndicator(
@@ -1487,7 +1433,7 @@ class _OpCardState extends State<OpCard> {
                               ? Colors.grey
                               : CommonStyles.statusRedText,
                         ),
-                      SizedBox(width: 4),
+                      const SizedBox(width: 4),
                       Text(
                         _isLoadingCancel
                             ? 'Loading...'
@@ -1561,7 +1507,9 @@ class _OpCardState extends State<OpCard> {
               //MARK: Here
               GestureDetector(
                 onTap: () {
-                  closePopUp(context, data, 17, userId);
+                  futureTechnicians = fetchTechnicians();
+
+                  closePopUp(context, data, userId, futureTechnicians);
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -2233,17 +2181,39 @@ class _OpCardState extends State<OpCard> {
     }
   }
 
-  void closePopUp(BuildContext context, Appointment data, int i, int? userId) {
+  void closePopUp(BuildContext context, Appointment data, int? userId,
+      Future<List<TechniciansModel>> futureTechnicians) {
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.zero,
-          contentPadding: EdgeInsets.zero,
-          titlePadding: EdgeInsets.zero,
-          content: Container(
+            backgroundColor: Colors.transparent,
+            insetPadding: EdgeInsets.zero,
+            contentPadding: EdgeInsets.zero,
+            titlePadding: EdgeInsets.zero,
+            content: CloseConsulationCard(
+              data: data,
+              paymentOptions: paymentOptions,
+              technicianOptions: technicianOptions,
+              onSubmit: (paymentMode, billingAmount, technicianId) {
+                Navigator.of(context).pop();
+                selectedTechnicianId = technicianId;
+                _priceController.text = billingAmount.toString();
+                apiPaymentMode = paymentMode;
+                print('xxx: $selectedTechnicianId');
+
+                postCloseAppointment(
+                    data,
+                    17,
+                    double.tryParse(billingAmount ?? '0.0'),
+                    paymentMode,
+                    userId,
+                    technicianId);
+              },
+            )
+
+            /*     Container(
             width: MediaQuery.of(context).size.width * 0.8,
             padding: const EdgeInsets.all(0),
             decoration: BoxDecoration(
@@ -2272,9 +2242,12 @@ class _OpCardState extends State<OpCard> {
                               ),
                             ),
                           )),
+
+                          //MARK: Close Btn
                           GestureDetector(
                             onTap: () {
                               selectedPaymentOption = -1;
+                              selectedTechnicianOption = -1;
                               _priceController.clear();
                               Navigator.of(context).pop();
                             },
@@ -2307,132 +2280,32 @@ class _OpCardState extends State<OpCard> {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
+                                  const SizedBox(height: 8),
+                                  customRow(
+                                      data: data.customerName,
+                                      title: 'Customer Name'),
+
+                                  const SizedBox(height: 5),
+                                  customRow(
+                                      data: DateFormat('dd-MM-yyyy hh:mm a')
+                                          .format(DateTime.parse(data.date)),
+                                      // data: DateFormat('dd-MM-yyyy')
+                                      //     .format(DateTime.parse(data.date)),
+                                      title: 'Slot Time'),
+
+                                  const SizedBox(height: 5),
+                                  customRow(
+                                      data: data.purposeOfVisit,
+                                      title: 'Purpose of Visit'),
+
+                                  /* if (data.technicianName != null) ...[
+                                    const SizedBox(height: 5),
+                                    customRow(
+                                        data: data.technicianName!,
+                                        title: 'Technician'),
+                                  ], */
                                   const SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      const Expanded(
-                                        flex: 4,
-                                        child: Text(
-                                          'Customer Name',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontFamily: "Outfit",
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 6,
-                                        child: RichText(
-                                          text: TextSpan(
-                                            style: const TextStyle(
-                                              color:
-                                                  CommonStyles.primaryTextColor,
-                                              fontSize: 14,
-                                              fontFamily: "Outfit",
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            children: [
-                                              WidgetSpan(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 0.0),
-                                                  child: Text(
-                                                    ': ${data.customerName}',
-                                                    style: const TextStyle(
-                                                      color: CommonStyles
-                                                          .primaryTextColor,
-                                                      fontSize: 14,
-                                                      fontFamily: "Outfit",
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          softWrap: true,
-                                          overflow: TextOverflow.visible,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Row(
-                                    children: [
-                                      const Expanded(
-                                        flex: 4,
-                                        child: Text(
-                                          'Slot Time',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontFamily: "Outfit",
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 6,
-                                        child: OverflowBar(
-                                          overflowAlignment:
-                                              OverflowBarAlignment.start,
-                                          children: [
-                                            Text(
-                                              ': ${DateFormat('dd-MM-yyyy').format(DateTime.parse(data.date))}, ${data.slotTime}',
-                                              style: const TextStyle(
-                                                color: CommonStyles
-                                                    .primaryTextColor,
-                                                fontSize: 14,
-                                                fontFamily: "Outfit",
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Row(
-                                    children: [
-                                      const Expanded(
-                                        flex: 4,
-                                        child: Text(
-                                          'Purpose of Visit',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 14,
-                                            fontFamily: "Outfit",
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 6,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              ': ${data.purposeOfVisit}',
-                                              style: const TextStyle(
-                                                color: CommonStyles
-                                                    .primaryTextColor,
-                                                fontSize: 14,
-                                                fontFamily: "Outfit",
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 20),
+                                  //MARK: Payment Mode
                                   const Row(
                                     children: [
                                       Text(
@@ -2447,86 +2320,7 @@ class _OpCardState extends State<OpCard> {
                                       ),
                                     ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 0, top: 5.0, right: 0),
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: isPaymentModeSelected
-                                              ? const Color.fromARGB(
-                                                  255, 175, 15, 4)
-                                              : CommonUtils.primaryTextColor,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                        color: Colors.white,
-                                      ),
-                                      child: DropdownButtonHideUnderline(
-                                        child: ButtonTheme(
-                                          alignedDropdown: true,
-                                          child: DropdownButton<int>(
-                                            value: selectedPaymentOption,
-                                            iconSize: 30,
-                                            icon: null,
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                            onChanged: (value) {
-                                              setState(() {
-                                                if (value != null) {
-                                                  selectedPaymentOption = value;
-                                                  if (paymentOptions[value]
-                                                          ['typeCdId'] ==
-                                                      23) {
-                                                    isFreeService = false;
-                                                    _priceController.text =
-                                                        '0.0';
-                                                  } else {
-                                                    _priceController.clear();
-                                                    isFreeService = true;
-                                                  }
-
-                                                  apiPaymentMode = paymentOptions[
-                                                          selectedPaymentOption]
-                                                      ['typeCdId'];
-                                                  selectedPaymentMode =
-                                                      paymentOptions[
-                                                              selectedPaymentOption]
-                                                          ['desc'];
-                                                }
-                                                isPaymentModeSelected = false;
-                                              });
-                                            },
-                                            items: [
-                                              const DropdownMenuItem<int>(
-                                                value: -1,
-                                                child: Text(
-                                                  'Select Payment Mode',
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                              ),
-                                              ...paymentOptions
-                                                  .asMap()
-                                                  .entries
-                                                  .map((entry) {
-                                                final index = entry.key;
-                                                final item = entry.value;
-                                                return DropdownMenuItem<int>(
-                                                  value: index,
-                                                  child: Text(item['desc']),
-                                                );
-                                              }).toList(),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  paymentModeDropDown(context, setState),
                                   if (isPaymentModeSelected)
                                     const Row(
                                       mainAxisAlignment:
@@ -2546,6 +2340,46 @@ class _OpCardState extends State<OpCard> {
                                         ),
                                       ],
                                     ),
+
+                                  //MARK: Technicians
+                                  // if (data.technicianName == null)
+                                  ...[
+                                    const SizedBox(height: 10.0),
+                                    const Row(
+                                      children: [
+                                        Text(
+                                          'Technician ',
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          '*',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ],
+                                    ),
+                                    technicianDropDown(context, setState, data),
+                                    if (isTechnicianSelected)
+                                      const Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16, vertical: 5),
+                                            child: Text(
+                                              'Please Select Technician',
+                                              style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 175, 15, 4),
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                  ],
                                   const SizedBox(height: 10.0),
                                   const Row(
                                     children: [
@@ -2574,47 +2408,47 @@ class _OpCardState extends State<OpCard> {
                                     ],
                                     maxLength: 10,
                                     decoration: InputDecoration(
-                                      errorText: _billingAmountError
-                                          ? _billingAmountErrorMsg
-                                          : null,
-                                      contentPadding: const EdgeInsets.only(
-                                          top: 15,
-                                          bottom: 10,
-                                          left: 15,
-                                          right: 15),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                          color: CommonUtils.primaryTextColor,
+                                        errorText: _billingAmountError
+                                            ? _billingAmountErrorMsg
+                                            : null,
+                                        contentPadding: const EdgeInsets.only(
+                                            top: 15,
+                                            bottom: 10,
+                                            left: 15,
+                                            right: 15),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                            color: CommonUtils.primaryTextColor,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(6.0),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                          color: CommonUtils.primaryTextColor,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                            color: CommonUtils.primaryTextColor,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(6.0),
-                                      ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                          color:
-                                              Color.fromARGB(255, 175, 15, 4),
+                                        errorBorder: OutlineInputBorder(
+                                          borderSide: const BorderSide(
+                                            color:
+                                                Color.fromARGB(255, 175, 15, 4),
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(6.0),
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(6.0),
-                                      ),
-                                      border: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(10),
+                                        border: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
                                         ),
-                                      ),
-                                      hintText: 'Enter Billing Amount (Rs)',
-                                      counterText: "",
-                                      hintStyle: const TextStyle(
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.w400),
-                                    ),
+                                        hintText: 'Enter Billing Amount (Rs)',
+                                        counterText: "",
+                                        hintStyle: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.w500)),
                                     validator: validateAmount,
                                     onChanged: (value) {
                                       setState(() {
@@ -2631,7 +2465,7 @@ class _OpCardState extends State<OpCard> {
                                       });
                                     },
                                   ),
-                                  const SizedBox(height: 20),
+                                  const SizedBox(height: 15),
                                 ],
                               ),
                             ),
@@ -2645,11 +2479,13 @@ class _OpCardState extends State<OpCard> {
                                   onPressed: () {
                                     setState(() {
                                       validatePaymentMode();
+                                      validateTechnician();
                                     });
                                     print(
-                                        'formValidation: ${_formKey.currentState!.validate()}  | $isPaymentValidate | $isBillingAmountValidate');
+                                        'formValidation: ${_formKey.currentState!.validate()}  | $isPaymentValidate | $isTechnicianValidate | $isBillingAmountValidate');
                                     if (_formKey.currentState!.validate() &&
                                         isPaymentValidate &&
+                                        isTechnicianValidate &&
                                         isBillingAmountValidate) {
                                       double? price = double.tryParse(
                                           _priceController.text);
@@ -2670,8 +2506,269 @@ class _OpCardState extends State<OpCard> {
               },
             ),
           ),
-        );
+       */
+
+            );
       },
+    );
+  }
+
+  Padding technicianDropDown(
+      BuildContext context, StateSetter setState, Appointment data) {
+    print('www4 technician: ${data.technicianName}');
+
+    if (data.technicianName != null && data.technicianName!.isNotEmpty) {
+      selectedTechnicianOption = technicianOptions.length + 1;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 0, top: 5.0, right: 0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isTechnicianSelected
+                ? const Color.fromARGB(255, 175, 15, 4)
+                : CommonUtils.primaryTextColor,
+          ),
+          borderRadius: BorderRadius.circular(5.0),
+          color: Colors.white,
+        ),
+        child: DropdownButtonHideUnderline(
+          child: ButtonTheme(
+            alignedDropdown: true,
+            child: DropdownButton<int>(
+              value: selectedTechnicianOption,
+              iconSize: 30,
+              hint: const Text(
+                'Select Technician',
+                style:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+              ),
+              icon: null,
+              style: const TextStyle(
+                color: Colors.black,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  selectedTechnicianOption = value;
+
+                  if (value != null && value != technicianOptions.length + 1) {
+                    selectedTechnicianId = technicianOptions[value]['id'];
+                  } else if (value != null &&
+                      value == technicianOptions.length + 1) {
+                    selectedTechnicianId = data.technicianId;
+                  }
+                  isTechnicianSelected = false;
+                });
+              },
+              items: [
+                const DropdownMenuItem<int>(
+                  value: -1,
+                  child: Text(
+                    'Select Technician',
+                    style: TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                if (data.technicianName != null &&
+                    data.technicianName!.isNotEmpty)
+                  DropdownMenuItem<int>(
+                    value: technicianOptions.length + 1,
+                    child: Text(
+                      '${data.technicianName}',
+                    ),
+                  ),
+                ...technicianOptions.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  return DropdownMenuItem<int>(
+                    value: index,
+                    child: Text(item['userName']),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void validateTechnician() {
+    print('validateTechnician: $selectedPaymentOption | $selectedTechnicianId');
+    if (selectedTechnicianId == null || selectedTechnicianId == -1) {
+      setState(() {
+        isTechnicianSelected = true;
+        isTechnicianValidate = false;
+      });
+    } else {
+      setState(() {
+        isTechnicianSelected = false;
+        isTechnicianValidate = true;
+      });
+    }
+  }
+
+  Padding paymentModeDropDown(BuildContext context, StateSetter setState) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 0, top: 5.0, right: 0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isPaymentModeSelected
+                ? const Color.fromARGB(255, 175, 15, 4)
+                : CommonUtils.primaryTextColor,
+          ),
+          borderRadius: BorderRadius.circular(5.0),
+          color: Colors.white,
+        ),
+        child: DropdownButtonHideUnderline(
+          child: ButtonTheme(
+            alignedDropdown: true,
+            child: DropdownButton<int>(
+              value: selectedPaymentOption,
+              iconSize: 30,
+              icon: null,
+              style: const TextStyle(
+                color: Colors.black,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  if (value != null) {
+                    selectedPaymentOption = value;
+                    if (paymentOptions[value]['typeCdId'] == 23) {
+                      isFreeService = false;
+                      _priceController.text = '0.0';
+                    } else {
+                      _priceController.clear();
+                      isFreeService = true;
+                    }
+
+                    apiPaymentMode =
+                        paymentOptions[selectedPaymentOption]['typeCdId'];
+                    selectedPaymentMode =
+                        paymentOptions[selectedPaymentOption]['desc'];
+                  }
+                  isPaymentModeSelected = false;
+                });
+              },
+              items: [
+                const DropdownMenuItem<int>(
+                  value: -1,
+                  child: Text(
+                    'Select Payment Mode',
+                    style: TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                ...paymentOptions.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  return DropdownMenuItem<int>(
+                    value: index,
+                    child: Text(item['desc']),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+/*   Row customRow({required String title, required String data}) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 4,
+          child: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+              fontFamily: "Outfit",
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        const Expanded(
+          flex: 6,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                ': Buttons will now automatically wrap to the next line if there’s not enough horizontal space. ',
+                style: TextStyle(
+                  color: CommonStyles.primaryTextColor,
+                  fontSize: 14,
+                  fontFamily: "Outfit",
+                  fontWeight: FontWeight.w500,
+                ),
+                softWrap: true, // Enables text wrapping
+                overflow: TextOverflow
+                    .visible, // Ensures text is visible when wrapped
+              ),
+
+              /*  Text(
+                ': Buttons will now automatically wrap to the next line if there’s not enough horizontal space. ',
+                // ': $data',
+                style: TextStyle(
+                  color: CommonStyles.primaryTextColor,
+                  fontSize: 14,
+                  fontFamily: "Outfit",
+                  fontWeight: FontWeight.w500,
+                ),
+              ), */
+            ],
+          ),
+        ),
+      ],
+    );
+  } */
+
+  Row customRow({required String title, required String data}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 4,
+          child: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+              fontFamily: "Outfit",
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        const Text(
+          ' : ',
+          style: TextStyle(
+            color: CommonStyles.primaryTextColor,
+            fontSize: 14,
+            fontFamily: "Outfit",
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Expanded(
+          flex: 6,
+          child: Text(
+            data,
+            style: const TextStyle(
+              color: CommonStyles.primaryTextColor,
+              fontSize: 14,
+              fontFamily: "Outfit",
+              fontWeight: FontWeight.w500,
+            ),
+            softWrap: true,
+            overflow: TextOverflow.visible,
+          ),
+        ),
+      ],
     );
   }
 
@@ -2872,7 +2969,7 @@ class _OpCardState extends State<OpCard> {
   Future<void> fetchPaymentOptions() async {
     try {
       final response = await http.get(Uri.parse(baseUrl + getPaymentMode));
-      print('apiUrl: $response');
+      print('fetchPaymentOptions: $response');
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
@@ -2888,8 +2985,50 @@ class _OpCardState extends State<OpCard> {
     }
   }
 
-  Future<void> postCloseAppointment(Appointment data, int i,
-      double? billingAmount, int? paymentTypeId, int? userId) async {
+  Future<void> fetchTechnicianOptions() async {
+    try {
+      final requestBody = jsonEncode({
+        "branchId": widget.data.branchId,
+        "date": widget.data.date,
+        "slot": widget.data.slotTime
+      });
+      final response = await http.post(
+        Uri.parse(baseUrl + getTechnicians),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      );
+      print('fetchTechnicianOptions: ${baseUrl + getTechnicians}');
+      print('fetchTechnicianOptions data: ${response.body}');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['listResult'] == null) {
+          setState(() {
+            technicianOptions = [];
+          });
+          return;
+        }
+        setState(() {
+          technicianOptions = data['listResult'];
+        });
+        return;
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
+      rethrow;
+    }
+  }
+
+  Future<void> postCloseAppointment(
+      Appointment data,
+      int i,
+      double? billingAmount,
+      int? paymentTypeId,
+      int? userId,
+      int? technicianId) async {
     final url = Uri.parse(baseUrl + postApiAppointment);
 
     // final url = Uri.parse('http://182.18.157.215/SaloonApp/API/api/Appointment');
@@ -2919,21 +3058,16 @@ class _OpCardState extends State<OpCard> {
       "UpdatedByUserId": userId,
       "timeofSlot": data.timeofSlot,
       if (i == 17) "price": billingAmount,
-      "paymentTypeId": paymentTypeId
-
-      // "rating": null,
-      // "review": null,
-      // "reviewSubmittedDate": null,
-      // "timeofslot": null,
-      // "customerId":  data.c
+      "paymentTypeId": paymentTypeId,
+      "technicianId": technicianId,
     };
+    print('xxx: ${jsonEncode(request)}');
     try {
-      // Send the POST request
       final response = await http.post(
         url,
         body: json.encode(request),
         headers: {
-          'Content-Type': 'application/json', // Set the content type header
+          'Content-Type': 'application/json',
         },
       );
       // Check the response status code
@@ -3019,6 +3153,39 @@ class _OpCardState extends State<OpCard> {
     return differenceInMinutes
         .abs(); // Return the absolute value of the difference
   }
+
+  Future<List<TechniciansModel>> fetchTechnicians() async {
+    try {
+      final apiUrl = Uri.parse(baseUrl + getTechnicians);
+      final requestBody = jsonEncode({
+        "branchId": widget.data.branchId,
+        "date": widget.data.date,
+        "slot": widget.data.slotTime
+      });
+      final jsonResponse = await http.post(
+        apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      );
+      print('fetchTechnicianOptions: ${baseUrl + getTechnicians}');
+      if (jsonResponse.statusCode == 200) {
+        final response = jsonDecode(jsonResponse.body);
+        if (response['listResult'] != null) {
+          List<dynamic> techniciansList = response['listResult'];
+          return techniciansList
+              .map((technician) => TechniciansModel.fromJson(technician))
+              .toList();
+        }
+        return [];
+      } else {
+        return [];
+      }
+    } catch (error) {
+      return [];
+    }
+  }
 }
 
 class StatusModel {
@@ -3032,5 +3199,678 @@ class StatusModel {
       typeCdId: json['typeCdId'],
       desc: json['desc'],
     );
+  }
+}
+
+class CloseConsulationCard extends StatefulWidget {
+  final Appointment data;
+  final List<dynamic> paymentOptions;
+  final List<dynamic> technicianOptions;
+  final void Function(
+      int? paymentMode, String? billingAmount, int? technicianId)? onSubmit;
+  const CloseConsulationCard(
+      {super.key,
+      required this.data,
+      required this.paymentOptions,
+      required this.technicianOptions,
+      this.onSubmit});
+
+  @override
+  State<CloseConsulationCard> createState() => _CloseConsulationCardState();
+}
+
+class _CloseConsulationCardState extends State<CloseConsulationCard> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _priceController = TextEditingController();
+/*   late Future<List<PaymentTypesModel>> futurePaymentTypes;
+  late Future<List<TechniciansModel>> futureTechnicians; */
+  int selectedPaymentOption = -1;
+  int? selectedTechnicianOption;
+  int? selectedTechnicianId;
+  int? apiPaymentMode;
+  bool isPaymentValidate = false;
+  bool isPaymentModeSelected = false;
+  bool _billingAmountError = false;
+  String? _billingAmountErrorMsg;
+  bool isBillingAmountValidate = false;
+
+  bool isTechnicianValidate = false;
+  bool isTechnicianSelected = false;
+  bool isFreeService = true;
+  String? selectedPaymentMode;
+
+  @override
+  void initState() {
+    super.initState();
+    setInitialTechnician(widget.data);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0),
+        color: const Color(0xffffffff),
+      ),
+      child: StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Expanded(
+                        child: Center(
+                      child: Text(
+                        'Billing Details',
+                        style: TextStyle(
+                          color: CommonStyles.primaryTextColor,
+                          fontSize: 14,
+                          fontFamily: "Outfit",
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    )),
+
+                    //MARK: Close Btn
+                    GestureDetector(
+                      onTap: () {
+                        selectedPaymentOption = -1;
+                        selectedTechnicianOption = -1;
+                        _priceController.clear();
+                        Navigator.of(context).pop();
+                      },
+                      child: const CircleAvatar(
+                        backgroundColor: CommonStyles.primaryColor,
+                        radius: 12,
+                        child: Center(
+                          child: Icon(
+                            Icons.close,
+                            color: CommonStyles.primaryTextColor,
+                            size: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Form(
+                        key: _formKey,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 8),
+                              customRow(
+                                  data: widget.data.customerName,
+                                  title: 'Customer Name'),
+
+                              const SizedBox(height: 5),
+                              customRow(
+                                  data:
+                                      '${DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.data.date))} ${widget.data.slotTime}',
+                                  // data: DateFormat('dd-MM-yyyy')
+                                  //     .format(DateTime.parse(data.date)),
+                                  title: 'Slot Time'),
+
+                              const SizedBox(height: 5),
+                              customRow(
+                                  data: widget.data.purposeOfVisit,
+                                  title: 'Purpose of Visit'),
+
+                              /* if (data.technicianName != null) ...[
+                                      const SizedBox(height: 5),
+                                      customRow(
+                                          data: data.technicianName!,
+                                          title: 'Technician'),
+                                    ], */
+                              const SizedBox(height: 10),
+                              //MARK: Payment Mode
+                              const Row(
+                                children: [
+                                  Text(
+                                    'Payment Mode ',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    '*',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                              paymentModeDropDown(
+                                  context, setState, widget.paymentOptions),
+                              if (isPaymentModeSelected)
+                                const Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 5),
+                                      child: Text(
+                                        'Please Select Payment Mode',
+                                        style: TextStyle(
+                                          color:
+                                              Color.fromARGB(255, 175, 15, 4),
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                              //MARK: Technicians
+                              // if (data.technicianName == null)
+                              ...[
+                                const SizedBox(height: 10.0),
+                                const Row(
+                                  children: [
+                                    Text(
+                                      'Technician ',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      '*',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ],
+                                ),
+                                technicianDropDown(
+                                    context, setState, widget.data),
+                                if (isTechnicianSelected)
+                                  const Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 5),
+                                        child: Text(
+                                          'Please Select Technician',
+                                          style: TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 175, 15, 4),
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                              const SizedBox(height: 10.0),
+                              const Row(
+                                children: [
+                                  Text(
+                                    'Billing Amount (Rs) ',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    '*',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 5.0),
+                              TextFormField(
+                                controller: _priceController,
+                                enabled: isFreeService,
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                        decimal: true),
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'^\d*\.?\d{0,2}')),
+                                ],
+                                maxLength: 10,
+                                decoration: InputDecoration(
+                                    errorText: _billingAmountError
+                                        ? _billingAmountErrorMsg
+                                        : null,
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 15,
+                                        bottom: 10,
+                                        left: 15,
+                                        right: 15),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: CommonUtils.primaryTextColor,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.0),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: CommonUtils.primaryTextColor,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.0),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                        color: Color.fromARGB(255, 175, 15, 4),
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.0),
+                                    ),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(10),
+                                      ),
+                                    ),
+                                    hintText: 'Enter Billing Amount (Rs)',
+                                    counterText: "",
+                                    hintStyle: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500)),
+                                validator: validateAmount,
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (value.startsWith(' ')) {
+                                      _priceController.value = TextEditingValue(
+                                        text: value.trimLeft(),
+                                        selection: TextSelection.collapsed(
+                                            offset: value.trimLeft().length),
+                                      );
+                                    }
+                                    _billingAmountError = false;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 15),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomButton(
+                              buttonText: 'Submit',
+                              color: CommonUtils.primaryTextColor,
+                              onPressed: () {
+                                setState(() {
+                                  validatePaymentMode();
+                                  validateTechnician();
+                                });
+                                print(
+                                    'formValidation: ${_formKey.currentState!.validate()}  | $isPaymentValidate | $isTechnicianValidate | $isBillingAmountValidate');
+                                if (_formKey.currentState!.validate() &&
+                                    isPaymentValidate &&
+                                    isTechnicianValidate &&
+                                    isBillingAmountValidate) {
+                                  /* double? price = double.tryParse(
+                                            _priceController.text);
+                                        postCloseAppointment(widget.data, 17, price!,
+                                            apiPaymentMode, userId);
+                                        Navigator.of(context).pop(); */
+                                  widget.onSubmit?.call(
+                                    selectedPaymentOption == -1
+                                        ? null
+                                        : apiPaymentMode,
+                                    _priceController.text.trim(),
+                                    selectedTechnicianId,
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Row customRow({required String title, required String? data}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 4,
+          child: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+              fontFamily: "Outfit",
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        const Text(
+          ' : ',
+          style: TextStyle(
+            color: CommonStyles.primaryTextColor,
+            fontSize: 14,
+            fontFamily: "Outfit",
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Expanded(
+          flex: 6,
+          child: Text(
+            '$data',
+            style: const TextStyle(
+              color: CommonStyles.primaryTextColor,
+              fontSize: 14,
+              fontFamily: "Outfit",
+              fontWeight: FontWeight.w500,
+            ),
+            softWrap: true,
+            overflow: TextOverflow.visible,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Padding paymentModeDropDown(BuildContext context, StateSetter setState,
+      List<dynamic> paymentOptions) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 0, top: 5.0, right: 0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isPaymentModeSelected
+                ? const Color.fromARGB(255, 175, 15, 4)
+                : CommonUtils.primaryTextColor,
+          ),
+          borderRadius: BorderRadius.circular(5.0),
+          color: Colors.white,
+        ),
+        child: DropdownButtonHideUnderline(
+          child: ButtonTheme(
+            alignedDropdown: true,
+            child: DropdownButton<int>(
+              value: selectedPaymentOption,
+              iconSize: 30,
+              icon: null,
+              style: const TextStyle(
+                color: Colors.black,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  if (value != null) {
+                    selectedPaymentOption = value;
+                    if (paymentOptions[value]['typeCdId'] == 23) {
+                      isFreeService = false;
+                      _priceController.text = '0.0';
+                    } else {
+                      _priceController.clear();
+                      isFreeService = true;
+                    }
+
+                    apiPaymentMode =
+                        paymentOptions[selectedPaymentOption]['typeCdId'];
+                    selectedPaymentMode =
+                        paymentOptions[selectedPaymentOption]['desc'];
+                  }
+                  isPaymentModeSelected = false;
+                });
+              },
+              items: [
+                const DropdownMenuItem<int>(
+                  value: -1,
+                  child: Text(
+                    'Select Payment Mode',
+                    style: TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                ...paymentOptions.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  return DropdownMenuItem<int>(
+                    value: index,
+                    child: Text(item['desc']),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /* Padding technicianDropDown(
+      BuildContext context, StateSetter setState, Appointment data) {
+    print('www4 technician: ${data.technicianName}');
+
+    if (data.technicianName != null && data.technicianName!.isNotEmpty) {
+      selectedTechnicianOption = widget.technicianOptions.length + 1;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 0, top: 5.0, right: 0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isTechnicianSelected
+                ? const Color.fromARGB(255, 175, 15, 4)
+                : CommonUtils.primaryTextColor,
+          ),
+          borderRadius: BorderRadius.circular(5.0),
+          color: Colors.white,
+        ),
+        child: DropdownButtonHideUnderline(
+          child: ButtonTheme(
+            alignedDropdown: true,
+            child: DropdownButton<int>(
+              value: selectedTechnicianOption,
+              iconSize: 30,
+              hint: const Text(
+                'Select Technician',
+                style:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+              ),
+              icon: null,
+              style: const TextStyle(
+                color: Colors.black,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  selectedTechnicianOption = value;
+print('selectedTechnicianOption: $value');
+                  if (value != null &&
+                      value != widget.technicianOptions.length + 1) {
+                    selectedTechnicianId =
+                        widget.technicianOptions[value]['id'];
+                  } else if (value != null &&
+                      value == widget.technicianOptions.length + 1) {
+                    selectedTechnicianId = data.technicianId;
+                  }
+                  isTechnicianSelected = false;
+                });
+              },
+              items: [
+                const DropdownMenuItem<int>(
+                  value: -1,
+                  child: Text(
+                    'Select Technician',
+                    style: TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                if (data.technicianName != null &&
+                    data.technicianName!.isNotEmpty)
+                  DropdownMenuItem<int>(
+                    value: widget.technicianOptions.length + 1,
+                    child: Text(
+                      '${data.technicianName}',
+                    ),
+                  ),
+                ...widget.technicianOptions.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  return DropdownMenuItem<int>(
+                    value: index,
+                    child: Text(item['userName']),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+ */
+  void setInitialTechnician(Appointment data) {
+    if (data.technicianName != null && data.technicianName!.isNotEmpty) {
+      selectedTechnicianOption = widget.technicianOptions.length;
+      selectedTechnicianId = data.technicianId;
+    } else {
+      selectedTechnicianOption = -1;
+    }
+  }
+
+  Padding technicianDropDown(
+      BuildContext context, StateSetter setState, Appointment data) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 0, top: 5.0, right: 0),
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isTechnicianSelected
+                ? const Color.fromARGB(255, 175, 15, 4)
+                : CommonUtils.primaryTextColor,
+          ),
+          borderRadius: BorderRadius.circular(5.0),
+          color: Colors.white,
+        ),
+        child: DropdownButtonHideUnderline(
+          child: ButtonTheme(
+            alignedDropdown: true,
+            child: DropdownButton<int>(
+              value: selectedTechnicianOption,
+              iconSize: 30,
+              hint: const Text(
+                'Select Technician',
+                style:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+              ),
+              icon: null,
+              style: const TextStyle(
+                color: Colors.black,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  selectedTechnicianOption = value;
+                  if (value != null &&
+                      value != -1 &&
+                      value != widget.technicianOptions.length) {
+                    print('selectedTechnicianOption: 111');
+                    selectedTechnicianId =
+                        widget.technicianOptions[value]['id'];
+                  } else if (value != null &&
+                      value != -1 &&
+                      value == widget.technicianOptions.length) {
+                    print('selectedTechnicianOption: 2222');
+                    selectedTechnicianId = data.technicianId;
+                  }
+                  print(
+                      'selectedTechnicianOption: $value | $selectedTechnicianId');
+                  isTechnicianSelected = false;
+                });
+              },
+              items: [
+                const DropdownMenuItem<int>(
+                  value: -1,
+                  child: Text(
+                    'Select Technician',
+                    style: TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                if (data.technicianName != null &&
+                    data.technicianName!.isNotEmpty)
+                  DropdownMenuItem<int>(
+                    value: widget.technicianOptions.length,
+                    child: Text(
+                      '${data.technicianName}',
+                    ),
+                  ),
+                ...widget.technicianOptions.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  return DropdownMenuItem<int>(
+                    value: index,
+                    child: Text(item['userName']),
+                  );
+                }).toList(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String? validateAmount(String? value) {
+    print('validatefullname: $value');
+    if (value!.isEmpty) {
+      setState(() {
+        _billingAmountError = true;
+        _billingAmountErrorMsg = 'Please Enter Billing Amount (Rs)';
+      });
+      isBillingAmountValidate = false;
+      return null;
+    }
+    isBillingAmountValidate = true;
+    return null;
+  }
+
+  void validatePaymentMode() {
+    print('www: $selectedPaymentOption');
+    if (selectedPaymentOption == -1) {
+      setState(() {
+        isPaymentModeSelected = true;
+        isPaymentValidate = false;
+      });
+    } else {
+      setState(() {
+        isPaymentModeSelected = false;
+        isPaymentValidate = true;
+      });
+    }
+  }
+
+  void validateTechnician() {
+    print('validateTechnician: $selectedPaymentOption | $selectedTechnicianId');
+    if (selectedTechnicianId == null || selectedTechnicianOption == -1) {
+      setState(() {
+        isTechnicianSelected = true;
+        isTechnicianValidate = false;
+      });
+    } else {
+      setState(() {
+        isTechnicianSelected = false;
+        isTechnicianValidate = true;
+      });
+    }
   }
 }

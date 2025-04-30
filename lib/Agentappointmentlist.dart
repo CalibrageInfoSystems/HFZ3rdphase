@@ -1345,7 +1345,6 @@ class _OpCardState extends State<OpCard> {
                                   Text(widget.data.gender ?? ' ',
                                       style: CommonStyles.txSty_16b_fb),
 
-                                  //    Text(widget.data.gender!, style: CommonStyles.txSty_16black_f5),
                                   const SizedBox(
                                     height: 5.0,
                                     width: 2.0,

@@ -40,8 +40,13 @@ class _LoginPageState extends State<CustomerLoginScreen> {
   @override
   void initState() {
     super.initState();
+    // UAT
+    // _emailController.text = "Arun";
+    // _passwordController.text = "Abcd@123";
 
-    // LocalNotificationService.initialize();
+    // Test
+    _emailController.text = "durgatest";
+    _passwordController.text = "Abcd@1234";
 
     // Terminated State
     FirebaseMessaging.instance.getInitialMessage().then((event) {
@@ -459,7 +464,6 @@ class _LoginPageState extends State<CustomerLoginScreen> {
       progressDialog.show();
       final String apiUrl = baseUrl + ValidateUser;
       print('apiUrl: $apiUrl');
-      // Prepare the request body
       final requestBody = {
         'userName': email,
         'password': password,

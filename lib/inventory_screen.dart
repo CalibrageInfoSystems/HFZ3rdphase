@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
 import 'package:hairfixingzone/Common/common_widgets.dart';
@@ -35,11 +36,14 @@ class InventoryScreen extends StatefulWidget {
 
 class _InventoryScreenState extends State<InventoryScreen> {
   int? _selectedSegment = 0;
+  String? selectedGender = 'Male';
+
   late Future<List<InventoryModel>> futureinvetories;
 
   @override
   void initState() {
     super.initState();
+    print('www: ${widget.userId}');
     _selectedSegment = widget.toTheSegment ?? 0;
     futureinvetories = getInventories();
   }
@@ -307,6 +311,32 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
+//MARK: Gender Toggler
+  Widget genderToggler() {
+    return SizedBox(
+      width: 300,
+      child: CupertinoSlidingSegmentedControl<String>(
+        groupValue: selectedGender,
+        children: const {
+          'Male': Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: Text('Male'),
+          ),
+          'Female': Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12),
+            child: Text('Female'),
+          ),
+        },
+        onValueChanged: (String? value) {
+          setState(() {
+            selectedGender = value;
+            futureinvetories = getInventories(gender: selectedGender);
+          });
+        },
+      ),
+    );
+  }
+
   Future<void> deleteInventory(InventoryModel inventory) async {
     try {
       final apiUrl = '$baseUrl$addUpdateInventory';
@@ -323,7 +353,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
         "createdByUserId": widget.userId,
         "createdDate": DateTime.now().toIso8601String(),
         "updatedByUserId": widget.userId,
-        "updatedDate": DateTime.now().toIso8601String()
+        "updatedDate": DateTime.now().toIso8601String(),
+        "genderTypeId": inventory.genderTypeId
       });
 
       final jsonResponse = await http.post(
@@ -368,6 +399,14 @@ class _InventoryScreenState extends State<InventoryScreen> {
         final data = snapshot.data as List<InventoryModel>;
         final activeData =
             data.where((inventory) => inventory.isActive != true).toList();
+        if (activeData.isEmpty) {
+          return const Center(
+            child: Text(
+              textAlign: TextAlign.center,
+              'No Deleted Inventory Found',
+            ),
+          );
+        }
         return Padding(
           padding: const EdgeInsets.all(14),
           child: ListView.separated(
@@ -396,6 +435,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
               child: branchTemplate(context),
             ),
             const SizedBox(height: 20),
+            genderToggler(),
+            const SizedBox(height: 10),
             tabBar(),
             tabBarView(),
             addInventoryBtn(context),
@@ -490,12 +531,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  Future<List<InventoryModel>> getInventories() async {
+  Future<List<InventoryModel>> getInventories({String? gender = 'Male'}) async {
     try {
       final apiUrl =
           // 'http://182.18.157.215/SaloonApp/API/Inventory/GetInventoryByBranchId/2';
           '$baseUrl$getInventoryByBranchId${widget.branchId}';
-      print('ApiUrl: $apiUrl');
       final jsonResponse = await http.get(Uri.parse(apiUrl));
       if (jsonResponse.statusCode == 200) {
         final response = jsonDecode(jsonResponse.body);
@@ -504,14 +544,11 @@ class _InventoryScreenState extends State<InventoryScreen> {
           if (inventories == null || inventories.isEmpty) {
             return throw Exception('No inventory found');
           }
-          return inventories.map((e) => InventoryModel.fromJson(e)).toList();
+          List<InventoryModel> result =
+              inventories.map((e) => InventoryModel.fromJson(e)).toList();
+          result = result.where((item) => item.gender == gender).toList();
+          return result;
         }
-        /* List<InventoryModel> inventories =
-            inventoryModelFromJson(jsonResponse.body);
-        if (inventories.isEmpty) {
-          return throw Exception('No inventory found');
-        }
-        return inventories; */
       }
       throw Exception('Failed to load inventory');
     } catch (e) {

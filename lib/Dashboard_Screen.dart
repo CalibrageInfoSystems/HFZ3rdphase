@@ -54,13 +54,18 @@ class CustomerDashBoard extends StatefulWidget {
   final Function(Branch data) toNavigate;
   final bool popupbool;
 
-  const CustomerDashBoard({super.key, this.bookNowButtonPressed, required this.toNavigate,required this.popupbool});
+  const CustomerDashBoard(
+      {super.key,
+      this.bookNowButtonPressed,
+      required this.toNavigate,
+      required this.popupbool});
 
   @override
   State<CustomerDashBoard> createState() => _CustomerDashBoardState();
 }
 
-class _CustomerDashBoardState extends State<CustomerDashBoard> with SingleTickerProviderStateMixin  , WidgetsBindingObserver {
+class _CustomerDashBoardState extends State<CustomerDashBoard>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final ScrollController _scrollController;
   late final AnimationController _animationController;
   String? marqueeText;
@@ -96,13 +101,14 @@ class _CustomerDashBoardState extends State<CustomerDashBoard> with SingleTicker
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _scrollController = ScrollController();
-print('popupflag:${widget.popupbool}');
+    print('popupflag:${widget.popupbool}');
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
     )..addListener(() {
         if (_scrollController.hasClients) {
-          _scrollController.jumpTo(_animationController.value * _scrollController.position.maxScrollExtent);
+          _scrollController.jumpTo(_animationController.value *
+              _scrollController.position.maxScrollExtent);
         }
       });
 
@@ -143,14 +149,14 @@ print('popupflag:${widget.popupbool}');
   //   // Your API call here
   // }
 
-@override
-void dispose() {
-  // Remove the observer when the widget is disposed
-  WidgetsBinding.instance.removeObserver(this);
-  _scrollController.dispose();
-  _animationController.dispose();
-  super.dispose();
-}
+  @override
+  void dispose() {
+    // Remove the observer when the widget is disposed
+    WidgetsBinding.instance.removeObserver(this);
+    _scrollController.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
 // @override
 // void didChangeAppLifecycleState(AppLifecycleState state) {
 //   // if (state == AppLifecycleState.resumed) {
@@ -163,12 +169,13 @@ void dispose() {
 //   }
 // }
 
-Future<void> _resetPopupFlag() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setBool('hasShownPopup', false); // Reset the flag
-  await fetchoffers();
-  print('Popup flag reset. Popup will show again when entering the screen.');
-}
+  Future<void> _resetPopupFlag() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasShownPopup', false); // Reset the flag
+    await fetchoffers();
+    print('Popup flag reset. Popup will show again when entering the screen.');
+  }
+
   Future<void> _checkConnectivityAndFetchData() async {
     if (_isApiCalled) return; // Avoid calling API again
     _isApiCalled = true;
@@ -184,14 +191,13 @@ Future<void> _resetPopupFlag() async {
       await fetchoffers();
       await fetchImages();
     } else {
-      CommonUtils.showCustomToastMessageLong('No Internet Connection', context, 1, 4);
+      CommonUtils.showCustomToastMessageLong(
+          'No Internet Connection', context, 1, 4);
       print('Not connected to the internet');
     }
   }
 
-
   Future<void> fetchLoginUserInfo() async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
@@ -222,7 +228,8 @@ Future<void> _resetPopupFlag() async {
           throw Exception('API failed');
         }
       } else {
-        throw Exception('Request failed with status: ${jsonResponse.statusCode}');
+        throw Exception(
+            'Request failed with status: ${jsonResponse.statusCode}');
       }
     } catch (error) {
       rethrow;
@@ -335,7 +342,9 @@ Future<void> _resetPopupFlag() async {
     });
     if (response.statusCode == 200) {
       setState(() {
-        _items = (json.decode(response.body)['listResult'] as List).map((item) => Item.fromJson(item)).toList();
+        _items = (json.decode(response.body)['listResult'] as List)
+            .map((item) => Item.fromJson(item))
+            .toList();
         isDataBinding = false;
         isLoading = false;
       });
@@ -345,8 +354,6 @@ Future<void> _resetPopupFlag() async {
       throw Exception('Failed to load items');
     }
   }
-
-
 
   Future<void> _getData() async {
     setState(() {
@@ -433,7 +440,8 @@ Future<void> _resetPopupFlag() async {
 
         List<BannerImages> bannerImages = [];
         for (var item in jsonData['listResult']) {
-          bannerImages.add(BannerImages(imageName: item['imageName'] ?? '', id: item['id'] ?? 0));
+          bannerImages.add(BannerImages(
+              imageName: item['imageName'] ?? '', id: item['id'] ?? 0));
         }
 
         setState(() {
@@ -466,11 +474,13 @@ Future<void> _resetPopupFlag() async {
         fetchData();
         fetchimagesslider();
       } else {
-        CommonUtils.showCustomToastMessageLong('No Internet Connection', context, 1, 4);
+        CommonUtils.showCustomToastMessageLong(
+            'No Internet Connection', context, 1, 4);
         print('Not connected to the internet');
       }
     });
   }
+
   // showDialog(
   //   barrierDismissible: true,
   //   context: context,
@@ -542,7 +552,6 @@ Future<void> _resetPopupFlag() async {
   //   },
   // );
   void _showpopupdialog(BuildContext context) {
-
     showGeneralDialog(
         barrierColor: Colors.black.withOpacity(0.5),
         transitionBuilder: (context, a1, a2, widget) {
@@ -556,7 +565,8 @@ Future<void> _resetPopupFlag() async {
                 ),
                 // Wrap the Dialog in a SizedBox to set a fixed height
                 child: Container(
-                  height: MediaQuery.of(context).size.height / 2, // Set height for both dialog and image
+                  height: MediaQuery.of(context).size.height /
+                      2, // Set height for both dialog and image
                   width: double.infinity,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
@@ -589,7 +599,12 @@ Future<void> _resetPopupFlag() async {
                             if (loadingProgress == null) return child;
                             return Center(
                               child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1) : null,
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        (loadingProgress.expectedTotalBytes ??
+                                            1)
+                                    : null,
                               ),
                             );
                           },
@@ -621,7 +636,8 @@ Future<void> _resetPopupFlag() async {
                               },
                               child: CircleAvatar(
                                 radius: 12,
-                                child: Icon(Icons.close, size: 18, color: Colors.white),
+                                child: Icon(Icons.close,
+                                    size: 18, color: Colors.white),
                                 backgroundColor: Colors.grey,
                               ),
                             ),
@@ -645,7 +661,6 @@ Future<void> _resetPopupFlag() async {
   }
 
   Future<void> fetchoffers() async {
-
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     //
     // // Check if the popup has already been shown
@@ -682,15 +697,13 @@ Future<void> _resetPopupFlag() async {
                 apiimagename = offer.imageName!;
               });
               if (ismatchedlogin) {
-                if (widget.popupbool==true) {
+                if (widget.popupbool == true) {
                   _showpopupdialog(context);
                   //await prefs.setBool('hasShownPopup', true);
                 }
-
               }
               offerFound = true;
               break;
-
             }
           }
           if (!offerFound) {
@@ -710,7 +723,8 @@ Future<void> _resetPopupFlag() async {
         setState(() {
           ismatchedlogin = false;
         });
-        print('Failed to send the request. Status code: ${response.statusCode}');
+        print(
+            'Failed to send the request. Status code: ${response.statusCode}');
       }
     } catch (e) {
       _offersCompleter!.completeError(e);
@@ -718,6 +732,7 @@ Future<void> _resetPopupFlag() async {
       print('Error slot: $e');
     }
   }
+
   @override
   bool get wantKeepAlive => true;
   @override
@@ -745,12 +760,14 @@ Future<void> _resetPopupFlag() async {
                           children: [
                             Text(
                               'Hello ',
-                              style: CommonStyles.txSty_20b_fb.copyWith(fontSize: 22),
+                              style: CommonStyles.txSty_20b_fb
+                                  .copyWith(fontSize: 22),
                               //style: GoogleFonts.outfit(fontWeight: FontWeight.w700,fontSize: 22,color: Colors.black),
                             ),
                             Text(
                               userFullName,
-                              style: CommonStyles.txSty_20b_fb.copyWith(fontSize: 22, color: const Color(0xFF11528f)),
+                              style: CommonStyles.txSty_20b_fb.copyWith(
+                                  fontSize: 22, color: const Color(0xFF11528f)),
                               //  style:GoogleFonts.outfit(fontWeight: FontWeight.w700,fontSize: 22,color: Color(0xFF11528f)),
                             ),
                           ],
@@ -813,7 +830,8 @@ Future<void> _resetPopupFlag() async {
                       //   ),
                       if (!imageList.isEmpty)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 10.0),
                           width: MediaQuery.of(context).size.width,
                           height: 200,
                           child: isLoading
@@ -828,12 +846,15 @@ Future<void> _resetPopupFlag() async {
                                     aspectRatio: 16 / 9,
                                     autoPlayCurve: Curves.fastOutSlowIn,
                                     enableInfiniteScroll: imageList.length > 1,
-                                    slideIndicator: const CircularSlideIndicator(
-                                      slideIndicatorOptions: SlideIndicatorOptions(
+                                    slideIndicator:
+                                        const CircularSlideIndicator(
+                                      slideIndicatorOptions:
+                                          SlideIndicatorOptions(
                                         itemSpacing: 10,
                                         padding: EdgeInsets.only(bottom: 10.0),
                                         indicatorBorderColor: Color(0xFF11528f),
-                                        currentIndicatorColor: Color(0xFF11528f),
+                                        currentIndicatorColor:
+                                            Color(0xFF11528f),
                                         indicatorRadius: 4,
                                       ),
                                     ),
@@ -843,25 +864,33 @@ Future<void> _resetPopupFlag() async {
                                     return Builder(
                                       builder: (BuildContext context) {
                                         return SizedBox(
-                                          width: MediaQuery.of(context).size.width,
+                                          width:
+                                              MediaQuery.of(context).size.width,
                                           child: Card(
                                             shadowColor: Colors.transparent,
-                                            surfaceTintColor: Colors.transparent,
+                                            surfaceTintColor:
+                                                Colors.transparent,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
                                             elevation: 4,
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                               child: Image.network(
                                                 item.imageName,
                                                 height: 200,
                                                 fit: BoxFit.fill,
-                                                loadingBuilder: (context, child, loadingProgress) {
+                                                loadingBuilder: (context, child,
+                                                    loadingProgress) {
                                                   if (loadingProgress == null) {
                                                     return child;
                                                   }
-                                                  return const Center(child: CircularProgressIndicator.adaptive());
+                                                  return const Center(
+                                                      child:
+                                                          CircularProgressIndicator
+                                                              .adaptive());
                                                 },
                                               ),
                                             ),
@@ -878,14 +907,16 @@ Future<void> _resetPopupFlag() async {
                         SizedBox(
                           height: 70.0,
                           child: Container(
-                            color:  Color(0xFF11528f).withOpacity(0.9), // Set the background color here
+                            color: Color(0xFF11528f).withOpacity(
+                                0.9), // Set the background color here
                             child: Stack(children: [
                               // Assets/images/stacked-steps-haikei.png
 
                               Positioned.fill(
                                 child: InfiniteMarquee(
                                   frequency: const Duration(milliseconds: 100),
-                                  itemBuilder: (BuildContext context, int index) {
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
                                     return Image.asset(
                                       'assets/bar_texture_rec.png',
                                       fit: BoxFit.cover,
@@ -906,14 +937,22 @@ Future<void> _resetPopupFlag() async {
                               // ),
                               Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.only(left: 10.0, right: 30.0, bottom: 10,top: 5), // Add padding to icon
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0,
+                                      right: 30.0,
+                                      bottom: 10,
+                                      top: 5), // Add padding to icon
                                   child: Scrollbar(
                                     //thumbVisibility: true, // Show the scrollbar when scrolling
                                     child: SingleChildScrollView(
-                                      scrollDirection: Axis.vertical,// Scroll horizontally for long text
+                                      scrollDirection: Axis
+                                          .vertical, // Scroll horizontally for long text
                                       child: Text(
-                                        marqueeTexts.isNotEmpty ? marqueeTexts[currentTextIndex] : '',
-                                        style: CommonStyles.text14white.copyWith(height: 1.5),
+                                        marqueeTexts.isNotEmpty
+                                            ? marqueeTexts[currentTextIndex]
+                                            : '',
+                                        style: CommonStyles.text14white
+                                            .copyWith(height: 1.5),
                                       ),
                                     ),
                                   ),
@@ -923,9 +962,12 @@ Future<void> _resetPopupFlag() async {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(left: 0.0, right: 0.0), // Add padding to icon
+                                    padding: const EdgeInsets.only(
+                                        left: 0.0,
+                                        right: 0.0), // Add padding to icon
                                     child: IconButton(
-                                      icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                                      icon: const Icon(Icons.arrow_forward_ios,
+                                          color: Colors.white),
                                       onPressed: nextText,
                                     ),
                                   ),
@@ -996,7 +1038,8 @@ Future<void> _resetPopupFlag() async {
 
                       //MARK: Branches
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 5.0),
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: Text(
@@ -1021,7 +1064,8 @@ Future<void> _resetPopupFlag() async {
                       ),
                       const SizedBox(height: 10),
                       if (isLoading)
-                        const Text('Please Wait Loading Slow Internet Connection !')
+                        const Text(
+                            'Please Wait Loading Slow Internet Connection !')
                       else if (brancheslist.isEmpty && imageList.isEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -1231,8 +1275,13 @@ Future<void> _resetPopupFlag() async {
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: GridView.builder(
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2, crossAxisSpacing: 16.0, mainAxisSpacing: 16.0, mainAxisExtent: 250, childAspectRatio: 8 / 2),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 16.0,
+                                    mainAxisSpacing: 16.0,
+                                    mainAxisExtent: 250,
+                                    childAspectRatio: 8 / 2),
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: isLoading ? 5 : brancheslist.length,
@@ -1242,7 +1291,8 @@ Future<void> _resetPopupFlag() async {
                             itemBuilder: (context, index) {
                               if (isLoading) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 0.0, vertical: 5.0),
                                   child: Shimmer.fromColors(
                                     baseColor: Colors.grey.shade300,
                                     highlightColor: Colors.grey.shade100,
@@ -1250,32 +1300,33 @@ Future<void> _resetPopupFlag() async {
                                       height: 150,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
-                                        borderRadius: BorderRadius.circular(15.0),
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
                                       ),
                                     ),
                                   ),
                                 );
                               } else {
                                 BranchModel branch = brancheslist[index];
-                                Color backgroundColor = index % 2 == 0 ? const Color(0xFFdbeaff) : const Color(0xFFcdeac3);
+                                Color backgroundColor = index % 2 == 0
+                                    ? const Color(0xFFdbeaff)
+                                    : const Color(0xFFcdeac3);
                                 return GestureDetector(
                                   onTap: () {
-
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => Bookingscreen(
-                                              branchId: branch.id!,
-                                              branchname: branch.name,
-                                              branchaddress: branch.address,
-                                              phonenumber: branch.mobileNumber,
-                                              branchImage: branch.imageName!,
-                                              latitude: branch.latitude,
-                                              longitude: branch.longitude,
-                                              LocationUrl: branch.locationUrl),
-                                        ),
-                                      );
-
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Bookingscreen(
+                                            branchId: branch.id!,
+                                            branchname: branch.name,
+                                            branchaddress: branch.address,
+                                            phonenumber: branch.mobileNumber,
+                                            branchImage: branch.imageName!,
+                                            latitude: branch.latitude,
+                                            longitude: branch.longitude,
+                                            LocationUrl: branch.locationUrl),
+                                      ),
+                                    );
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
@@ -1292,35 +1343,43 @@ Future<void> _resetPopupFlag() async {
                                       ],
                                     ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: [
                                         Align(
                                           alignment: Alignment.topLeft,
                                           child: Container(
-                                            margin: const EdgeInsets.only(top: 20, left: 10),
+                                            margin: const EdgeInsets.only(
+                                                top: 20, left: 10),
                                             decoration: BoxDecoration(
                                               border: Border.all(
                                                 color: Colors.grey,
                                                 width: 2.5,
                                               ),
-                                              borderRadius: BorderRadius.circular(15.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(15.0),
                                             ),
                                             width: 65,
                                             height: 60,
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(13.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(13.0),
                                               child: Image.network(
                                                 branch.imageName!,
                                                 width: 65,
                                                 height: 60,
                                                 fit: BoxFit.fill,
-                                                loadingBuilder: (context, child, loadingProgress) {
+                                                loadingBuilder: (context, child,
+                                                    loadingProgress) {
                                                   if (loadingProgress == null) {
                                                     return child;
                                                   }
                                                   return const Center(
-                                                    child: CircularProgressIndicator.adaptive(),
+                                                    child:
+                                                        CircularProgressIndicator
+                                                            .adaptive(),
                                                   );
                                                 },
                                               ),
@@ -1337,8 +1396,11 @@ Future<void> _resetPopupFlag() async {
                                           child: Text(
                                             branch.name,
                                             maxLines: 3,
-                                            style: CommonUtils.txSty_18b_fb.copyWith(
-                                              fontSize: 18 * MediaQuery.of(context).textScaleFactor,
+                                            style: CommonUtils.txSty_18b_fb
+                                                .copyWith(
+                                              fontSize: 18 *
+                                                  MediaQuery.of(context)
+                                                      .textScaleFactor,
                                             ),
                                           ),
                                         ),
@@ -1353,10 +1415,14 @@ Future<void> _resetPopupFlag() async {
                                             child: Text(
                                               branch.address,
                                               maxLines: 4,
-                                              style: CommonStyles.txSty_12b_fb.copyWith(
-                                                fontSize: 12 * MediaQuery.of(context).textScaleFactor,
+                                              style: CommonStyles.txSty_12b_fb
+                                                  .copyWith(
+                                                fontSize: 12 *
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
                                                 wordSpacing: 1.2,
-                                                color: Colors.black.withOpacity(0.8),
+                                                color: Colors.black
+                                                    .withOpacity(0.8),
                                               ),
                                             ),
                                           ),
@@ -1374,49 +1440,68 @@ Future<void> _resetPopupFlag() async {
                                               border: Border.all(
                                                 color: const Color(0xFF11528f),
                                               ),
-                                              borderRadius: BorderRadius.circular(20.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
                                             ),
                                             child: ElevatedButton(
                                               onPressed: () {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (context) => Bookingscreen(
-                                                        branchId: branch.id!,
-                                                        branchname: branch.name,
-                                                        branchaddress: branch.address,
-                                                        phonenumber: branch.mobileNumber,
-                                                        branchImage: branch.imageName!,
-                                                        latitude: branch.latitude,
-                                                        longitude: branch.longitude,
-                                                        LocationUrl: branch.locationUrl),
+                                                    builder: (context) =>
+                                                        Bookingscreen(
+                                                            branchId:
+                                                                branch.id!,
+                                                            branchname:
+                                                                branch.name,
+                                                            branchaddress:
+                                                                branch.address,
+                                                            phonenumber: branch
+                                                                .mobileNumber,
+                                                            branchImage: branch
+                                                                .imageName!,
+                                                            latitude:
+                                                                branch.latitude,
+                                                            longitude: branch
+                                                                .longitude,
+                                                            LocationUrl: branch
+                                                                .locationUrl),
                                                   ),
                                                 );
                                               },
                                               style: ElevatedButton.styleFrom(
-                                                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                                                foregroundColor: const Color(0xFF8d97e2),
-                                                backgroundColor: Colors.transparent,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 10.0),
+                                                foregroundColor:
+                                                    const Color(0xFF8d97e2),
+                                                backgroundColor:
+                                                    Colors.transparent,
                                                 elevation: 0,
                                                 shadowColor: Colors.transparent,
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(20.0),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0),
                                                 ),
                                               ),
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
                                                 children: [
                                                   const Text(
                                                     'Book Now',
-                                                    style: CommonStyles.txSty_14p_f5,
+                                                    style: CommonStyles
+                                                        .txSty_14p_f5,
                                                   ),
                                                   const SizedBox(width: 5),
                                                   SvgPicture.asset(
                                                     'assets/squareupright.svg',
                                                     width: 12.0,
                                                     height: 12.0,
-                                                    color: const Color(0xFF11528f),
+                                                    color:
+                                                        const Color(0xFF11528f),
                                                   ),
                                                 ],
                                               ),
@@ -1837,7 +1922,8 @@ class SlowScrollPhysics extends ScrollPhysics {
   double get minFlingVelocity => super.minFlingVelocity * 0.2;
 
   @override
-  Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
+  Simulation? createBallisticSimulation(
+      ScrollMetrics position, double velocity) {
     if ((velocity.abs() >= minFlingVelocity)) {
       return super.createBallisticSimulation(position, velocity * 0.1);
     }
@@ -1948,7 +2034,8 @@ class BranchCard extends StatelessWidget {
   }
 
   Future<void> openMap(Model_branch branchnames) async {
-    final url = 'https://www.google.com/maps/search/?api=1&query=${branchnames.latitude},${branchnames.longitude}';
+    final url =
+        'https://www.google.com/maps/search/?api=1&query=${branchnames.latitude},${branchnames.longitude}';
     if (await canLaunch(url)) {
       await launch(url);
     } else {

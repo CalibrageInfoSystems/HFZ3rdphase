@@ -2,14 +2,14 @@ library APIConstants;
 
 const String SUCCESS_MESSAGE = " You will be contacted by us very soon.";
 
-// var baseUrl = "http://182.18.157.215/SaloonApp/API/"; // Test
-var baseUrl = "http://182.18.157.215/Saloon_UAT/API/"; // UAT
+var baseUrl = "http://182.18.157.215/SaloonApp/API/"; // Test
+// var baseUrl = "http://182.18.157.215/Saloon_UAT/API/"; // UAT
 // var baseUrl ="http://137.59.201.212/HairFixingZone/API/";// Live
 
 //var imagesflierepo ="http://137.59.201.212/HairFixingZone/FileRepository/";// HairFixingZone Live
 
-// var imagesflierepo = 'http://182.18.157.215/SaloonApp/Saloon_Repo/'; // Test
-var imagesflierepo = 'http://182.18.157.215/Saloon_UAT/Saloon_Repo/'; // UAT
+var imagesflierepo = 'http://182.18.157.215/SaloonApp/Saloon_Repo/'; // Test
+// var imagesflierepo = 'http://182.18.157.215/Saloon_UAT/Saloon_Repo/'; // UAT
 // var imagesflierepo= 'http://182.18.157.215/SaloonApp_Live/Saloon_Repo/'; // Live
 
 var getBanners = "GetBanner?Id=null";
@@ -62,11 +62,16 @@ var getholidayslist = 'api/HolidayList/GetHolidayListdetails';
 var getconsulationbyranchid = 'api/Consultation/GetConsultationsByBranchId';
 //var validateusernameotp = "ValidateOTP";
 var AddCustomerNotification = "AddCustomerNotification";
-var GetTechnicians = "api/Appointment/GetTechnicians";
+var getTechnicians = "api/Appointment/GetTechnicians";
 var Addfavourites = "AddUpdateFavourites";
 var Viewfavourites = "GetFavourites";
 var DisplayOffers = "api/Offer/GetOffer/1";
 var deleteuser = "DeleteUser";
 
 const getInventoryByBranchId = "Inventory/GetInventoryByBranchId/";
+const getCustomerEnquiries = "CustomerEnquiry/GetCustomerEnquiries";
 const addUpdateInventory = "Inventory/AddUpdateInventory";
+const addUpdateCustomerEnquiry = "CustomerEnquiry/AddUpdateCustomerEnquiry";
+const validateCustomer = "ValidateCustomer";
+const validateCustomerOTP = "ValidateCustomerOTP";
+const getAppointmentData = "api/Appointment/GetAppointmentData";

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hairfixingzone/models/op_slot_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Appointment.dart';
@@ -717,7 +718,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                                               : () {
                                                   setState(() {
                                                     _selectedTimeSlot =
-                                                        slot.SlotTimeSpan;
+                                                        slot.slotTimeSpan;
                                                     _selectedSlot = slot.slot;
                                                     AvailableSlots = slot
                                                         .availableSlots
@@ -789,7 +790,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                                                 vertical: 1.0, horizontal: 1.0),
                                             backgroundColor:
                                                 _selectedTimeSlot ==
-                                                        slot.SlotTimeSpan
+                                                        slot.slotTimeSpan
                                                     ? CommonUtils
                                                         .primaryTextColor
                                                     : (slot.availableSlots <= 0
@@ -797,7 +798,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                                                         : Colors.white),
                                             side: BorderSide(
                                               color: _selectedTimeSlot ==
-                                                      slot.SlotTimeSpan
+                                                      slot.slotTimeSpan
                                                   ? CommonUtils.primaryTextColor
                                                   : (slot.availableSlots <= 0
                                                       ? Colors.transparent
@@ -811,16 +812,16 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
                                             ),
                                             textStyle: TextStyle(
                                               color: _selectedTimeSlot ==
-                                                      slot.SlotTimeSpan
+                                                      slot.slotTimeSpan
                                                   ? Colors.white
                                                   : Colors.black,
                                             ),
                                           ),
                                           child: Text(
-                                            slot.SlotTimeSpan,
+                                            slot.slotTimeSpan,
                                             style: TextStyle(
                                               color: _selectedTimeSlot ==
-                                                      slot.SlotTimeSpan
+                                                      slot.slotTimeSpan
                                                   ? Colors.white
                                                   : (slot.availableSlots <= 0
                                                       ? Colors.white
@@ -1326,7 +1327,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
     }
 
     return slots.where((slot) {
-      String timespan = slot.SlotTimeSpan;
+      String timespan = slot.slotTimeSpan;
       // Combine the current date and formatted time
       String SlotDateTimeString =
           '${DateFormat('yyyy-MM-dd').format(currentDate)} $timespan';
@@ -1338,7 +1339,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
       DateTime slotDateTime;
       if (currentdate == formattedapiDate) {
         // If the slot is for the current date, use the slot's time
-        String timespan = slot.SlotTimeSpan;
+        String timespan = slot.slotTimeSpan;
 
         // Combine the current date and time span
         String SlotDateTimeString =

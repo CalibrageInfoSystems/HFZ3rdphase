@@ -1,3 +1,7 @@
+// To parse this JSON data, do
+//
+//     final inventoryModel = inventoryModelFromJson(jsonString);
+
 import 'dart:convert';
 
 List<InventoryModel> inventoryModelFromJson(String str) =>
@@ -11,7 +15,7 @@ class InventoryModel {
   final int? id;
   final int? branchId;
   final String? productName;
-  final int? quantity;
+  final double? quantity;
   final int? colorTypeId;
   final String? desc;
   final bool? isActive;
@@ -23,6 +27,8 @@ class InventoryModel {
   final String? updatedBy;
   final String? branch;
   final String? color;
+  final int? genderTypeId;
+  final String? gender;
 
   InventoryModel({
     this.id,
@@ -40,14 +46,15 @@ class InventoryModel {
     this.updatedBy,
     this.branch,
     this.color,
+    this.genderTypeId,
+    this.gender,
   });
 
   factory InventoryModel.fromJson(Map<String, dynamic> json) => InventoryModel(
         id: json["id"],
         branchId: json["branchId"],
         productName: json["productName"],
-        quantity: (json['quantity'] as num).toInt(),
-        // quantity: json["quantity"]?.toDouble(),
+        quantity: json["quantity"]?.toDouble(),
         colorTypeId: json["colorTypeId"],
         desc: json["desc"],
         isActive: json["isActive"],
@@ -63,6 +70,8 @@ class InventoryModel {
         updatedBy: json["updatedBy"],
         branch: json["branch"],
         color: json["color"],
+        genderTypeId: json["genderTypeId"],
+        gender: json["gender"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -81,5 +90,7 @@ class InventoryModel {
         "updatedBy": updatedBy,
         "branch": branch,
         "color": color,
+        "genderTypeId": genderTypeId,
+        "gender": gender,
       };
 }
