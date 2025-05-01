@@ -773,7 +773,7 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                             if (consultationslist[index].price != null) ...[
                               const SizedBox(height: 5.0),
                               Text(
-                                '${consultationslist[index].price}',
+                                '₹${consultationslist[index].price}',
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontFamily: "Outfit",
@@ -2336,9 +2336,13 @@ class _CloseConsulationCardState extends State<CloseConsulationCard> {
                             enabled: isFreeService,
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
+                            /*  inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                 RegExp(r'^\d+\.?\d{0,2}$'),),
+                            ], */
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d*')),
+                                  RegExp(r'^\d*\.?\d{0,2}')),
                             ],
                             maxLength: 10,
                             decoration: InputDecoration(

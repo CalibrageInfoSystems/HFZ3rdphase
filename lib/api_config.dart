@@ -75,3 +75,4 @@ const addUpdateCustomerEnquiry = "CustomerEnquiry/AddUpdateCustomerEnquiry";
 const validateCustomer = "ValidateCustomer";
 const validateCustomerOTP = "ValidateCustomerOTP";
 const getAppointmentData = "api/Appointment/GetAppointmentData";
+const getTechniciansByBranch = "api/TechnicianLeave/GetTechniciansByBranch/";

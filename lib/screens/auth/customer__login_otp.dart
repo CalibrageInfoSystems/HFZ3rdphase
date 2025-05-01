@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,6 +14,7 @@ import 'package:hairfixingzone/HomeScreen.dart';
 import 'package:hairfixingzone/api_config.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomerLoginOtp extends StatefulWidget {
   final bool isExisting;
@@ -32,6 +34,16 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _otpController = TextEditingController();
   String? currentText;
+  bool _isOtpValid = true;
+  late Timer _timer;
+  int _secondsRemaining = 600;
+
+  @override
+  void initState() {
+    
+    super.initState();
+    startTimer();
+  }
 
   @override
   void dispose() {
@@ -39,6 +51,210 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
     super.dispose();
   }
 
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_secondsRemaining > 0) {
+          _secondsRemaining--;
+        } else {
+          timer.cancel();
+        }
+      });
+    });
+  }
+
+  void restartTimer() {
+    _timer.cancel(); // Cancel the current timer if it's running
+    _secondsRemaining = 600; // Reset seconds remaining to 10 minutes
+    startTimer(); // Start a new timer
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: CommonUtils.primaryTextColor,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            header(context),
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                    ),
+                  ),
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          PinCodeTextField(
+                            appContext: context,
+                            length: 6,
+                            obscureText: false,
+                            animationType: AnimationType.fade,
+                            pinTheme: PinTheme(
+                              shape: PinCodeFieldShape.box,
+                              borderRadius: BorderRadius.circular(10),
+                              fieldHeight: 50,
+                              fieldWidth: 45,
+                              activeColor: _isOtpValid
+                                  ? const Color.fromARGB(255, 63, 3, 109)
+                                  : Colors.red, // Red border if invalid
+                              selectedColor: _isOtpValid
+                                  ? const Color.fromARGB(255, 63, 3, 109)
+                                  : Colors.red,
+                              selectedFillColor: Colors.white,
+                              activeFillColor: Colors.white,
+                              inactiveFillColor: Colors.white,
+                              inactiveColor: _isOtpValid
+                                  ? CommonUtils.primaryTextColor
+                                  : Colors.red,
+                              errorBorderColor: Colors.red,
+                            ),
+                            animationDuration:
+                                const Duration(milliseconds: 300),
+                            enableActiveFill: true,
+                            controller: _otpController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            keyboardType: TextInputType.number,
+                            onCompleted: (v) {
+                              print("Completed");
+                            },
+                            onChanged: (value) {
+                              print(value);
+                              setState(() {
+                                currentText = value;
+                                _isOtpValid = true; // Reset validation state
+                              });
+                            },
+                            beforeTextPaste: (text) {
+                              print("Allowing to paste $text");
+                              return true;
+                            },
+                          ),
+                          if (!_isOtpValid) // Show error message if invalid
+                            const Text(
+                              'Please Enter Valid OTP',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: CustomButton(
+                              buttonText: 'Verify OTP',
+                              color: CommonUtils.primaryTextColor,
+                              onPressed: () {
+                                if (_otpController.text.length != 6) {
+                                  setState(() {
+                                    _isOtpValid = false;
+                                  });
+                                } else {
+                                  setState(() {
+                                    _isOtpValid = true;
+                                  });
+                                  checkInternetConnection();
+                                }
+                              },
+                            ),
+                          ),
+
+                          //MARK: OTP Timer
+                          const SizedBox(height: 10),
+                          Text(
+                            'OTP Validate For ${(_secondsRemaining ~/ 60).toString().padLeft(2, '0')}:${(_secondsRemaining % 60).toString().padLeft(2, '0')} Minutes',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontFamily: "Outfit",
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                            ),
+                          ),
+                          //MARK: Resend OTP
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              /* const Text('Didn\'t receive OTP? ',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontFamily: "Outfit",
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
+                                          )), */
+                              TextButton(
+                                onPressed: () {
+                                  resendOtp(context);
+                                },
+                                child: const Text(
+                                  'Resend OTP',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontFamily: "Outfit",
+                                    color: Color(0xFF0f75bc),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Back to Login?',
+                                  style: CommonUtils.Mediumtext_14),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(' Click Here!',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: "Outfit",
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF0f75bc),
+                                    )),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+/* 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,6 +315,7 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
                               activeFillColor: Colors.white,
                               inactiveFillColor: Colors.white,
                               inactiveColor: CommonUtils.primaryTextColor,
+                              errorBorderColor: CommonUtils.formFieldErrorBorderColor,
                             ),
                             animationDuration:
                                 const Duration(milliseconds: 300),
@@ -109,6 +326,7 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly
                             ],
+                            
                             keyboardType: TextInputType.number,
                             // validator: validateotp,
                             onCompleted: (v) {
@@ -123,6 +341,16 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
                             beforeTextPaste: (text) {
                               print("Allowing to paste $text");
                               return true;
+                            },
+                            validator: (value) {
+                              print('www: $value');
+                              if (value == null || value.isEmpty) {
+                                return 'Please Enter OTP';
+                              }
+                              if (value.length != 6) {
+                                return 'OTP Must Have 6 Digits';
+                              }
+                              return null;  
                             },
                           ),
                           const SizedBox(height: 20),
@@ -191,7 +419,7 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
       ),
     );
   }
-
+ */
   bool validateOtp(String? value) {
     if (value == null || value.isEmpty) {
       CommonUtils.showCustomToastMessageLongbottom(
@@ -223,6 +451,7 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
 
   Future<void> customerLoginOtp(BuildContext context) async {
     ProgressDialog progressDialog = ProgressDialog(context);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       final apiUrl = '$baseUrl$validateCustomerOTP';
 
@@ -233,7 +462,7 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
         "otp": _otpController.text.trim(),
         "isExisting": widget.isExisting
       });
-      print('customerLogin2: $apiUrl | $requestBody');
+      print('resendOtp: $apiUrl | $requestBody');
       final jsonResponse = await http.post(
         Uri.parse(apiUrl),
         body: requestBody,
@@ -250,11 +479,11 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
               context,
               0,
               4);
-
+          print('www: ${widget.isExisting}');
           if (widget.isExisting) {
+            prefs.setBool('isLoggedIn', true);
             // existing user
-            Navigator.pushAndRemoveUntil(
-              context,
+            Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
                 builder: (context) => const HomeScreen(boolflagpopup: true),
               ),
@@ -262,7 +491,6 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
             );
           } else {
             // new user
-
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => CustomerRegisterScreen(
@@ -302,7 +530,7 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
         'userName': widget.contactNumber,
         'deviceTokens': [deviceTokens]
       });
-      print('customerLogin2: $apiUrl | $requestBody');
+      print('resendOtp: $apiUrl | $requestBody');
       final jsonResponse = await http.post(
         Uri.parse(apiUrl),
         body: requestBody,
@@ -311,6 +539,7 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
         },
       );
       if (jsonResponse.statusCode == 200) {
+        restartTimer();
         final response = jsonDecode(jsonResponse.body);
 
         CommonUtils.showCustomToastMessageLong(
@@ -350,10 +579,16 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('Login Your Account',
+              
+                      const Text('We Just Sent Your Otp to ',
+                          style: CommonUtils.Sub_header_Styles),
+                      Text(widget.contactNumber ?? '',
+                          style: CommonUtils
+                              .Sub_header_Styles),
+              /* const Text('Login Your Account',
                   style: CommonUtils.Sub_header_Styles),
               const Text('to Access Our Services',
-                  style: CommonUtils.Sub_header_Styles),
+                  style: CommonUtils.Sub_header_Styles), */
             ],
           ),
         ),

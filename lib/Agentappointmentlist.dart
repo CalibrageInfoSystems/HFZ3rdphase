@@ -3003,9 +3003,8 @@ class _OpCardState extends State<OpCard> {
                                         const TextInputType.numberWithOptions(
                                             decimal: true),
                                     inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp(r'^\d*\.?\d*')),
-                                    ],
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                ],
                                     onChanged: (value) {
                                       setState(() {
                                         if (value.startsWith(' ')) {

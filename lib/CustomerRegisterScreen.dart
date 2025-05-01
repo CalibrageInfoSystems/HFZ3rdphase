@@ -10,6 +10,7 @@ import 'package:hairfixingzone/CommonUtils.dart';
 import 'package:hairfixingzone/api_config.dart';
 import 'package:hairfixingzone/slotbookingscreen.dart';
 import 'package:loading_progress/loading_progress.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Common/custom_button.dart';
 import 'Common/custome_form_field.dart';
@@ -943,7 +944,7 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
           "updatedByUserId": null,
           "updatedDate": "$now",
           "roleId": 2,
-          "gender": null,
+          "gender": selectedValue,
           "dateOfBirth": null,
           "branchIds": null
         };
@@ -970,8 +971,10 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
                   'Customer Registered Sucessfully', context, 0, 5);
               FocusScope.of(context).unfocus();
 
-              Navigator.pushAndRemoveUntil(
-                context,
+              Map<String, dynamic> user = data['response'];
+              await saveUserDataToSharedPreferences(user);
+
+              Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
                   builder: (context) => const HomeScreen(boolflagpopup: true),
                 ),
@@ -1005,6 +1008,37 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
           rethrow;
         }
       }
+    }
+  }
+
+  Future<void> saveUserDataToSharedPreferences(
+      Map<String, dynamic> userData) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.setBool('isLoggedIn', true);
+    // Save user data using unique keys
+    final genderTypeId = userData['gender'];
+    final gender = getGender(genderTypeId);
+    await prefs.setInt('userId', userData['id']);
+    await prefs.setString('userFullName', userData['firstName'] ?? '');
+    await prefs.setString('username', userData['userName'] ?? '');
+    await prefs.setInt('userRoleId', userData['roleID'] ?? 0);
+    await prefs.setString('email', userData['email'] ?? '');
+    await prefs.setString('contactNumber', userData['contactNumber'] ?? '');
+    await prefs.setString('gender', gender);
+    // await prefs.setString('gender', userData['gender']);
+    await prefs.setString('dateofbirth', userData['dateofbirth'] ?? '');
+    await prefs.setString('password', userData['password'] ?? '');
+    await prefs.setInt('genderTypeId', genderTypeId);
+    prefs.setBool('isLoggedIn', true);
+  }
+
+  String getGender(int? genderTypeId) {
+    if (genderTypeId == 1) {
+      return 'Male';
+    } else if (genderTypeId == 2) {
+      return 'Female';
+    } else {
+      return '';
     }
   }
 

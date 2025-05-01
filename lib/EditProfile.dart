@@ -39,7 +39,8 @@ class EditProfile_screenState extends State<EditProfile> {
   TextEditingController dobController = TextEditingController();
   TextEditingController genderController = TextEditingController();
   TextEditingController mobileNumberController = TextEditingController();
-  TextEditingController alernateMobileNumberController = TextEditingController();
+  TextEditingController alernateMobileNumberController =
+      TextEditingController();
   TextEditingController emailController = TextEditingController();
 
   bool _fullNameError = false;
@@ -97,7 +98,8 @@ class EditProfile_screenState extends State<EditProfile> {
       DeviceOrientation.portraitDown,
       DeviceOrientation.portraitUp,
     ]);
-    selectedDate = DateTime.now(); // Initialize selectedDate with a non-null value, if needed
+    selectedDate = DateTime
+        .now(); // Initialize selectedDate with a non-null value, if needed
 
     CommonUtils.checkInternetConnectivity().then((isConnected) async {
       if (isConnected) {
@@ -105,7 +107,8 @@ class EditProfile_screenState extends State<EditProfile> {
 
         // fetchMyAppointments(userId);
       } else {
-        CommonUtils.showCustomToastMessageLong('Please Check Your Internet Connection', context, 1, 4);
+        CommonUtils.showCustomToastMessageLong(
+            'Please Check Your Internet Connection', context, 1, 4);
         print('The Internet Is not  Connected');
       }
     });
@@ -152,7 +155,9 @@ class EditProfile_screenState extends State<EditProfile> {
         //  formattedDate = DateFormat('dd-MM-yyyy').format(DateTime.parse(dob));
 
         fullNameController.text = "$loginUserFullName";
-        dobController.text = DateFormat('dd-MM-yyyy').format(DateTime.parse('$loginUserDob'));
+        dobController.text = (loginUserDob != null && loginUserDob!.isNotEmpty)
+            ? DateFormat('dd-MM-yyyy').format(DateTime.parse('$loginUserDob'))
+            : '';
         emailController.text = '$loginUserEmail';
         mobileNumberController.text = '$loginUserContactNumber';
         alernateMobileNumberController.text = '$loginUserAlternerNumber';
@@ -176,8 +181,10 @@ class EditProfile_screenState extends State<EditProfile> {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime currentDate = DateTime.now();
-    final DateTime oldestDate = DateTime(currentDate.year - 100); // Allow selection from 100 years ago
-    final DateTime initialDate = selectedDate ?? currentDate; // Use currentDate if selectedDate is null
+    final DateTime oldestDate =
+        DateTime(currentDate.year - 100); // Allow selection from 100 years ago
+    final DateTime initialDate =
+        selectedDate ?? currentDate; // Use currentDate if selectedDate is null
 
     final DateTime? pickedDay = await showDatePicker(
       context: context,
@@ -238,7 +245,10 @@ class EditProfile_screenState extends State<EditProfile> {
             backgroundColor: Color(0xffe2f0fd),
             title: const Text(
               'Edit Profile',
-              style: TextStyle(color: Color(0xFF0f75bc), fontSize: 16.0, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: Color(0xFF0f75bc),
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w600),
             ),
             leading: IconButton(
               icon: const Icon(
@@ -254,7 +264,10 @@ class EditProfile_screenState extends State<EditProfile> {
             future: _fetchUserDataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return SizedBox(width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height, child: const Center(child: CircularProgressIndicator()));
+                return SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: const Center(child: CircularProgressIndicator()));
               } else if (snapshot.hasError) {
                 return Center(
                   child: Text(snapshot.error.toString()),
@@ -286,7 +299,8 @@ class EditProfile_screenState extends State<EditProfile> {
 
                   validator: validatefullname,
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')), // Including '\s' for space
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'[a-zA-Z\s]')), // Including '\s' for space
                   ],
                   controller: fullNameController,
                   keyboardType: TextInputType.name,
@@ -297,7 +311,8 @@ class EditProfile_screenState extends State<EditProfile> {
                       if (value.startsWith(' ')) {
                         fullNameController.value = TextEditingValue(
                           text: value.trimLeft(),
-                          selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                          selection: TextSelection.collapsed(
+                              offset: value.trimLeft().length),
                         );
                       }
                       _fullNameError = false;
@@ -308,73 +323,6 @@ class EditProfile_screenState extends State<EditProfile> {
                   height: 10,
                 ),
 
-                // CustomeFormField(
-                //   label: 'Date of Birth',
-                //   validator: validatedob,
-                //   controller: DateofBirth,
-                //   focusNode: DateofBirthdFocus,
-                //   onTap: () => _selectDate(context),
-                // ),
-                const Row(
-                  children: [
-                    Text(
-                      'Date of Birth ',
-                      style: CommonUtils.txSty_12b_fb,
-                    ),
-                    Text(
-                      '*',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-
-                TextFormField(
-                  //MARK: DOB
-                  controller: dobController,
-                  onTap: () {
-                    _selectDate(context);
-                  },
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    errorText: _dobError ? _dobErrorMsg : null,
-                    contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: CommonUtils.primaryTextColor,
-                      ),
-                      borderRadius: BorderRadius.circular(6.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                        color: CommonUtils.primaryTextColor,
-                      ),
-                      borderRadius: BorderRadius.circular(6.0),
-                    ),
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    hintText: 'Enter Date of Birth',
-                    counterText: "",
-                    hintStyle: CommonStyles.texthintstyle,
-                    suffixIcon: const Icon(Icons.calendar_today),
-                  ),
-                  validator: validateDOB,
-                  style: CommonStyles.txSty_14b_fb,
-                  onChanged: (value) {
-                    setState(() {
-                      _dobError = false;
-                    });
-                  },
-                ),
-
-                const SizedBox(
-                  height: 10,
-                ),
                 const Row(
                   children: [
                     Text(
@@ -412,7 +360,10 @@ class EditProfile_screenState extends State<EditProfile> {
                               setState(() {
                                 selectedGender = value!;
 
-                                gendertypeid = dropdownItems.firstWhere((item) => item['desc'] == selectedGender)['typeCdId'];
+                                gendertypeid = dropdownItems.firstWhere(
+                                    (item) =>
+                                        item['desc'] ==
+                                        selectedGender)['typeCdId'];
                                 print("gendertypeid:$gendertypeid");
                                 // if (selectedTypeCdId != -1) {
                                 //   selectedValue = dropdownItems[selectedTypeCdId]['typeCdId'];
@@ -567,13 +518,11 @@ class EditProfile_screenState extends State<EditProfile> {
                   maxLength: 60,
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   keyboardType: TextInputType.emailAddress,
-                  onTap: () {
-
-                  },
+                  onTap: () {},
                   decoration: InputDecoration(
                       errorText: _emailError ? _emailErrorMsg : null,
-
-                      contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                      contentPadding: const EdgeInsets.only(
+                          top: 15, bottom: 10, left: 15, right: 15),
                       focusedBorder: OutlineInputBorder(
                         borderSide: const BorderSide(
                           color: Color(0xFF0f75bc),
@@ -621,13 +570,15 @@ class EditProfile_screenState extends State<EditProfile> {
                   errorText: _mobileNumberError ? _mobileNumberErrorMsg : null,
                   onChanged: (value) {
                     setState(() {
-                      if (value.length == 1 && ['0', '1', '2', '3', '4'].contains(value)) {
+                      if (value.length == 1 &&
+                          ['0', '1', '2', '3', '4'].contains(value)) {
                         mobileNumberController.clear();
                       }
                       if (value.startsWith(' ')) {
                         mobileNumberController.value = TextEditingValue(
                           text: value.trimLeft(),
-                          selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                          selection: TextSelection.collapsed(
+                              offset: value.trimLeft().length),
                         );
                       }
                       _mobileNumberError = false;
@@ -644,7 +595,63 @@ class EditProfile_screenState extends State<EditProfile> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    // SizedBox(height: 5),
+                    const Row(
+                      children: [
+                        Text(
+                          'Date of Birth ',
+                          style: CommonUtils.txSty_12b_fb,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+
+                    //MARK: DOB
+                    TextFormField(
+                      controller: dobController,
+                      onTap: () {
+                        _selectDate(context);
+                      },
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        errorText: _dobError ? _dobErrorMsg : null,
+                        contentPadding: const EdgeInsets.only(
+                            top: 15, bottom: 10, left: 15, right: 15),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: CommonUtils.primaryTextColor,
+                          ),
+                          borderRadius: BorderRadius.circular(6.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            color: CommonUtils.primaryTextColor,
+                          ),
+                          borderRadius: BorderRadius.circular(6.0),
+                        ),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                        ),
+                        hintText: 'Enter Date of Birth',
+                        counterText: "",
+                        hintStyle: CommonStyles.texthintstyle,
+                        suffixIcon: const Icon(Icons.calendar_today),
+                      ),
+                      // validator: validateDOB,
+                      style: CommonStyles.txSty_14b_fb,
+                      onChanged: (value) {
+                        setState(() {
+                          _dobError = false;
+                        });
+                      },
+                    ),
+
+                    const SizedBox(
+                      height: 10,
+                    ),
                     const Row(
                       children: [
                         Text(
@@ -683,7 +690,8 @@ class EditProfile_screenState extends State<EditProfile> {
                       decoration: InputDecoration(
                         counterText: '',
                         errorText: _altNumberError ? _altNumberErrorMsg : null,
-                        contentPadding: const EdgeInsets.only(top: 15, bottom: 10, left: 15, right: 15),
+                        contentPadding: const EdgeInsets.only(
+                            top: 15, bottom: 10, left: 15, right: 15),
                         focusedBorder: OutlineInputBorder(
                           borderSide: const BorderSide(
                             color: Color(0xFF0f75bc),
@@ -709,16 +717,19 @@ class EditProfile_screenState extends State<EditProfile> {
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                       ],
                       style: CommonStyles.txSty_14b_fb,
-                      validator: validateAlterMobilenum,
+                      // validator: validateAlterMobilenum,
                       onChanged: (value) {
                         setState(() {
-                          if (value.length == 1 && ['0', '1', '2', '3', '4'].contains(value)) {
+                          if (value.length == 1 &&
+                              ['0', '1', '2', '3', '4'].contains(value)) {
                             alernateMobileNumberController.clear();
                           }
                           if (value.startsWith(' ')) {
-                            alernateMobileNumberController.value = TextEditingValue(
+                            alernateMobileNumberController.value =
+                                TextEditingValue(
                               text: value.trimLeft(),
-                              selection: TextSelection.collapsed(offset: value.trimLeft().length),
+                              selection: TextSelection.collapsed(
+                                  offset: value.trimLeft().length),
                             );
                           }
                           _altNumberError = false;
@@ -794,7 +805,8 @@ class EditProfile_screenState extends State<EditProfile> {
                 child: Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height / 2.7,
-              padding: EdgeInsets.only(left: 15.0, right: 10, top: 6, bottom: 10),
+              padding:
+                  EdgeInsets.only(left: 15.0, right: 10, top: 6, bottom: 10),
               child: Stack(
                 //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -808,7 +820,11 @@ class EditProfile_screenState extends State<EditProfile> {
                         children: [
                           Text(
                             'Delete Confirmation',
-                            style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500, fontFamily: 'Outfit'),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Outfit'),
                           ),
                         ],
                       ),
@@ -825,10 +841,10 @@ class EditProfile_screenState extends State<EditProfile> {
                       Text(
                         'Once you delete your account, all of your information and booking slots will be lost forever. We will not be able to restore your account. ',
                         style: TextStyle(
-                          color: CommonUtils.primaryTextColor,
-
-                            fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Outfit'
-                        ),
+                            color: CommonUtils.primaryTextColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Outfit'),
                       ),
                       SizedBox(
                         height: 10,
@@ -838,9 +854,9 @@ class EditProfile_screenState extends State<EditProfile> {
                         'Are you sure you want to proceed?',
                         style: TextStyle(
                             color: CommonUtils.primaryTextColor,
-
-                            fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Outfit'
-                        ),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Outfit'),
                       ),
                       // SizedBox(height: 15,),
                     ],
@@ -889,11 +905,13 @@ class EditProfile_screenState extends State<EditProfile> {
       print(isFullNameValidate);
       print(isMobileNumberValidate);
       print(isEmailValidate);
-      print(isDobValidate);
+      // print(isDobValidate);
       print(alernateMobileNumberController.text);
 
-      if (isFullNameValidate && isMobileNumberValidate && isEmailValidate && isDobValidate) {
-        String? alternateMobile = alernateMobileNumberController.text.isNotEmpty ? alernateMobileNumberController.text : null;
+      if (isFullNameValidate && isMobileNumberValidate && isEmailValidate) {
+        String? alternateMobile = alernateMobileNumberController.text.isNotEmpty
+            ? alernateMobileNumberController.text
+            : null;
 
         if (alternateMobile != null && isAltMobileNumberValidate) {
           updateUser();
@@ -914,7 +932,11 @@ class EditProfile_screenState extends State<EditProfile> {
 
     // Show the progress dialog
     progressDialog.show();
-    final request = {"id": loginUserId, "updatedByUserId": loginUserId, "updatedDate": "$now"};
+    final request = {
+      "id": loginUserId,
+      "updatedByUserId": loginUserId,
+      "updatedDate": "$now"
+    };
 
     print('DeleteAccountObject: ${json.encode(request)}');
     try {
@@ -936,7 +958,9 @@ class EditProfile_screenState extends State<EditProfile> {
           print('Request sent successfully');
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => HomeScreen(boolflagpopup: false,),
+              builder: (context) => HomeScreen(
+                boolflagpopup: false,
+              ),
             ),
           );
 
@@ -955,10 +979,10 @@ class EditProfile_screenState extends State<EditProfile> {
             prefs.remove('dateofbirth');
             prefs.remove('password');
             prefs.remove('genderTypeId');
-           // Remove roleId from SharedPreferences
+            // Remove roleId from SharedPreferences
 
-
-            CommonUtils.showCustomToastMessageLong('Profile Delete Successfully', context, 0, 5);
+            CommonUtils.showCustomToastMessageLong(
+                'Profile Delete Successfully', context, 0, 5);
             // Navigator.pushReplacement(
             //   context,
             //   MaterialPageRoute(builder: (context) => CustomerLoginScreen()),
@@ -976,7 +1000,7 @@ class EditProfile_screenState extends State<EditProfile> {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => startingscreen()),
-                  (route) => false, // Clear all previous routes
+              (route) => false, // Clear all previous routes
             );
           });
 
@@ -987,13 +1011,15 @@ class EditProfile_screenState extends State<EditProfile> {
           // Failure case
           // Handle failure scenario here
           print('statusmesssage${data['statusMessage']}');
-          CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 1, 5);
+          CommonUtils.showCustomToastMessageLong(
+              '${data['statusMessage']}', context, 1, 5);
         }
       } else {
         progressDialog.dismiss();
         //showCustomToastMessageLong(
         // 'Failed to send the request', context, 1, 2);
-        print('Failed to send the request. Status code: ${response.statusCode}');
+        print(
+            'Failed to send the request. Status code: ${response.statusCode}');
       }
     } catch (e) {
       progressDialog.dismiss();
@@ -1081,9 +1107,9 @@ class EditProfile_screenState extends State<EditProfile> {
       });
       isEmailValidate = false;
       return null;
-    //} else if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
-     } else if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$').hasMatch(value)) {
-
+      //} else if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
+    } else if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$')
+        .hasMatch(value)) {
       setState(() {
         _emailError = true;
         _emailErrorMsg = 'Please Enter Valid Email';
@@ -1132,6 +1158,7 @@ class EditProfile_screenState extends State<EditProfile> {
     return null;
   }
 
+
   String? validateAlterMobilenum(String? value) {
     if (value!.isEmpty) {
       return null;
@@ -1139,7 +1166,8 @@ class EditProfile_screenState extends State<EditProfile> {
     if (value.startsWith(RegExp('[1-4]'))) {
       setState(() {
         _altNumberError = true;
-        _altNumberErrorMsg = 'Alternate Mobile Number Should Not Start with 1-4';
+        _altNumberErrorMsg =
+            'Alternate Mobile Number Should Not Start with 1-4';
       });
       isAltMobileNumberValidate = false;
       return null;
@@ -1147,7 +1175,8 @@ class EditProfile_screenState extends State<EditProfile> {
     if (value.contains(RegExp(r'[a-zA-Z]'))) {
       setState(() {
         _altNumberError = true;
-        _altNumberErrorMsg = 'Alternate Mobile Number Should Contain Only Digits';
+        _altNumberErrorMsg =
+            'Alternate Mobile Number Should Contain Only Digits';
       });
       isAltMobileNumberValidate = false;
       return null;
@@ -1176,19 +1205,13 @@ class EditProfile_screenState extends State<EditProfile> {
       String? formattedDob;
       //'$formattedDate';
 
-      print('formattedapi$formattedDob');
       // Format the date of birth
       DateTime? dob;
-      try {
-        dob = DateFormat('dd-MM-yyyy').parse(dobController.text);
-      } catch (e) {
-        print('Error parsing date of birth: $e');
-        // Handle the error, e.g., show an error message to the user
-        return;
-      }
+      dob = dobController.text == ''
+          ? null
+          : DateFormat('dd-MM-yyyy').parse(dobController.text);
 
-      String dOBobject = DateFormat('yyyy-MM-dd').format(dob);
-      print('DOBobject: $dOBobject');
+      String dOBobject =  dobController.text == '' ? '' : DateFormat('yyyy-MM-dd').format(dob!);
       // Show the progress dialog
       progressDialog.show();
       final request = {
@@ -1224,6 +1247,7 @@ class EditProfile_screenState extends State<EditProfile> {
           },
         );
 
+        progressDialog.dismiss();
         if (response.statusCode == 200) {
           Map<String, dynamic> data = json.decode(response.body);
 
@@ -1233,8 +1257,9 @@ class EditProfile_screenState extends State<EditProfile> {
             progressDialog.dismiss();
             print('Request sent successfully');
             Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) =>  EditProfile(createdDate: widget.createdDate)),
-
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EditProfile(createdDate: widget.createdDate)),
             );
             // showCustomToastMessageLong('Slot booked successfully', context, 0, 2);
             // Navigator.of(context).push(
@@ -1244,8 +1269,9 @@ class EditProfile_screenState extends State<EditProfile> {
             // );
             print('statusmesssage:${data['statusMessage']}');
             //CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 0, 5);
-            CommonUtils.showCustomToastMessageLong('Customer Updated Successfully', context, 0, 5);
-          //  CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 0, 5);
+            CommonUtils.showCustomToastMessageLong(
+                'Customer Updated Successfully', context, 0, 5);
+            //  CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 0, 5);
 
             // Success case11.Customer Updated Sucessfully
             // Handle success scenario here
@@ -1254,17 +1280,19 @@ class EditProfile_screenState extends State<EditProfile> {
             // Failure case
             // Handle failure scenario here
             print('statusmesssage${data['statusMessage']}');
-            CommonUtils.showCustomToastMessageLong('${data['statusMessage']}', context, 1, 5);
+            CommonUtils.showCustomToastMessageLong(
+                '${data['statusMessage']}', context, 1, 5);
           }
         } else {
           progressDialog.dismiss();
           //showCustomToastMessageLong(
           // 'Failed to send the request', context, 1, 2);
-          print('Failed to send the request. Status code: ${response.statusCode}');
+          print(
+              'Failed to send the request. Status code: ${response.statusCode}');
         }
       } catch (e) {
         progressDialog.dismiss();
-        print('Error slot: $e');
+        print('progressDialog Error slot: $e');
       }
     }
   }

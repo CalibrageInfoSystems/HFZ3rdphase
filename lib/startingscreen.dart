@@ -100,7 +100,7 @@ class _startingscreenState extends State<startingscreen> {
                         SizedBox(height: 20), // Space between text and buttons
                         Spacer(),
                         //MARK: loginNdRegister
-                        loginNdRegister(context),
+                        // loginNdRegister(context),
 
                         ElevatedButton(
                           onPressed: () {

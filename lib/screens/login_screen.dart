@@ -160,7 +160,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
   }
 
   Future<void> customerLogin(BuildContext context) async {
-    ProgressDialog progressDialog = ProgressDialog(context);
+    ProgressDialog progressDialog = ProgressDialog(context); 
     try {
       final apiUrl = baseUrl + validateCustomer;
 

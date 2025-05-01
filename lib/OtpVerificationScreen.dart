@@ -269,15 +269,6 @@ class OtpverificationScreenState extends State<OtpVerificationScreen> {
                                                 fontWeight: FontWeight.w700,
                                                 color: Color(0xFF662e91))),
                                       )
-                                      // Text(
-                                      //   ' Resend code',
-                                      //   style: TextStyle(
-                                      //     fontSize: 14,
-                                      //     fontFamily: "Outfit",
-                                      //     fontWeight: FontWeight.w700,
-                                      //     color:CommonUtils.primaryTextColor,
-                                      //   )
-                                      // ),
                                     ],
                                   ),
                                   const SizedBox(
