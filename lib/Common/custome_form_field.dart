@@ -26,6 +26,8 @@ class CustomeFormField extends StatelessWidget {
   final bool enabled;
   final bool isLableRequired;
   final double radius;
+  final Color? borderColor;
+  final Iterable<String>? autofillHints;
 
   const CustomeFormField({
     Key? key,
@@ -51,6 +53,8 @@ class CustomeFormField extends StatelessWidget {
     this.focusNode,
     this.radius = 6.0,
     this.isLableRequired = true,
+    this.autofillHints,
+    this.borderColor,
   }) : super(key: key);
 
   @override
@@ -85,6 +89,7 @@ class CustomeFormField extends StatelessWidget {
         TextFormField(
           controller: controller,
           inputFormatters: inputFormatters,
+          autofillHints: autofillHints,
           decoration: InputDecoration(
             enabled: enabled,
             suffixIcon: suffixIcon,
@@ -97,14 +102,14 @@ class CustomeFormField extends StatelessWidget {
               borderRadius: BorderRadius.circular(radius),
             ),
             enabledBorder: OutlineInputBorder(
-              borderSide: const BorderSide(
-                color: CommonUtils.primaryTextColor,
+              borderSide: BorderSide(
+                color: borderColor ?? CommonUtils.primaryTextColor,
               ),
               borderRadius: BorderRadius.circular(radius),
             ),
             border: OutlineInputBorder(
-              borderSide: const BorderSide(
-                color: CommonUtils.primaryTextColor,
+              borderSide: BorderSide(
+                color: borderColor ?? CommonUtils.primaryTextColor,
               ),
               borderRadius: BorderRadius.circular(radius),
             ),

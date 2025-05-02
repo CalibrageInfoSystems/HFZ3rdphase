@@ -63,6 +63,7 @@ var getconsulationbyranchid = 'api/Consultation/GetConsultationsByBranchId';
 //var validateusernameotp = "ValidateOTP";
 var AddCustomerNotification = "AddCustomerNotification";
 var getTechnicians = "api/Appointment/GetTechnicians";
+var getClosingTechnicians = "api/Appointment/GetClosingTechnicians";
 var Addfavourites = "AddUpdateFavourites";
 var Viewfavourites = "GetFavourites";
 var DisplayOffers = "api/Offer/GetOffer/1";

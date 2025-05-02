@@ -131,6 +131,44 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
     required String? slot,
   }) async {
     try {
+      final apiUrl = Uri.parse(baseUrl + getClosingTechnicians);
+      // final apiUrl = Uri.parse(baseUrl + getTechnicians);
+      final requestBody = jsonEncode({
+        "branchId": branchId,
+        "date": date,
+        // "slot": slot,
+      });
+      final jsonResponse = await http.post(
+        apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestBody,
+      );
+      if (jsonResponse.statusCode == 200) {
+        final response = jsonDecode(jsonResponse.body);
+        if (response['listResult'] != null) {
+          List<dynamic> techniciansList = response['listResult'];
+          return techniciansList
+              .map((technician) => TechniciansModel.fromJson(technician))
+              .toList();
+        }
+        return [];
+      } else {
+        return [];
+      }
+    } catch (error) {
+      return [];
+    }
+  }
+
+/* 
+  Future<List<TechniciansModel>> fetchTechnicians({
+    required int? branchId,
+    required String? date,
+    required String? slot,
+  }) async {
+    try {
       final apiUrl = Uri.parse(baseUrl + getTechnicians);
       final requestBody = jsonEncode({
         "branchId": branchId,
@@ -160,7 +198,7 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
     } catch (error) {
       return [];
     }
-  }
+  } */
 
   Future<List<Consultation>> getviewconsulationlist(
       String fromdate, String todate) async {
@@ -1824,11 +1862,11 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
         "remarks": consultation.remarks,
         "createdByUserId": consultation.createdByUser,
         "createdDate":
-            DateFormat('yyyy-MM-dd').format(consultation.createdDate!),
+            DateFormat("yyyy-MM-ddTHH:mm:ss").format(consultation.createdDate!),
         "updatedByUserId": widget.userid,
-        "updatedDate": DateFormat('yyyy-MM-dd').format(DateTime.now()),
-        "visitingDate":
-            DateFormat('yyyy-MM-dd').format(consultation.visitingDate!),
+        "updatedDate": DateFormat("yyyy-MM-ddTHH:mm:ss").format(DateTime.now()),
+        "visitingDate": DateFormat("yyyy-MM-ddTHH:mm:ss")
+            .format(consultation.visitingDate!),
         "statusTypeId": statusTypeId,
         "paymentTypeId": apiPaymentMode,
         "price": _priceController.text.trim(),

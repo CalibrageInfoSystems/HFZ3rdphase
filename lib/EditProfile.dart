@@ -556,13 +556,15 @@ class EditProfile_screenState extends State<EditProfile> {
                   height: 10,
                 ),
 
+                //MARK: Mobile Number
                 CustomeFormField(
-                  //MARK: Mobile Number
                   label: 'Mobile Number ',
                   validator: validateMobilenum,
                   controller: mobileNumberController,
                   maxLength: 10,
-
+                  readOnly: true,
+                  borderColor: Colors.grey.shade200,
+                  screenForReschedule: true,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                   ],
@@ -1158,7 +1160,6 @@ class EditProfile_screenState extends State<EditProfile> {
     return null;
   }
 
-
   String? validateAlterMobilenum(String? value) {
     if (value!.isEmpty) {
       return null;
@@ -1211,7 +1212,8 @@ class EditProfile_screenState extends State<EditProfile> {
           ? null
           : DateFormat('dd-MM-yyyy').parse(dobController.text);
 
-      String dOBobject =  dobController.text == '' ? '' : DateFormat('yyyy-MM-dd').format(dob!);
+      String dOBobject =
+          dobController.text == '' ? '' : DateFormat('yyyy-MM-dd').format(dob!);
       // Show the progress dialog
       progressDialog.show();
       final request = {
