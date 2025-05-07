@@ -28,6 +28,7 @@ class CustomeFormField extends StatelessWidget {
   final double radius;
   final Color? borderColor;
   final Iterable<String>? autofillHints;
+  final Widget? prefixIcon;
 
   const CustomeFormField({
     Key? key,
@@ -55,6 +56,7 @@ class CustomeFormField extends StatelessWidget {
     this.isLableRequired = true,
     this.autofillHints,
     this.borderColor,
+    this.prefixIcon,
   }) : super(key: key);
 
   @override
@@ -91,6 +93,7 @@ class CustomeFormField extends StatelessWidget {
           inputFormatters: inputFormatters,
           autofillHints: autofillHints,
           decoration: InputDecoration(
+            prefixIcon: prefixIcon,
             enabled: enabled,
             suffixIcon: suffixIcon,
             contentPadding:
@@ -136,14 +139,11 @@ class CustomeFormField extends StatelessWidget {
           maxLength: maxLength,
           maxLines: maxLines,
           maxLengthEnforcement: maxLengthEnforcement,
-          readOnly:
-              readOnly, // Pass the readOnly parameter to the TextFormField
+          readOnly: readOnly,
           onTap: onTap,
           style: CommonStyles.txSty_14b_fb.copyWith(
             color: screenForReschedule ? Colors.grey : Colors.black,
           ),
-          //  textStyle :CommonStyles.txSty_14b_fb
-          // Add onTap to handle any additional logic if needed
         ),
       ],
     );

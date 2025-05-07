@@ -179,8 +179,8 @@ class MyApp extends StatelessWidget {
       print("onMessageOmessagetitle: $messagetitle");
       print("onMessagelog: $messagelog");
       // NotificationHandler.handleNotification(message, context);
-// HERE
-      //  LocalNotificationService.showNotificationOnForeground(context, message);
+      // LocalNotificationService HERE
+      LocalNotificationService.showNotificationOnForeground(context, message);
       // LocalNotificationService.display(message);
 
       if (messageBody != null) {
@@ -231,7 +231,7 @@ class MyApp extends StatelessWidget {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-
+      print('zzz: $isLoggedIn');
       if (isLoggedIn) {
         userId = prefs.getInt('userId')!;
 

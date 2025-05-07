@@ -96,7 +96,7 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
     }
   }
 
-  Future<List<StatusModel>> getStatus() async {
+/*   Future<List<StatusModel>> getStatus() async {
     final response = await http.get(Uri.parse(baseUrl + getstatus));
     if (response.statusCode == 200) {
       final List<dynamic> responseData =
@@ -107,7 +107,36 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
       print('fetch branchname: ${response.body}');
       return result;
     } else {
-      throw Exception('Failed to load products');
+      // throw Exception('Failed to load products');
+      return [];
+    }
+  } */
+  Future<List<StatusModel>> getStatus() async {
+    try {
+      final response = await http.get(Uri.parse(baseUrl + getstatus));
+      print('getStatus: ${baseUrl + getstatus}');
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData =
+            json.decode(response.body)['listResult'];
+        List<StatusModel> statusList =
+            responseData.map((json) => StatusModel.fromJson(json)).toList();
+        List<StatusModel> result = statusList
+            .where((item) =>
+                item.typeCdId != 6 &&
+                item.typeCdId != 18 &&
+                item.typeCdId != 34 &&
+                item.typeCdId != 35 &&
+                item.typeCdId != 36 &&
+                item.typeCdId != 28)
+            .toList();
+        return result;
+      } else {
+        // throw Exception('Failed to load products');
+        return [];
+      }
+    } catch (e) {
+      // rethrow;
+      return [];
     }
   }
 
@@ -301,6 +330,7 @@ class _TestAgentOplistState extends State<TestAgentOplist> {
         const SizedBox(
           width: 10,
         ),
+        //MARK: Filter
         Container(
           height: 45,
           width: 45,
@@ -3819,7 +3849,7 @@ print('selectedTechnicianOption: $value');
                   final item = entry.value;
                   return DropdownMenuItem<int>(
                     value: index,
-                    child: Text(item['userName']),
+                    child: Text(item['firstName']),
                   );
                 }).toList(),
               ],

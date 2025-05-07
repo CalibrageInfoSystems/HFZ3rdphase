@@ -128,7 +128,7 @@ class _AgentHomeState extends State<AgentHome> {
           context: context,
           title: buildTitle(_currentIndex, context),
           actions: [
-            IconButton(
+            /* IconButton(
               icon: Container(
                 width: 40,
                 height: 40,
@@ -148,7 +148,25 @@ class _AgentHomeState extends State<AgentHome> {
                   ),
                 );
               },
+            ), */
+
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Branches_screen(
+                        userId: widget.userId, isBranchFrom: 'CustomerEnquiry'),
+                  ),
+                );
+              },
+              child: SvgPicture.asset(
+                'assets/enquery_icon.svg',
+                width: 24,
+                height: 24,
+              ),
             ),
+            const SizedBox(width: 10),
             IconButton(
               icon: Container(
                 width: 40,

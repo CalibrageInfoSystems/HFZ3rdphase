@@ -170,55 +170,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
               ),
             ),
-
-            /*   Column(
-              children: [
-                if (inventory.isActive!)
-                  IconButton(
-                    onPressed: () {
-                      CommonWidgets.customCancelDialog(
-                        context,
-                        message:
-                            'Are You Sure You Want to Delete ${inventory.productName}?',
-                        onConfirm: () {
-                          deleteInventory(inventory).whenComplete(() {
-                            setState(() {
-                              futureinvetories = getInventories();
-                            });
-                          });
-                        },
-                      );
-                    },
-                    icon: const Icon(Icons.delete),
-                  ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          userId: widget.userId,
-                          branchId: widget.branchId,
-                          inventory: inventory,
-                          branchName: widget.branchName,
-                          branchImage: widget.branchImage,
-                          branchNumber: widget.branchNumber,
-                          branchAddress: widget.branchAddress,
-                          isUpdate: true,
-                          isActive: inventory.isActive,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.edit),
-                ),
-              ],
-            ),
-           */
             inventory.isActive!
                 ? Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: PopupMenuButton<String>(
                       onSelected: (value) async {
                         if (value == 'edit') {
+                          //MARK: Edit Inventory
                           final updateInventory =
                               await Navigator.of(context).push(
                             MaterialPageRoute(
@@ -237,7 +195,9 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           );
                           if (updateInventory) {
                             setState(() {
-                              futureinvetories = getInventories();
+                              futureinvetories =
+                                  getInventories(gender: selectedGender);
+                              // futureinvetories = getInventories();
                             });
                           }
                         } else if (value == 'delete') {
@@ -248,7 +208,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             onConfirm: () {
                               deleteInventory(inventory).whenComplete(() {
                                 setState(() {
-                                  futureinvetories = getInventories();
+                                  futureinvetories =
+                                      getInventories(gender: selectedGender);
                                 });
                               });
                             },
@@ -298,8 +259,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
                         ),
                       );
                       if (result) {
-                        setState(() {
+                        /* setState(() {
                           futureinvetories = getInventories();
+                        }); */
+                        setState(() {
+                          futureinvetories =
+                              getInventories(gender: selectedGender);
+                          // futureinvetories = getInventories();
                         });
                       }
                     },
@@ -470,8 +436,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   ),
                 );
                 if (result) {
-                  setState(() {
+                  /* setState(() {
                     futureinvetories = getInventories();
+                  }); */
+                  setState(() {
+                    futureinvetories = getInventories(gender: selectedGender);
+                    // futureinvetories = getInventories();
                   });
                 }
               },

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
@@ -887,6 +888,7 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
           ) {
         FocusScope.of(context).unfocus();
         CommonStyles.startProgress(context);
+        String? deviceTokens = await FirebaseMessaging.instance.getToken();
         String? fullName = fullNameController.text.trim();
         String dob = dobController.text;
         //  String? gender = Gender.text;
@@ -973,6 +975,7 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
 
               Map<String, dynamic> user = data['response'];
               await saveUserDataToSharedPreferences(user);
+              addCustomerNotification(user['id'], user['roleID'], deviceTokens);
 
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
@@ -1008,6 +1011,35 @@ class _LoginPageState extends State<CustomerRegisterScreen> {
           rethrow;
         }
       }
+    }
+  }
+
+  Future<void> addCustomerNotification(
+      int userId, int roleid, String? deviceTokens) async {
+    final url = Uri.parse(baseUrl + AddCustomerNotification);
+
+    final request = {
+      "id": null,
+      "userId": userId,
+      "roleId": roleid,
+      "deviceToken": deviceTokens
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode(request),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        bool isSuccess = data['isSuccess'];
+      } else {}
+    } catch (e) {
+      // ProgressManager.stopProgress();
+      print('Error slot: $e');
     }
   }
 

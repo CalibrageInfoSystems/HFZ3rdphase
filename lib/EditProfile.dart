@@ -904,22 +904,16 @@ class EditProfile_screenState extends State<EditProfile> {
   Future<void> validating() async {
     validateGender(selectedName);
     if (_formKey.currentState!.validate()) {
-      print(isFullNameValidate);
-      print(isMobileNumberValidate);
-      print(isEmailValidate);
-      // print(isDobValidate);
-      print(alernateMobileNumberController.text);
-
       if (isFullNameValidate && isMobileNumberValidate && isEmailValidate) {
         String? alternateMobile = alernateMobileNumberController.text.isNotEmpty
             ? alernateMobileNumberController.text
             : null;
-
-        if (alternateMobile != null && isAltMobileNumberValidate) {
+        updateUser();
+        /* if (alternateMobile != null && isAltMobileNumberValidate) {
           updateUser();
         } else if (alternateMobile == null) {
           updateUser();
-        }
+        } */
       } else {
         print('validation failed');
       }
@@ -1196,8 +1190,7 @@ class EditProfile_screenState extends State<EditProfile> {
 
 //MARK: Update user
   Future<void> updateUser() async {
-    validateGender(selectedName);
-    if (_formKey.currentState!.validate()) {
+    try {
       final url = Uri.parse(baseUrl + updateuser);
       DateTime now = DateTime.now();
       ProgressDialog progressDialog = ProgressDialog(context);
@@ -1296,6 +1289,9 @@ class EditProfile_screenState extends State<EditProfile> {
         progressDialog.dismiss();
         print('progressDialog Error slot: $e');
       }
+    } catch (e) {
+      print('Catch: $e');
+      rethrow;
     }
   }
 }

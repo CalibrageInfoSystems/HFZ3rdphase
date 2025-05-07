@@ -751,7 +751,11 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
 
                               // Filter out items with "typeCdId": 18
                               data = data
-                                  .where((item) => item.typeCdId != 18)
+                                  .where((item) =>
+                                      item.typeCdId != 18 &&
+                                      item.typeCdId != 34 &&
+                                      item.typeCdId != 35 &&
+                                      item.typeCdId != 36)
                                   .toList();
 
                               return SizedBox(
@@ -774,6 +778,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                                     } else {
                                       status = data[index - 1];
                                     }
+
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
@@ -816,7 +821,7 @@ class _FilterBottomSheetState extends State<FilterAppointmentBottomSheet> {
                                                 child: Row(
                                                   children: [
                                                     Text(
-                                                      status.desc.toString(),
+                                                      '${status.desc}',
                                                       style: TextStyle(
                                                         fontSize: 12.0,
                                                         fontWeight:

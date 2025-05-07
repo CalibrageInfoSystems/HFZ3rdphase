@@ -10,6 +10,7 @@ import 'package:hairfixingzone/models/customer_enquiry_model.dart';
 import 'package:hairfixingzone/screens/customer_enquiry/add_customer_enquiry.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomerEnquiries extends StatefulWidget {
   final int userId;
@@ -462,7 +463,6 @@ class _CustomerEnquiriesState extends State<CustomerEnquiries> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Expanded(
-                                        flex: 7,
                                         child: Text(
                                           '${enquiry.customerName}',
                                           style: const TextStyle(
@@ -474,7 +474,7 @@ class _CustomerEnquiriesState extends State<CustomerEnquiries> {
                                         ),
                                       ),
                                       const SizedBox(width: 5),
-                                      Expanded(
+                                      /* Expanded(
                                         flex: 3,
                                         child: Text(
                                           '${enquiry.mobileNumber}',
@@ -485,6 +485,10 @@ class _CustomerEnquiriesState extends State<CustomerEnquiries> {
                                             color: Color(0xFF0f75bc),
                                           ),
                                         ),
+                                      ), */
+                                      Icon(
+                                        Icons.edit,
+                                        size: 20,
                                       ),
 
                                       /* RichText(
@@ -502,8 +506,48 @@ class _CustomerEnquiriesState extends State<CustomerEnquiries> {
                                       ), */
                                     ],
                                   ),
-                                  const SizedBox(height: 2.0),
-                                  Row(
+                                  if (enquiry.mobileNumber != null &&
+                                      enquiry.mobileNumber!.isNotEmpty) ...[
+                                    const SizedBox(height: 3.0),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          makePhoneCall(
+                                              'tel:+91${enquiry.mobileNumber}');
+                                        },
+                                        child: Text(
+                                          '${enquiry.mobileNumber}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: "Outfit",
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF0f75bc),
+                                            decoration:
+                                                TextDecoration.underline,
+                                            decorationColor: Color(0xFF0f75bc),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                  if (enquiry.email != null &&
+                                      enquiry.email!.isNotEmpty) ...[
+                                    const SizedBox(height: 3.0),
+                                    Expanded(
+                                      child: Text(
+                                        enquiry.email ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: "Outfit",
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black,
+                                        ),
+                                        softWrap: true,
+                                        maxLines: null,
+                                      ),
+                                    ),
+                                  ],
+                                  /*  Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     mainAxisAlignment:
@@ -512,7 +556,13 @@ class _CustomerEnquiriesState extends State<CustomerEnquiries> {
                                       Expanded(
                                         child: Text(
                                           enquiry.email ?? '',
-                                          style: CommonStyles.txSty_16b6_fb,
+                                          // style: CommonStyles.txSty_16b6_fb,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: "Outfit",
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
+                                          ),
                                           softWrap: true,
                                           maxLines: null,
                                         ),
@@ -520,7 +570,7 @@ class _CustomerEnquiriesState extends State<CustomerEnquiries> {
                                       const SizedBox(width: 5),
                                       Icon(Icons.edit),
                                     ],
-                                  ),
+                                  ), */
                                   /*  Row(
                                     children: [
                                       Flexible(
@@ -544,11 +594,31 @@ class _CustomerEnquiriesState extends State<CustomerEnquiries> {
                                       ), */
                                     ],
                                   ), */
-                                  const SizedBox(height: 5.0),
-                                  Text(enquiry.remarks ?? '',
+                                  /*  Text(enquiry.remarks ?? '',
                                       maxLines: 3,
                                       overflow: TextOverflow.ellipsis,
-                                      style: CommonStyles.txSty_14blu_f5),
+                                      style: CommonStyles.txSty_14blu_f5), */
+                                  if (enquiry.remarks != null &&
+                                      enquiry.remarks!.isNotEmpty) ...[
+                                    const SizedBox(height: 5.0),
+                                    RichText(
+                                      text: TextSpan(
+                                        text: 'Remark : ',
+                                        style: CommonStyles.txSty_14blu_f5,
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                            text: enquiry.remarks ?? '',
+                                            style: const TextStyle(
+                                              color: Color(0xFF5f5f5f),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'Outfit',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -675,5 +745,13 @@ class _CustomerEnquiriesState extends State<CustomerEnquiries> {
         );
       },
     );
+  }
+
+  Future<void> makePhoneCall(String phoneNumber) async {
+    if (await canLaunch(phoneNumber)) {
+      await launch(phoneNumber);
+    } else {
+      throw 'Could not launch $phoneNumber';
+    }
   }
 }

@@ -20,6 +20,7 @@ import 'package:hairfixingzone/MyAppointment_Model.dart';
 import 'package:hairfixingzone/api_config.dart';
 import 'package:hairfixingzone/models/payment_types_model.dart';
 import 'package:hairfixingzone/models/technician_model.dart';
+import 'package:hairfixingzone/test_agent_oplist.dart';
 
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,6 +82,16 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
   late Future<List<PaymentTypesModel>> futurePaymentTypes;
   late Future<List<TechniciansModel>> futureTechnicians;
 
+  late Future<List<StatusModel>> futureStatus;
+  final _filterDateController = TextEditingController();
+  int selectedFilterStatus = 0;
+  int? selectedStatusTypeId;
+  bool isFilterApplied = false;
+  final orangeColor = CommonUtils.primaryTextColor;
+
+  String? selectedFromDate;
+  String? selectedToDate;
+
   @override
   void initState() {
     super.initState();
@@ -90,12 +101,9 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
         DateFormat('dd-MM-yyyy').format(DateTime.now());
     futurePaymentTypes = fetchPaymentTypes();
     // futureTechnicians = fetchTechnicians();
-    print(
-        'branchid ${widget.branchid} fromdate${widget.fromdate} todate ${widget.todate}');
-    consultationData = getviewconsulationlist(
-      DateFormat('yyyy-MM-dd').format(DateTime.now()),
-      DateFormat('yyyy-MM-dd').format(DateTime.now()),
-    );
+
+    consultationData = getviewconsulationlist();
+    futureStatus = getStatus();
   }
 
   Future<List<PaymentTypesModel>> fetchPaymentTypes() async {
@@ -201,16 +209,19 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
   } */
 
   Future<List<Consultation>> getviewconsulationlist(
-      String fromdate, String todate) async {
+      {String? fromdate, String? todate, int? statusTypeId}) async {
     // const String apiUrl =
     //     'http://182.18.157.215/SaloonApp/API/api/Consultation/GetConsultationsByBranchId';
     String apiUrl = baseUrl + getconsulationbyranchid;
     print('getconsulationapi:$apiUrl');
+    final currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
     final Map<String, dynamic> requestObject = {
       "userId": widget.userid, // userId
       "branchId": widget.agent.id, //widget.branchid,
-      "fromDate": fromdate, //widget.fromdate,
-      "toDate": todate,
+      "fromDate": fromdate ?? currentDate, //widget.fromdate,
+      "toDate": todate ?? currentDate,
+      "statusTypeId": statusTypeId != null ? '$statusTypeId' : null,
       "isActive": true, //widget.todate
     };
     try {
@@ -456,36 +467,12 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                       height: 10,
                     ),
                     //MARK: Date Picker
-                    TextFormField(
+                    datepickerNdFilter(),
+                    /* TextFormField(
                       controller: _fromToDatesController,
                       keyboardType: TextInputType.visiblePassword,
                       onTap: () async {
-                        FocusScope.of(context).requestFocus(
-                            FocusNode()); // to prevent the keyboard from appearing
-                        /* final values =
-                            await showCustomCalendarDialog(context, config);
-                        if (values != null) {
-                          setState(() {
-                            //           startDate = s;
-                            //           endDate = e;
-                            //           _fromToDatesController.text =
-                            //               '${startDate != null ? DateFormat("dd/MM/yyyy").format(startDate!) : '-'} / ${endDate != null ? DateFormat("dd/MM/yyyy").format(endDate!) : '-'}';
-                            //           ConsultationData =
-
-                            selectedDate =
-                                _getValueText(config.calendarType, values);
-                            _fromToDatesController.text =
-                                '${selectedDate![0]} - ${selectedDate![1]}';
-                            String apiFromDate = formateDate(selectedDate![0]);
-                            String apiToDate = formateDate(selectedDate![1]);
-                            ConsultationData =
-                            // provider.getDisplayDate =
-                            //     '${selectedDate![0]}  to  ${selectedDate![1]}';
-                            // provider.getApiFromDate = selectedDate![0];
-                            // provider.getApiToDate = selectedDate![1];
-                          });
-                        } */
-
+                        FocusScope.of(context).requestFocus(FocusNode());
                         _selectDate(context);
                       },
                       readOnly: true,
@@ -517,6 +504,7 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                       ),
                       //  validator: validatePassword,
                     ),
+                   */
                   ],
                 ),
               ),
@@ -577,6 +565,108 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
             ],
           ),
         ));
+  }
+
+  Widget datepickerNdFilter() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 45,
+            child: TextFormField(
+              controller: _fromToDatesController,
+              keyboardType: TextInputType.visiblePassword,
+              onTap: () async {
+                FocusScope.of(context).requestFocus(FocusNode());
+                _selectDate(context);
+              },
+              readOnly: true,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.only(
+                    top: 15, bottom: 10, left: 15, right: 15),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(
+                    color: Color(0xFF0f75bc),
+                  ),
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  // borderSide: const BorderSide(
+                  //   color: CommonUtils.primaryTextColor,
+                  // ),
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
+                hintText: 'Select Dates',
+                counterText: "",
+                hintStyle: const TextStyle(
+                    color: Colors.grey, fontWeight: FontWeight.w400),
+                prefixIcon: const Icon(Icons.calendar_today),
+              ),
+              //  validator: validatePassword,
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: 10,
+        ),
+        //MARK: Filter
+        Container(
+          height: 45,
+          width: 45,
+          decoration: BoxDecoration(
+            color: isFilterApplied ? const Color(0xffe2f0fd) : Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: CommonUtils.primaryTextColor,
+            ),
+          ),
+          child: IconButton(
+            icon: SvgPicture.asset(
+              'assets/filter.svg',
+              color:
+                  isFilterApplied ? Colors.black : CommonUtils.primaryTextColor,
+              width: 24,
+              height: 24,
+            ),
+            onPressed: () {
+              showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                builder: (context) => Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: filterTemplate(
+                    onClear: () {
+                      setState(() {
+                        consultationData = getviewconsulationlist();
+                        clearFilter();
+                      });
+                    },
+                    onFilter: () {
+                      setState(() {
+                        consultationData = getviewconsulationlist(
+                          fromdate: selectedFromDate,
+                          todate: selectedFromDate,
+                          statusTypeId: selectedStatusTypeId,
+                        );
+                      });
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   String? formatVisitingDateToISO(DateTime? visitingDate) {
@@ -665,6 +755,7 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         flex: 7,
@@ -1006,14 +1097,9 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                                     );
 
                                     if (result == true) {
-                                      final formattedDate =
-                                          DateFormat('yyyy-MM-dd').format(
-                                              selectedDate ?? DateTime.now());
-
                                       setState(() {
                                         consultationData =
-                                            getviewconsulationlist(
-                                                formattedDate, formattedDate);
+                                            getviewconsulationlist();
                                       });
                                     }
                                   } else {
@@ -1082,6 +1168,12 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
                                 onConfirm: () {
                                   customConsultationCall(
                                       consultationslist[index], 34);
+
+                                  /* consultationData = getviewconsulationlist(
+                          fromdate: selectedFromDate,
+                          todate: selectedToDate,
+                          statusTypeId: selectedStatusTypeId,
+                        ); */
                                 },
                               );
                             },
@@ -1172,6 +1264,262 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
         ),
       ),
     );
+  }
+
+  //MARK: Filter Template
+  Widget filterTemplate({void Function()? onClear, void Function()? onFilter}) {
+    return StatefulBuilder(
+      builder: (context, setState) => Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const Text(
+                  'Filter By',
+                  style: CommonStyles.txSty_16blu_f5,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    onClear?.call();
+                  },
+                  child: const Text(
+                    'Clear All Filters',
+                    style: CommonStyles.txSty_16blu_f5,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Container(
+                width: double.infinity,
+                height: 0.3,
+                color: CommonUtils.primaryTextColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(left: 5, right: 5),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: FutureBuilder(
+                        future: futureStatus,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator.adaptive(
+                              backgroundColor: Colors.transparent,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  CommonUtils.primaryTextColor),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const SizedBox();
+                          } else {
+                            List<StatusModel> result = snapshot.data!;
+                            List<StatusModel> data = result
+                                .where((item) =>
+                                    item.typeCdId != 6 && item.typeCdId != 18)
+                                .toList();
+                            return SizedBox(
+                              height: 38,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemCount: data.length + 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  bool isSelected =
+                                      index == selectedFilterStatus;
+                                  StatusModel status;
+
+                                  if (index == 0) {
+                                    status = StatusModel(
+                                      typeCdId: null,
+                                      desc: 'All',
+                                    );
+                                  } else {
+                                    status = data[index - 1];
+                                  }
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedFilterStatus = index;
+                                        selectedStatusTypeId =
+                                            selectedFilterStatus == 0
+                                                ? null
+                                                : data[selectedFilterStatus - 1]
+                                                    .typeCdId;
+                                      });
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 4.0),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? orangeColor
+                                            : orangeColor.withOpacity(0.1),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? orangeColor
+                                              : orangeColor,
+                                          width: 1.0,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      child: IntrinsicWidth(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15.0),
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    status.desc.toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 12.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontFamily: "Outfit",
+                                                      color: isSelected
+                                                          ? Colors.white
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                        }),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            textStyle: const TextStyle(
+                              color: CommonUtils.primaryTextColor,
+                            ),
+                            side: const BorderSide(
+                              color: CommonUtils.primaryTextColor,
+                            ),
+                            backgroundColor: Colors.white,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5),
+                              ),
+                            ),
+                          ),
+                          child: const Text(
+                            'Close',
+                            style: TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 14,
+                              color: CommonUtils.primaryTextColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: SizedBox(
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: () async {
+                                Navigator.of(context).pop();
+                                onFilter?.call();
+                                /* setState(() {
+                                  futureAppointments = getAgentAppointments(
+                                    userId: null,
+                                    branchId: widget.branchId,
+                                    statustypeId: statustypeId,
+                                  );
+                                }); */
+                              },
+                              child: Container(
+                                height: 40.0,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  color: CommonUtils.primaryTextColor,
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'Apply',
+                                    style: TextStyle(
+                                      fontFamily: 'Outfit',
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void clearFilterInDatepicker() {
+    setState(() {
+      isFilterApplied = false;
+      selectedFilterStatus = 0;
+      selectedStatusTypeId = null;
+    });
+  }
+
+  void clearFilter() {
+    setState(() {
+      isFilterApplied = false;
+      selectedFilterStatus = 0;
+      selectedStatusTypeId = null;
+      selectedDate = null;
+      selectedFromDate = null;
+      _fromToDatesController.text =
+          DateFormat('dd-MM-yyyy').format(DateTime.now());
+    });
   }
 
   /*  void closePopUp(BuildContext context, Consultation data) {
@@ -1690,12 +2038,14 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
         selectedDate = pickedDay;
         _fromToDatesController.text =
             DateFormat('dd-MM-yyyy').format(pickedDay);
-        String apiFromDate = DateFormat('yyyy-MM-dd').format(pickedDay);
-        String apiToDate = DateFormat('yyyy-MM-dd').format(pickedDay);
-        consultationData = getviewconsulationlist(apiFromDate, apiToDate);
+        selectedFromDate = DateFormat('yyyy-MM-dd').format(pickedDay);
+        consultationData = getviewconsulationlist(
+            fromdate: selectedFromDate, todate: selectedFromDate);
+
+        clearFilterInDatepicker();
         print('test: $selectedDate');
-        print('test apiFromDate: $apiFromDate');
-        print('test apiToDate: $apiToDate');
+        print('test apiFromDate: $selectedFromDate');
+        print('test apiToDate: $selectedToDate');
       });
     }
   }
@@ -1828,11 +2178,9 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
         if (response['isSuccess']) {
           CommonUtils.showCustomToastMessageLong(
               'Consultation Cancelled Successfully', context, 0, 5);
-          final formattedDate =
-              DateFormat('yyyy-MM-dd').format(selectedDate ?? DateTime.now());
+
           setState(() {
-            consultationData =
-                getviewconsulationlist(formattedDate, formattedDate);
+            consultationData = getviewconsulationlist();
           });
         } else {
           CommonUtils.showCustomToastMessageLong(
@@ -1889,11 +2237,14 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
               context,
               0,
               2);
-          final formattedDate =
-              DateFormat('yyyy-MM-dd').format(selectedDate ?? DateTime.now());
+
           setState(() {
-            consultationData =
-                getviewconsulationlist(formattedDate, formattedDate);
+            // consultationData = getviewconsulationlist();
+            consultationData = getviewconsulationlist(
+              fromdate: selectedFromDate,
+              todate: selectedFromDate,
+              statusTypeId: selectedStatusTypeId,
+            );
           });
         } else {
           CommonUtils.showCustomToastMessageLong(
@@ -2168,6 +2519,74 @@ class _ViewConsultationState extends State<ViewConsulationlistScreen> {
     isBillingAmountValidate = true;
     return null;
   }
+
+  Future<List<StatusModel>> getStatus() async {
+    try {
+      final response = await http.get(Uri.parse(baseUrl + getstatus));
+      print('getStatus: ${baseUrl + getstatus}');
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData =
+            json.decode(response.body)['listResult'];
+        List<StatusModel> statusList =
+            responseData.map((json) => StatusModel.fromJson(json)).toList();
+        List<StatusModel> result = statusList
+            .where((item) =>
+                item.typeCdId != 4 &&
+                item.typeCdId != 6 &&
+                item.typeCdId != 18 &&
+                item.typeCdId != 36 &&
+                item.typeCdId != 28)
+            .toList();
+        return result;
+      } else {
+        // throw Exception('Failed to load products');
+        return [];
+      }
+    } catch (e) {
+      // rethrow;
+      return [];
+    }
+  }
+
+/*    Future<List<StatusModel>> getStatus() async {
+    final response = await http.get(Uri.parse(baseUrl + getstatus));
+    if (response.statusCode == 200) {
+      final List<dynamic> responseData =
+          json.decode(response.body)['listResult'];
+      List<StatusModel> result = responseData
+          .where((item) => item['typeCdId'] != 18 && item['typeCdId'] != 34)
+          .map((json) => StatusModel.fromJson(json))
+          .toList();
+      print('fetch branchname: ${result[0].desc}');
+      print('fetch branchname: ${response.body}');
+      return result;
+    } else {
+      // throw Exception('Failed to load products');
+      return [];
+    }
+  } */
+
+/*   Future<void> showFilterDatePicker(BuildContext context) async {
+    final DateTime currentDate = DateTime.now();
+    final DateTime initialDate = selectedFilterDate ?? currentDate;
+
+    final DateTime? pickedDay = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      firstDate: DateTime(2012),
+      lastDate:
+          DateTime(currentDate.year + 1, currentDate.month, currentDate.day),
+      initialDatePickerMode: DatePickerMode.day,
+    );
+
+    if (pickedDay != null) {
+      setState(() {
+        selectedFilterDate = pickedDay;
+        _filterDateController.text = DateFormat('dd-MM-yyyy').format(pickedDay);
+      });
+    }
+  } */
 }
 
 class CloseConsulationCard extends StatefulWidget {
@@ -2701,7 +3120,7 @@ class _CloseConsulationCardState extends State<CloseConsulationCard> {
                         final item = entry.value;
                         return DropdownMenuItem<int>(
                           value: index,
-                          child: Text('${item.userName}'),
+                          child: Text('${item.firstName}'),
                         );
                       }).toList(),
                     ],

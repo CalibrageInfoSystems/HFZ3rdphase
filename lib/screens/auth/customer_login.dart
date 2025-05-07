@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hairfixingzone/Common/common_styles.dart';
 import 'package:hairfixingzone/Common/custom_button.dart';
 import 'package:hairfixingzone/Common/custome_form_field.dart';
@@ -26,7 +27,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
   bool _mobileNumberError = false;
   String? _mobileNumberErrorMsg;
   bool isMobileNumberValidate = false;
-
+/* 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,6 +129,274 @@ class _CustomerLoginState extends State<CustomerLogin> {
       ),
     );
   }
+ */
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: SvgPicture.asset(
+              'assets/hfz_bg.svg',
+              fit: BoxFit.cover,
+              // width: MediaQuery.of(context).size.width,
+              // height: MediaQuery.of(context).size.height,
+            ),
+          ),
+          Container(
+            height: size.height * 0.4,
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 80, left: 20),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Welcome Back to',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Hair Fixing Zone..!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Spacer(),
+              ],
+            ),
+          ),
+
+          // Content
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Center(
+                    child: Text(
+                      'Customer Login',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    padding: const EdgeInsets.all(20),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/hfz_logo.png',
+                            height: 100,
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Verify with OTP',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'A verification code will be sent to the mobile number for your account verification process.',
+                            textAlign: TextAlign.center,
+                            style:
+                                TextStyle(fontSize: 14, color: Colors.black54),
+                          ),
+                          const SizedBox(height: 30),
+                          CustomeFormField(
+                            label: 'Mobile Number',
+                            controller: mobileNumberController,
+                            prefixIcon: const Icon(
+                              Icons.phone,
+                              color: Color(0xFF8E2DE2),
+                            ),
+                            validator: validateMobileNumber,
+                            isMandatory: false,
+                            borderColor: const Color(0xFF8E2DE2),
+                            autofillHints: const [
+                              AutofillHints.oneTimeCode,
+                              AutofillHints.telephoneNumber
+                            ],
+                            maxLength: 10,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^[6-9]\d{0,9}')),
+                            ],
+                            keyboardType: TextInputType.phone,
+                            errorText: _mobileNumberError
+                                ? _mobileNumberErrorMsg
+                                : null,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value.startsWith(' ')) {
+                                  mobileNumberController.value =
+                                      TextEditingValue(
+                                    text: value.trimLeft(),
+                                    selection: TextSelection.collapsed(
+                                        offset: value.trimLeft().length),
+                                  );
+                                }
+                                _mobileNumberError = false;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 30),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: checkInternetConnection,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF8E2DE2),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: const Text(
+                                'Send OTP',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /* 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: CommonUtils.primaryColor,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: CommonUtils.primaryTextColor,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            header(context),
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                    ),
+                  ),
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // const SizedBox(height: 30),
+                          /* 
+                          Upgraded digital_signature and Qr code scanner packages
+                          Implemented functionality to capture digital signature and QR code scanning
+                           */
+                          CustomeFormField(
+                            label: 'Mobile Number',
+                            validator: validateMobileNumber,
+                            controller: mobileNumberController,
+                            autofillHints: const [
+                              AutofillHints.oneTimeCode,
+                              AutofillHints.telephoneNumber
+                            ],
+                            maxLength: 10,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'^[6-9]\d{0,9}')),
+                            ],
+                            keyboardType: TextInputType.phone,
+                            errorText: _mobileNumberError
+                                ? _mobileNumberErrorMsg
+                                : null,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value.startsWith(' ')) {
+                                  mobileNumberController.value =
+                                      TextEditingValue(
+                                    text: value.trimLeft(),
+                                    selection: TextSelection.collapsed(
+                                        offset: value.trimLeft().length),
+                                  );
+                                }
+                                _mobileNumberError = false;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 30),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: CustomButton(
+                              buttonText: 'Send OTP',
+                              color: CommonUtils.primaryTextColor,
+                              onPressed: checkInternetConnection,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+ */
 
   SizedBox header(BuildContext context) {
     return SizedBox(
@@ -215,6 +484,8 @@ class _CustomerLoginState extends State<CustomerLogin> {
               MaterialPageRoute(
                 builder: (context) => CustomerLoginOtp(
                   isExisting: true,
+                  userId: user['id'],
+                  roleId: user['roleID'],
                   contactNumber: mobileNumberController.text.trim(),
                 ),
               ),

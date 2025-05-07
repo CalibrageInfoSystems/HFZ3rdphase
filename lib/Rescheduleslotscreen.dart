@@ -175,6 +175,7 @@ class _BookingScreenState extends State<Rescheduleslotscreen> {
     getUserDataFromSharedPreferences();
     //fetchdropdown();
     BranchId = widget.data.branchId;
+    selectedTechnicianValue = widget.data.technicianId;
 
 // Assuming widget.data.purposeOfVisitId is the value you want to match
 
@@ -1447,7 +1448,8 @@ class _BookingScreenState extends State<Rescheduleslotscreen> {
         // "timeofslot": widget.data.timeofSlot,
         "timeofslot": '$_selectedTimeSlot24',
         "customerId": Id,
-        "paymentTypeId": null
+        "paymentTypeId": null,
+        "technicianId": selectedTechnicianValue,
       };
 
       print('Object: ${json.encode(request)}');
