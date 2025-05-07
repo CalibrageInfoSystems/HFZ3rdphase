@@ -3018,6 +3018,10 @@ class _CloseConsulationCardState extends State<CloseConsulationCard> {
                             isFreeService = true;
                           }
 
+                          _billingAmountError = true;
+                          _billingAmountErrorMsg = null;
+                          isBillingAmountValidate = true;
+
                           apiPaymentMode =
                               paymentOptions[selectedPaymentOption!].typeCdId;
                           selectedPaymentMode =
@@ -3139,6 +3143,8 @@ class _CloseConsulationCardState extends State<CloseConsulationCard> {
         isPaymentModeSelected = true;
         isPaymentValidate = false;
       });
+    } else if (selectedPaymentOption == 3) {
+      print('www1111: $selectedPaymentOption');
     } else {
       setState(() {
         isPaymentModeSelected = false;
@@ -3225,6 +3231,7 @@ Future<void> customConsultationCall(
  */
 
   String? validateAmount(String? value) {
+    print('validateAmount: $value');
     if (value!.isEmpty) {
       setState(() {
         _billingAmountError = true;
@@ -3232,13 +3239,16 @@ Future<void> customConsultationCall(
       });
       isBillingAmountValidate = false;
       return null;
+    } else if (value == '0.0') {
+      isBillingAmountValidate = true;
+      return null;
     }
     isBillingAmountValidate = true;
     return null;
   }
 }
 
-/* 
+/*
 class ConsultationCard extends StatefulWidget {
   final Consultation consultation;
   const ConsultationCard({super.key, required this.consultation});

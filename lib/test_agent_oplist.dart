@@ -3651,6 +3651,10 @@ class _CloseConsulationCardState extends State<CloseConsulationCard> {
                       isFreeService = true;
                     }
 
+                    _billingAmountError = true;
+                    _billingAmountErrorMsg = null;
+                    isBillingAmountValidate = true;
+
                     apiPaymentMode =
                         paymentOptions[selectedPaymentOption]['typeCdId'];
                     selectedPaymentMode =
