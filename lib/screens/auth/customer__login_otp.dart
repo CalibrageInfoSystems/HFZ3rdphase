@@ -634,7 +634,7 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
         final response = jsonDecode(jsonResponse.body);
 
         CommonUtils.showCustomToastMessageLong(
-            'Resend OTP Successfully', context, 0, 4);
+            'OTP Resent Successfully', context, 0, 4);
       } else {
         CommonUtils.showCustomToastMessageLong(
             jsonResponse.body, context, 1, 4);

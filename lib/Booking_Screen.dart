@@ -1614,9 +1614,8 @@ class _BookingScreenState extends State<Bookingscreen> {
   List<Slot> filteredSlots = [];
 
   Future<List<Slot>> fetchTimeSlots(DateTime selectedDate, int branchId) async {
-    print('xxx: called');
     setState(() {
-      isLoading = true; // Set isLoading to true before making the API request
+      isLoading = true;
     });
 
     final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);

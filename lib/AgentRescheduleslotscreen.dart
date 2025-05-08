@@ -1392,7 +1392,7 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
 
   // List<Slot> filteredSlots = [];
 
-  Future<List<Slot>> fetchTimeSlots(DateTime selectedDate, int branchId) async {
+  /* Future<List<Slot>> fetchTimeSlots(DateTime selectedDate, int branchId) async {
     setState(() {
       isLoading = true; // Set isLoading to true before making the API request
     });
@@ -1400,7 +1400,6 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
     final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
     final url =
         Uri.parse("$baseUrl$GetSlotsByDateAndBranch$formattedDate/$branchId");
-    print('url==>969: $url');
 
     try {
       final response = await http.get(url);
@@ -1415,6 +1414,44 @@ class _AgentrescheduleslotscreenState extends State<Agentrescheduleslotscreen> {
           isLoading = false; // Set isLoading to false after data is fetched
           // Update any necessary state variables
         });
+
+        return slots;
+      } else {
+        throw Exception('Failed to fetch slots');
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false; // Set isLoading to false if error occurs
+      });
+      throw Exception('Error fetching time slots: $e');
+    }
+  } */
+
+  Future<List<Slot>> fetchTimeSlots(DateTime selectedDate, int branchId) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    final url =
+        Uri.parse("$baseUrl$GetSlotsByDateAndBranch$formattedDate/$branchId");
+
+    try {
+      final response = await http.get(url);
+      setState(() {
+        isLoading = false;
+      });
+      if (response.statusCode == 200) {
+        final jsonResult = jsonDecode(response.body);
+
+        List<Slot> slots = [];
+
+        print('xxx: ${jsonResult['listResult']}');
+
+        if (jsonResult['listResult'] != null) {
+          final List<dynamic> slotData = jsonResult['listResult'];
+          slots = slotData.map((slotJson) => Slot.fromJson(slotJson)).toList();
+        }
 
         return slots;
       } else {
