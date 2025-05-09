@@ -147,33 +147,6 @@ class _CustomerLoginState extends State<CustomerLogin> {
               // height: MediaQuery.of(context).size.height,
             ),
           ),
-          Container(
-            height: size.height * 0.4,
-            width: double.infinity,
-            padding: const EdgeInsets.only(top: 80, left: 20),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Welcome Back to',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Hair Fixing Zone..!',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
-          ),
 
           // Content
           Align(
@@ -181,6 +154,33 @@ class _CustomerLoginState extends State<CustomerLogin> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  Container(
+                    height: size.height * 0.4,
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(top: 80, left: 20),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome Back to',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Hair Fixing Zone..!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Spacer(),
+                      ],
+                    ),
+                  ),
                   Center(
                     child: Text(
                       'Customer Login',

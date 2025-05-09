@@ -275,25 +275,6 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
               // height: MediaQuery.of(context).size.height,
             ),
           ),
-          Container(
-            height: size.height * 0.4,
-            width: double.infinity,
-            padding: const EdgeInsets.only(top: 80, left: 20),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Hair Fixing Zone..!',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
-          ),
 
           // Content
           Align(
@@ -301,6 +282,25 @@ class _CustomerLoginOtpState extends State<CustomerLoginOtp> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  Container(
+                    height: size.height * 0.4,
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(top: 80, left: 20),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hair Fixing Zone..!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Spacer(),
+                      ],
+                    ),
+                  ),
                   const Center(
                     child: Text(
                       'Login With OTP',
